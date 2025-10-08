@@ -9,12 +9,11 @@
         .fullscreen { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; }
         
         #blacklist-screen { font-size: 1.5em; }
-        #boot-screen { padding: 20px; font-size: 1.2em; display: block; } /* Показываем по умолчанию */
+        #boot-screen { padding: 20px; font-size: 1.2em; display: block; }
         #boot-text { white-space: pre; }
         .cursor { display: inline-block; background-color: #d2d2d2; width: 12px; height: 20px; animation: blink-cursor 1s step-end infinite; }
         @keyframes blink-cursor { from, to { background-color: transparent; } 50% { background-color: #d2d2d2; } }
         
-        /* Стили для кнопки "Войти" */
         #login-prompt { flex-direction: column; }
         #enter-button {
             font-family: 'Courier New', Courier, monospace; font-size: 1.5em; color: #d2d2d2; background-color: #1a1a1a;
@@ -31,7 +30,6 @@
         .emergency-signal { color: #ff4444; font-size: 2.5em; letter-spacing: 5px; margin-bottom: 20px; }
         #riddle-container p { line-height: 1.6; font-size: 1.1em; margin-bottom: 25px; }
         
-        /* Стили для прогресс-бара */
         #loading-container { font-size: 1.2em; margin-bottom: 25px; color: #aaccff; width: 350px; text-align: left;}
         #progress-bar { width: 100%; background-color: #333; border: 1px solid #555; height: 20px; margin-top: 10px; }
         #progress-bar-inner { width: 0%; height: 100%; background-color: #aaccff; animation: load 3s linear forwards; }
@@ -75,35 +73,20 @@
     <audio id="final-sound" src="final-sound.mp3" loop></audio>
 
     <script>
-        // --- Все элементы страницы ---
         const elements = {
-            blacklist: document.getElementById('blacklist-screen'),
-            boot: document.getElementById('boot-screen'),
-            bootText: document.getElementById('boot-text'),
-            login: document.getElementById('login-prompt'),
-            enterBtn: document.getElementById('enter-button'),
-            main: document.getElementById('main-container'),
-            timer: document.getElementById('timer-container'),
-            loading: document.getElementById('loading-container'),
-            riddle: document.getElementById('riddle-content'),
-            answer: document.getElementById('answer-input'),
-            submitBtn: document.getElementById('submit-button'),
-            final: document.getElementById('final-screen'),
-            taskMusic: document.getElementById('task-music'),
-            finalSound: document.getElementById('final-sound')
+            blacklist: document.getElementById('blacklist-screen'), boot: document.getElementById('boot-screen'), bootText: document.getElementById('boot-text'),
+            login: document.getElementById('login-prompt'), enterBtn: document.getElementById('enter-button'), main: document.getElementById('main-container'),
+            timer: document.getElementById('timer-container'), loading: document.getElementById('loading-container'), riddle: document.getElementById('riddle-content'),
+            answer: document.getElementById('answer-input'), submitBtn: document.getElementById('submit-button'), final: document.getElementById('final-screen'),
+            taskMusic: document.getElementById('task-music'), finalSound: document.getElementById('final-sound')
         };
         let timerIntervalId = null, loopCount = 0;
 
-        // --- ЛОГИКА ---
-
-        // 1. ПРОВЕРКА СОСТОЯНИЯ ИГРЫ (localStorage)
         const gameState = localStorage.getItem('gameState');
         if (gameState === 'completed') {
-            // Если игра пройдена, сразу показываем финальный экран
-            // (текст будет загружен позже из сервера для безопасности)
             elements.boot.style.display = 'none';
-            // Делаем запрос на сервер за финальным текстом
-            fetch('/check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer: "OVERRIDE_L3_FINCH" }) })
+            const serverUrl = 'https://supamupa.pythonanywhere.com/check'; // Используем реальный URL для получения финального сообщения
+            fetch(serverUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer: "OVERRIDE_L3_FINCH" }) })
             .then(res => res.json()).then(data => {
                 if(data.final_message) {
                     elements.final.textContent = data.final_message;
@@ -111,15 +94,11 @@
                 }
             });
         } else if (gameState === 'blacklisted') {
-            // Если в черном списке
-            elements.boot.style.display = 'none';
-            elements.blacklist.style.display = 'flex';
+            elements.boot.style.display = 'none'; elements.blacklist.style.display = 'flex';
         } else {
-            // Новая игра
             runBootAnimation();
         }
 
-        // 2. АНИМАЦИЯ ЗАГРУЗКИ BIOS
         function runBootAnimation() {
             const bootLines = ['Phoenix BIOS 4.0 Release 6.0','Copyright 1982-1989 Phoenix Technologies Ltd.','','CPU: 80386 @ 25MHz','Memory Test: 1024K OK','','Checking for Moonlight Animatronics Sub-System...','MA-BIOS v2.1.89 detected.','Boot successful.',''];
             let lineIndex = 0; elements.bootText.innerHTML = '<span class="cursor"></span>';
@@ -130,51 +109,63 @@
                     clearInterval(intervalId);
                     setTimeout(() => {
                         elements.boot.style.display = 'none';
-                        elements.login.style.display = 'flex'; // Показываем кнопку "Войти"
+                        elements.login.style.display = 'flex';
                     }, 500);
                 }
             }, 300);
         }
 
-        // 3. НАЧАЛО ЗАДАЧИ (ПОСЛЕ КНОПКИ "ВОЙТИ")
+        // --- НОВАЯ ФУНКЦИЯ ДЛЯ СКАЧИВАНИЯ ФАЙЛА ---
+        function triggerDownload(fileUrl) {
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = fileUrl;
+            // Устанавливаем имя файла для скачивания
+            a.download = fileUrl.split('/').pop();
+            document.body.appendChild(a);
+            a.click(); // Имитируем клик
+            document.body.removeChild(a); // Удаляем временный элемент
+        }
+
         elements.enterBtn.addEventListener('click', () => {
             elements.login.style.display = 'none';
             elements.main.style.display = 'flex';
             
-            // Показываем прогресс-бар на 3 секунды, потом запускаем таймер
+            // --- ДОБАВЛЕНА СТРОКА ДЛЯ ЗАПУСКА СКАЧИВАНИЯ ---
+            triggerDownload('kernel_log_archive.txt');
+
             setTimeout(() => {
                 elements.loading.style.display = 'none';
                 elements.riddle.style.display = 'block';
                 startTimer();
-            }, 3000); // 3 секунды на анимацию прогресс-бара
+            }, 3000); 
             
             elements.taskMusic.volume = 0.7;
             elements.taskMusic.play();
         });
 
         function startTimer() {
-            let timeLeft = 3 * 60; // Таймер на 3 минуты
+            let timeLeft = 3 * 60; 
             timerIntervalId = setInterval(() => {
                 timeLeft--; const minutes = Math.floor(timeLeft / 60); let seconds = timeLeft % 60;
                 elements.timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
                 if (timeLeft <= 0) {
                     clearInterval(timerIntervalId);
-                    localStorage.setItem('gameState', 'blacklisted'); // Меняем состояние на 'blacklisted'
+                    localStorage.setItem('gameState', 'blacklisted');
                     location.reload();
                 }
             }, 1000);
         }
         
-        // 4. ПРОВЕРКА ОТВЕТА И ФИНАЛ
         function triggerSuccessSequence(finalMessage) {
-            localStorage.setItem('gameState', 'completed'); // Меняем состояние на 'completed'
+            localStorage.setItem('gameState', 'completed');
             elements.final.textContent = finalMessage;
             clearInterval(timerIntervalId); elements.timer.classList.add('blinking');
             elements.taskMusic.pause(); elements.finalSound.currentTime = 0; elements.finalSound.play();
             elements.finalSound.addEventListener('timeupdate', function fn() {
                 if (this.currentTime > this.duration - 0.5) {
                     loopCount++;
-                    if (loopCount >= 9) { // ИЗМЕНЕНИЕ: повторяем 9 раз
+                    if (loopCount >= 9) {
                         elements.main.style.display = 'none'; elements.final.style.display = 'flex';
                         this.removeEventListener('timeupdate', fn);
                     }
