@@ -1467,10 +1467,11 @@
 1989-10-27 09:23:02,543 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
 1989-10-27 09:23:10,119 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'.
 1989-10-27 09:23:11,250 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
-1989-10-27 09:23:11,800 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: T1ZFUlJJREVfTDRfRklOQ0g=
+1989-10-27 09:23:11,800 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: T1ZFUlJJREVfTDNfRklOQ0g=
 1989-10-27 09:23:12,781 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
 1989-10-27 09:23:15,991 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
 1989-10-27 09:23:16,001 [system_init] [CRITICAL] KERNEL PANIC - UNABLE TO MAINTAIN SYSTEM INTEGRITY.
 1989-10-27 09:23:16,002 [system_init] [INFO] System going down for emergency halt.
 
 --- LOG TERMINATED ABNORMALLY ---
+
