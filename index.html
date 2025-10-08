@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SYSTEM_ACCESS</title>
+    <style>
+        body, html { height: 100%; margin: 0; background-color: #000; color: #d2d2d2; font-family: 'Courier New', Courier, monospace; overflow: hidden; }
+        #blacklist-screen { display: none; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 1.5em; }
+        #boot-screen { padding: 20px; font-size: 1.2em; }
+        #boot-text { white-space: pre; }
+        .cursor { display: inline-block; background-color: #d2d2d2; width: 12px; height: 20px; animation: blink-cursor 1s step-end infinite; }
+        @keyframes blink-cursor { from, to { background-color: transparent; } 50% { background-color: #d2d2d2; } }
+        #main-container { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; flex-direction: column; }
+        #timer-container { position: absolute; top: 30px; left: 50%; transform: translateX(-50%) scaleX(1.8); font-size: 3em; color: #ffcc00; text-shadow: 1px 1px 3px #000; }
+        @keyframes blinking-text { 50% { opacity: 0.2; } }
+        .blinking { animation: blinking-text 0.8s linear infinite; }
+        #riddle-container { text-align: center; max-width: 700px; }
+        .emergency-signal { color: #ff4444; font-size: 2.5em; letter-spacing: 5px; margin-bottom: 20px; }
+        #riddle-container p { line-height: 1.6; font-size: 1.1em; margin-bottom: 25px; }
+        #loading-animation { font-size: 1.2em; margin-bottom: 25px; color: #aaccff; }
+        #spinner { display: inline-block; animation: spin 1s steps(4) infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        #answer-input { background: #101010; border: 1px solid #333; color: #fff; padding: 12px; font-size: 1.2em; text-align: center; width: 350px; font-family: 'Courier New', Courier, monospace; }
+        #final-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; justify-content: center; align-items: center; color: rgba(200, 200, 200, 0.5); font-size: 2em; text-align: center; white-space: pre; z-index: 3000; }
+    </style>
+</head>
+<body>
+    
+    <div id="blacklist-screen">Вы не смогли выполнить задачу.</div>
+    <div id="boot-screen"><pre id="boot-text"></pre></div>
+    <div id="main-container">
+        <div id="timer-container">03:00</div>
+        <div id="riddle-container">
+            <h1 class="emergency-signal">signal: EMERGENCY</h1>
+            <p>Потеряна связь со складовым бункером L-3 после скачка напряжения. Система безопасности перешла в аварийный режим и требует ключ ручной отмены блокировки. Зашифрованный ключ был автоматически заархивирован в последнем фрагменте лога перед отключением. Найдите и расшифруйте его.</p>
+            <div id="loading-animation">Анализ дампа... [<span id="spinner">/</span>]</div>
+            <input type="text" id="answer-input">
+        </div>
+    </div>
+    <div id="final-screen"></div> 
+    
+    <audio id="task-music" src="task-music.mp3" loop></audio>
+    <audio id="final-sound" src="final-sound.mp3" loop></audio>
+
+    <script>
+        const blacklistScreen = document.getElementById('blacklist-screen'), bootScreen = document.getElementById('boot-screen'), mainContainer = document.getElementById('main-container'), bootText = document.getElementById('boot-text'), timerContainer = document.getElementById('timer-container'), answerInput = document.getElementById('answer-input'), finalScreen = document.getElementById('final-screen'), taskMusic = document.getElementById('task-music'), finalSound = document.getElementById('final-sound');
+        let timerIntervalId = null, loopCount = 0;
+
+        if (localStorage.getItem('blacklisted') === 'true') {
+            bootScreen.style.display = 'none'; blacklistScreen.style.display = 'flex';
+        } else {
+            blacklistScreen.style.display = 'none'; runBootAnimation();
+        }
+        function runBootAnimation() {
+            const bootLines = ['Phoenix BIOS 4.0 Release 6.0','Copyright 1982-1989 Phoenix Technologies Ltd.','All Rights Reserved','','CPU: 80386 @ 25MHz','Memory Test: 1024K OK','','Checking for Moonlight Animatronics Sub-System...','MA-BIOS v2.1.89 detected.','Initializing Stage Controller...','Loading Kernel...','Boot successful.',''];
+            let lineIndex = 0; bootText.innerHTML = '<span class="cursor"></span>';
+            const intervalId = setInterval(() => {
+                if (lineIndex < bootLines.length) {
+                    bootText.innerHTML = bootText.innerHTML.replace('<span class="cursor"></span>', '') + bootLines[lineIndex] + '\n<span class="cursor"></span>'; lineIndex++;
+                } else {
+                    clearInterval(intervalId); setTimeout(() => { bootScreen.style.display = 'none'; startTask(); }, 500);
+                }
+            }, 300);
+        }
+        function startTask() {
+            mainContainer.style.display = 'flex'; taskMusic.volume = 0.7; taskMusic.play();
+            const spinner = document.getElementById('spinner'), spinChars = ['/', '—', '\\', '|'];
+            let spinIndex = 0; setInterval(() => { spinner.textContent = spinChars[spinIndex]; spinIndex = (spinIndex + 1) % spinChars.length; }, 200);
+            let timeLeft = 3 * 60; 
+            timerIntervalId = setInterval(() => {
+                timeLeft--; const minutes = Math.floor(timeLeft / 60); let seconds = timeLeft % 60;
+                timerContainer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeLeft <= 0) { clearInterval(timerIntervalId); localStorage.setItem('blacklisted', 'true'); location.reload(); }
+            }, 1000);
+        }
+        function triggerSuccessSequence(finalMessage) {
+            finalScreen.textContent = finalMessage;
+            clearInterval(timerIntervalId); timerContainer.classList.add('blinking');
+            taskMusic.pause(); finalSound.currentTime = 0; finalSound.play();
+            finalSound.addEventListener('timeupdate', function fn() {
+                if (this.currentTime > this.duration - 0.5) {
+                    loopCount++;
+                    if (loopCount >= 3) {
+                        mainContainer.style.display = 'none'; finalScreen.style.display = 'flex';
+                        this.removeEventListener('timeupdate', fn);
+                    }
+                }
+            });
+        }
+        function checkAnswer() {
+            const userAnswer = answerInput.value;
+            // !!! ВАЖНО: ЗАМЕНИТЕ ЭТОТ АДРЕС НА ВАШ АДРЕС С PYTHONANYWHERE !!!
+            const serverUrl = 'https://ВАШЕ_ИМЯ.pythonanywhere.com/check';
+            
+            fetch(serverUrl, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ answer: userAnswer })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.correct) {
+                    triggerSuccessSequence(data.final_message);
+                } else {
+                    answerInput.style.borderColor = 'red';
+                    setTimeout(() => { answerInput.style.borderColor = '#333'; }, 500);
+                }
+            })
+            .catch(error => {
+                console.error("ОШИБКА: Не удалось подключиться к серверу проверки.", error);
+                riddleContainer.querySelector('p').textContent = "ОШИБКА: СЕРВЕР ПРОВЕРКИ НЕ ОТВЕЧАЕТ.";
+            });
+        }
+        answerInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') checkAnswer(); });
+    </script>
+</body>
+</html>

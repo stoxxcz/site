@@ -1,0 +1,1476 @@
+--- KERNEL LOG DUMP ---
+--- Log Start Time: 1989-10-27 00:34:00 ---
+
+1989-10-27 00:35:00,875 [system_init] [INFO] Core control system starting up...
+1989-10-27 00:35:22,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 00:35:24,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 00:35:27,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 00:35:56,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 00:36:11,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 00:36:26,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 00:36:36,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 00:37:20,773 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 00:37:31,118 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 00:37:36,295 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 00:38:02,218 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 00:39:27,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 00:39:42,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 00:39:57,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 00:40:07,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 00:40:39,746 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 00:40:47,799 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 00:41:31,552 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 00:41:58,796 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 00:42:06,320 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 00:44:06,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 00:44:22,286 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 00:44:30,681 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 00:44:36,266 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 00:44:47,342 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 00:45:03,173 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 00:45:33,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 00:45:49,715 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 00:46:19,225 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 00:47:19,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 00:47:21,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 00:47:24,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 00:47:43,396 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 00:48:35,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 00:48:52,208 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 00:49:10,909 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 00:49:20,642 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 00:49:36,886 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 00:49:48,368 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 00:50:03,409 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 00:50:13,751 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 00:50:23,942 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 00:50:53,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 00:51:54,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 00:52:09,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 00:52:24,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 00:52:34,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 00:53:10,669 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 00:54:00,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 00:54:15,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 00:54:30,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 00:54:40,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 00:55:03,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 00:55:18,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 00:55:33,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 00:55:43,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 00:56:28,984 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 00:57:17,831 [main_stage_control] [INFO] Hydraulic pressure nominal.
+1989-10-27 00:58:06,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 00:58:08,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 00:58:11,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 00:58:43,351 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 00:59:15,137 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 00:59:52,456 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 01:01:40,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 01:01:55,915 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 01:02:13,827 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 01:02:27,362 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 01:02:47,887 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 01:03:06,388 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 01:03:36,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 01:03:44,533 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:04:35,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 01:04:42,483 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 01:04:54,115 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 01:05:08,399 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 01:05:23,903 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 01:05:30,665 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 01:05:45,938 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 01:06:00,111 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 01:06:10,475 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 01:06:27,531 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 01:06:57,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 01:08:13,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 01:08:28,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 01:08:43,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 01:08:53,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 01:09:00,435 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 01:09:22,184 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:09:57,182 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:10:45,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 01:11:00,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 01:11:15,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 01:11:25,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 01:13:17,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 01:13:31,388 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 01:13:42,832 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 01:13:51,996 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 01:14:07,579 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 01:14:15,131 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 01:14:45,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 3 WARNINGS, 0 ERRORS.
+1989-10-27 01:16:04,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 01:16:17,387 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 01:16:31,822 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 01:16:44,792 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 01:16:52,339 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 01:17:08,974 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 01:17:38,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 01:17:50,413 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 01:18:08,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 01:18:10,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:18:13,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:19:44,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 01:19:50,754 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:20:07,368 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:20:19,776 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:20:30,455 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:20:48,301 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 01:21:00,933 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:21:13,396 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 01:21:21,544 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:21:51,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 01:22:10,900 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 01:22:46,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 01:23:01,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.3V.
+1989-10-27 01:23:16,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 01:23:26,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 01:23:46,483 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 01:24:07,922 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 01:24:12,986 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_joe_r'.
+1989-10-27 01:24:22,781 [main_stage_control] [INFO] Daytime performance schedule loaded.
+1989-10-27 01:25:09,467 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 01:26:07,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 01:26:17,122 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 01:26:31,311 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 01:26:45,284 [animatronic_louis_b] [ERROR] Failed to sync with master clock. Retrying...
+1989-10-27 01:26:58,252 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 01:27:12,717 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 01:27:20,175 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 01:27:40,113 [animatronic_louis_b] [ERROR] Vocalizer DAC failure. Outputting static.
+1989-10-27 01:28:10,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 2 ERRORS.
+1989-10-27 01:28:37,342 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 01:29:20,212 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 01:29:26,241 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 01:29:40,968 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 01:30:01,233 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 01:30:37,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 01:30:39,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:30:42,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:31:52,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 01:32:03,438 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:32:23,420 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 01:32:30,537 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:32:48,695 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 01:33:00,980 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 01:33:05,464 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 01:33:20,313 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:33:40,804 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:33:48,506 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 01:33:55,807 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 01:34:25,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 1 ERRORS.
+1989-10-27 01:35:08,965 [animatronic_dino_d] [ERROR] MIDI buffer corruption. Playing random notes.
+1989-10-27 01:35:33,723 [main_stage_control] [INFO] Daytime performance schedule loaded.
+1989-10-27 01:36:19,501 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 01:36:46,701 [main_stage_control] [INFO] Hydraulic pressure nominal.
+1989-10-27 01:37:02,595 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:37:47,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 01:37:49,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:37:52,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:38:41,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 01:38:43,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:38:46,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:39:39,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 01:39:54,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 01:40:09,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 01:40:19,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 01:40:47,738 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:40:53,203 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 01:41:11,768 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:42:00,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 01:42:10,569 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:42:24,442 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 01:42:34,736 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 01:42:45,836 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 01:43:01,604 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 01:43:31,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 3 WARNINGS, 0 ERRORS.
+1989-10-27 01:43:45,501 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:44:27,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 01:44:29,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:44:32,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:45:02,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 01:45:04,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:45:07,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:46:01,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 01:46:03,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 01:46:06,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:46:44,981 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 01:47:42,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 01:47:57,150 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 01:48:03,973 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 01:48:16,955 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:48:24,458 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 01:48:39,193 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:48:49,695 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:48:56,741 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 01:49:10,603 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 01:49:18,310 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 01:49:48,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 01:50:42,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 01:50:52,389 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 01:51:01,723 [animatronic_louis_b] [ERROR] Vocalizer DAC failure. Outputting static.
+1989-10-27 01:51:11,101 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 01:51:24,896 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 01:51:35,830 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 01:51:52,407 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 01:52:22,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 1 ERRORS.
+1989-10-27 01:52:43,759 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 01:53:14,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 01:53:29,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 01:53:44,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 01:53:54,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 01:54:31,617 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 01:55:20,861 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 01:56:18,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 01:56:23,287 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 01:56:36,593 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 01:56:55,908 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 01:57:14,834 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 01:57:22,699 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 01:57:52,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 01:59:34,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 01:59:53,236 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:00:11,962 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 02:00:29,564 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:00:42,453 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 02:00:59,904 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 02:01:11,330 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 02:01:41,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 02:02:27,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 02:02:43,318 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 02:02:49,824 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 02:03:06,365 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 02:03:26,579 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 02:03:31,289 [animatronic_dino_d] [ERROR] MIDI buffer corruption. Playing random notes.
+1989-10-27 02:03:36,404 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 02:03:43,945 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 02:03:52,429 [animatronic_dino_d] [ERROR] MIDI buffer corruption. Playing random notes.
+1989-10-27 02:04:12,714 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 02:04:42,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 2 ERRORS.
+1989-10-27 02:04:56,119 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 02:05:37,110 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 02:06:23,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 02:06:38,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 02:06:53,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 02:07:03,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 02:08:26,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 02:08:41,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 02:08:56,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 02:09:06,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 02:09:13,235 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 02:09:32,890 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:10:27,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 02:10:42,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.8V.
+1989-10-27 02:10:57,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 02:11:07,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 02:11:25,502 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 02:12:06,381 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 02:12:36,503 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 02:13:11,113 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 02:13:18,441 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 02:13:53,819 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:15:21,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 02:15:37,598 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 02:15:52,380 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 02:15:59,419 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 02:16:07,162 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 02:16:21,109 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 02:16:33,616 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 02:16:39,362 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 02:17:09,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 02:17:15,290 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 02:17:40,749 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 02:17:50,216 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
+1989-10-27 02:18:24,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 02:18:39,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 02:18:54,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 02:19:04,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 02:19:52,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:19:54,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:19:57,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:20:51,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:20:53,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:20:56,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:21:33,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 02:21:48,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 02:22:03,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 02:22:13,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 02:22:54,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:22:56,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:22:59,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:23:36,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:23:38,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:23:41,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:23:52,966 [main_stage_control] [INFO] Hydraulic pressure nominal.
+1989-10-27 02:24:32,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:24:34,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:24:37,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:26:01,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 02:26:17,182 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 02:26:24,778 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:26:38,318 [animatronic_louis_b] [ERROR] Servo 4C not responding.
+1989-10-27 02:26:55,797 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:27:03,166 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 02:27:16,881 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 02:27:24,509 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 02:27:35,236 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 02:27:51,866 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 02:28:21,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 1 ERRORS.
+1989-10-27 02:28:39,332 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:28:53,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:28:55,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:28:58,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:29:50,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 02:30:05,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 02:30:20,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 02:30:30,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 02:31:10,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:31:12,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:31:15,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:31:31,386 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 02:32:25,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 02:32:43,633 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:32:59,663 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 02:33:09,837 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:33:28,538 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 02:33:40,918 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:33:53,352 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 02:34:11,470 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 02:34:24,833 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:34:41,964 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:34:59,436 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 02:35:29,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 02:36:40,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 02:36:55,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 02:37:10,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 02:37:20,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 02:38:09,686 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:38:33,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:38:35,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:38:38,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:39:01,879 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 02:39:22,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 02:39:37,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 02:39:52,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 02:40:02,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 02:40:08,731 [power_mgmt] [ERROR] Unstable voltage detected on main power bus. Fluctuation: +/- 15V.
+1989-10-27 02:40:20,209 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:40:42,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:40:44,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:40:47,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:41:18,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:41:20,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:41:23,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:41:40,936 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 02:42:13,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:42:15,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:42:18,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:43:00,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:43:02,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:43:05,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:43:41,802 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:44:16,304 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 02:44:54,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 02:44:56,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:44:59,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:45:24,672 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 02:46:54,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 02:47:05,885 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 02:47:24,977 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 02:47:35,602 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 02:47:54,942 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 02:48:03,718 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 02:48:15,338 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 02:48:45,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 02:49:12,463 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 02:49:54,569 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: T1ZFUlJJREVfTDRfRklOQ0g=
+1989-10-27 02:50:15,151 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 02:51:07,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 02:51:17,435 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 02:51:32,946 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 02:51:38,472 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 02:51:52,946 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 02:52:08,884 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 02:52:14,439 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 02:52:44,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 02:53:03,411 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 02:53:22,419 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 02:54:04,262 [main_stage_control] [INFO] Hydraulic pressure nominal.
+1989-10-27 02:54:44,171 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 02:54:57,131 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 02:55:47,915 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 02:56:04,757 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_joe_r'.
+1989-10-27 02:57:29,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 02:57:48,410 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 02:58:01,313 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:58:08,122 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 02:58:28,109 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 02:58:43,257 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 02:58:59,608 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 02:59:19,407 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 02:59:32,965 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 03:00:02,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 03:00:50,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 03:01:03,885 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:01:08,997 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:01:15,713 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:01:33,807 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:01:49,859 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:02:03,821 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 03:02:17,110 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 03:02:31,539 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:03:01,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 03:03:42,508 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 03:03:54,611 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:04:39,204 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 03:04:55,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 03:04:57,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 03:05:00,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:05:42,826 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 03:06:19,642 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 03:08:02,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 03:08:14,555 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 03:08:31,235 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 03:08:47,841 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 03:09:03,155 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 03:09:17,377 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 03:09:36,240 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 03:09:48,936 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 03:09:53,321 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 03:10:23,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 03:10:35,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 03:10:37,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 03:10:40,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:11:39,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 03:11:53,904 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 03:12:07,823 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 03:12:18,505 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 03:12:32,193 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 03:12:52,940 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 03:12:57,533 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 03:13:10,613 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 03:13:40,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 03:14:10,858 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:15:49,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 03:16:08,617 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:16:18,355 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:16:28,923 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 03:16:33,116 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:16:46,121 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:16:59,509 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 03:17:09,402 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 03:17:27,636 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:17:39,184 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 03:17:59,893 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:18:29,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 03:19:20,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 03:19:40,582 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:19:48,535 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:19:58,178 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 03:20:12,107 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 03:20:23,620 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:20:31,282 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 03:20:37,185 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 03:20:48,308 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 03:20:55,835 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 03:21:25,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 03:22:06,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 03:22:23,556 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:22:37,772 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:22:51,163 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 03:23:00,674 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 03:23:17,814 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:23:37,383 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:23:52,373 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:24:03,591 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:24:33,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 03:24:56,157 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 03:25:44,917 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:26:18,241 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 03:26:25,114 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 03:26:56,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 03:27:11,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 03:27:26,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 03:27:36,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 03:27:55,745 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 03:28:49,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 03:29:03,250 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 03:29:10,597 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 03:29:29,401 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 03:29:37,506 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 03:29:54,399 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 03:30:08,187 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 03:30:17,815 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 03:30:47,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 03:31:37,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 03:31:52,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.8V.
+1989-10-27 03:32:07,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 03:32:17,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 03:33:52,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 03:34:03,517 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 03:34:17,765 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:34:34,668 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 03:34:50,176 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 03:34:55,261 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:35:25,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 03:35:34,622 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:35:52,573 [main_stage_control] [INFO] Hydraulic pressure nominal.
+1989-10-27 03:36:15,615 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 03:36:57,251 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 03:37:25,374 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:38:13,210 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 03:38:58,145 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 03:39:07,223 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 03:40:36,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 03:40:44,918 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:41:01,859 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:41:20,907 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:41:35,685 [animatronic_dino_d] [ERROR] MIDI buffer corruption. Playing random notes.
+1989-10-27 03:41:53,600 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:42:13,468 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:42:26,544 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:42:43,208 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:42:49,623 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 03:42:58,583 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 03:43:28,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 0 WARNINGS, 1 ERRORS.
+1989-10-27 03:43:58,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 03:44:13,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 03:44:28,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 03:44:38,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 03:45:14,282 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 03:45:47,835 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:46:25,207 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 03:46:33,267 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:46:55,938 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:47:12,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 03:47:14,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 03:47:17,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:48:03,581 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 03:48:29,208 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 03:49:20,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 03:49:22,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 03:49:25,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:50:13,530 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 03:51:02,282 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 03:51:13,284 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 03:51:24,551 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 03:52:06,316 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 03:52:19,780 [power_mgmt] [ERROR] Unstable voltage detected on main power bus. Fluctuation: +/- 15V.
+1989-10-27 03:53:05,246 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 03:53:28,155 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 03:54:43,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 03:55:02,928 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 03:55:09,680 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 03:55:22,422 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 03:55:39,575 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 03:55:56,463 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 03:56:26,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 03:57:04,102 [animatronic_dino_d] [ERROR] MIDI buffer corruption. Playing random notes.
+1989-10-27 03:57:44,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 03:57:58,818 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 03:58:09,648 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 03:58:21,679 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 03:58:31,419 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 03:58:48,328 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 03:59:01,683 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 03:59:11,804 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 03:59:29,110 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 03:59:59,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 04:00:04,973 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 04:00:52,960 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 04:02:19,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 04:02:34,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 04:02:49,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 04:02:59,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 04:03:14,646 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:03:27,425 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 04:03:44,867 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 04:04:38,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:04:40,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:04:43,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:04:52,969 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 04:05:19,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:05:21,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:05:24,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:05:52,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:05:54,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:05:57,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:07:13,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 04:07:28,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 04:07:43,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 04:07:53,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 04:08:05,412 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 04:08:15,968 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 04:08:38,726 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:09:12,581 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 04:10:00,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 04:10:14,321 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 04:10:30,499 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 04:10:46,293 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 04:10:51,593 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 04:10:57,797 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 04:11:06,101 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 04:11:15,132 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 04:11:27,562 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 04:11:44,464 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 04:11:56,476 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 04:12:26,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 3 WARNINGS, 0 ERRORS.
+1989-10-27 04:12:50,521 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 04:14:13,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 04:14:19,393 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 04:14:25,205 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:14:44,490 [animatronic_louis_b] [ERROR] Vocalizer DAC failure. Outputting static.
+1989-10-27 04:14:59,852 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:15:18,219 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 04:15:31,258 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:16:01,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 1 ERRORS.
+1989-10-27 04:16:47,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:16:49,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:16:52,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:17:22,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:17:24,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:17:27,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:18:10,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 04:18:15,760 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:18:35,941 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 04:18:53,134 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:19:09,568 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 04:19:29,687 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 04:19:36,882 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 04:19:46,465 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:20:16,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 04:21:51,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 04:22:09,555 [security_module] [CRITICAL] Anomaly in behavior matrix. Failsafe triggered. Creator's override protocol required: [FAILSAFE:FINCH:OVERRIDE]
+1989-10-27 04:22:17,708 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 04:22:24,437 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 04:22:37,606 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 04:22:49,888 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 04:22:57,263 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 04:23:05,196 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 04:23:18,176 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 04:23:48,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 2 WARNINGS, 1 ERRORS.
+1989-10-27 04:24:17,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:24:19,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:24:22,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:26:13,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 04:26:22,592 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 04:26:41,915 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 04:27:01,694 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 04:27:14,544 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 04:27:34,473 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 04:27:51,533 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 04:28:21,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 04:28:28,558 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: T1ZFUlJJREVfTDRfRklOQ0g=
+1989-10-27 04:28:36,897 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 04:29:12,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:29:14,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:29:17,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:29:43,136 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:30:11,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 04:30:26,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 04:30:41,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 04:30:51,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 04:30:59,716 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 04:31:15,462 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:32:04,611 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 04:32:16,137 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 04:33:12,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:33:14,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:33:17,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:33:48,371 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:34:11,785 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:34:43,222 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 04:35:05,230 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 04:36:24,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 04:36:39,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 04:36:54,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 04:37:04,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 04:39:03,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 04:39:08,432 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 04:39:13,572 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 04:39:27,978 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 04:39:39,653 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:39:58,636 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 04:40:18,675 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:40:26,704 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 04:40:56,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 3 WARNINGS, 0 ERRORS.
+1989-10-27 04:42:50,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 04:42:55,683 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 04:43:05,603 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 04:43:10,918 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 04:43:26,629 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 04:43:39,260 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 04:43:57,502 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 04:44:11,493 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 04:44:41,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 04:45:22,486 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 04:45:33,935 [main_stage_control] [INFO] Daytime performance schedule loaded.
+1989-10-27 04:46:04,741 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 04:46:24,929 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 04:47:13,924 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 04:48:45,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 04:49:03,489 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 04:49:08,249 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 04:49:19,743 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 04:49:34,313 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 04:49:53,869 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 04:49:59,948 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 04:50:06,684 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 04:50:36,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 04:50:57,470 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 04:51:33,389 [main_stage_control] [INFO] Daytime performance schedule loaded.
+1989-10-27 04:51:48,332 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
+1989-10-27 04:53:05,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 04:53:19,820 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:53:29,761 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 04:53:36,818 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 04:53:46,974 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 04:53:51,332 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 04:54:00,484 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 04:54:16,457 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 04:54:33,303 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 04:54:46,642 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 04:55:04,694 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 04:55:34,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 04:55:51,824 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
+1989-10-27 04:57:08,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 04:57:23,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 04:57:38,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 04:57:48,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 04:58:17,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:58:19,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:58:22,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:59:06,564 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 04:59:45,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 04:59:47,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 04:59:50,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:00:11,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 05:00:13,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:00:16,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:01:35,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 05:01:49,133 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 05:02:02,295 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 05:02:12,758 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 05:02:30,408 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 05:02:37,933 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 05:02:48,696 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 05:03:18,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 05:04:04,410 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:04:54,939 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:05:11,487 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 05:06:07,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 05:06:22,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 05:06:37,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 05:06:47,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 05:07:40,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 05:07:55,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.3V.
+1989-10-27 05:08:10,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 05:08:20,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 05:08:54,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 05:08:56,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:08:59,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:09:27,885 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 05:09:43,226 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:10:35,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 05:10:50,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 05:11:05,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 05:11:15,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 05:13:09,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 05:13:22,424 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:13:41,431 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:13:54,748 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 05:14:00,618 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:14:14,995 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 05:14:26,775 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:14:46,863 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:15:01,275 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 05:15:17,983 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:15:25,788 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:15:55,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 05:16:31,328 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:16:39,242 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 05:17:29,809 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 05:18:19,980 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 05:18:52,421 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 05:19:21,721 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 05:20:05,981 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:20:59,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 05:21:01,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:21:04,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:21:25,955 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 05:22:06,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 05:22:21,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.8V.
+1989-10-27 05:22:36,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 05:22:46,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 05:24:12,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 05:24:28,911 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:24:34,807 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:24:53,489 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:25:13,417 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:25:18,421 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:25:28,751 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:25:36,110 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:25:43,235 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:25:51,875 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 05:25:59,219 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:26:29,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 05:26:53,477 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 05:28:07,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 05:28:15,741 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:28:22,989 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 05:28:41,337 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:28:47,593 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:29:01,469 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:29:11,809 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:29:25,807 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:29:45,343 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 05:30:15,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 05:31:05,344 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 05:31:31,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 05:31:33,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:31:36,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:32:25,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 05:32:27,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:32:30,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:33:12,968 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 05:33:42,821 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:33:57,791 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 05:34:37,331 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 05:34:45,558 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:34:57,374 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 05:35:16,964 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:36:09,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 05:36:11,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:36:14,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:36:25,113 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 05:36:59,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 05:37:01,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:37:04,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 05:37:36,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 05:37:54,162 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 05:38:08,597 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 05:38:19,463 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 05:38:30,836 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 05:38:37,514 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 05:38:54,602 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 05:39:06,637 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 05:39:12,201 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 05:39:18,539 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 05:39:48,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 05:40:09,430 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 05:40:54,738 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 05:41:40,400 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:42:07,874 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: T1ZFUlJJREVfTDRfRklOQ0g=
+1989-10-27 05:42:39,979 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 05:43:25,437 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 05:44:49,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 05:45:04,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 05:45:19,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 05:45:29,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 05:45:39,819 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 05:46:32,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 05:46:47,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 05:47:02,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 05:47:12,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 05:48:02,852 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:48:46,955 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 05:49:08,748 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 05:50:39,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 05:50:46,247 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 05:50:55,119 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 05:51:11,868 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 05:51:17,791 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 05:51:22,449 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 05:51:52,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 05:53:48,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 05:54:05,892 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 05:54:19,927 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 05:54:25,677 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 05:54:32,588 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 05:54:48,390 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 05:55:03,157 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 05:55:19,919 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 05:55:32,418 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 05:55:46,639 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 05:56:16,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 05:57:02,766 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 05:58:00,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 05:58:08,808 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 05:58:18,753 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 05:58:27,330 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 05:58:33,306 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 05:58:41,585 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 05:59:00,185 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 05:59:30,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 05:59:48,237 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 06:00:40,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 06:00:53,995 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 06:00:58,260 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 06:01:08,469 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 06:01:18,467 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 06:01:38,114 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 06:02:08,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 06:02:41,337 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 06:03:18,892 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:03:49,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:03:51,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:03:54,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:04:35,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:04:37,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:04:40,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:05:23,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:05:25,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:05:28,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:06:14,820 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:06:42,753 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 06:08:02,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:08:17,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 06:08:32,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:08:42,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:08:57,319 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 06:09:09,934 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 06:09:17,178 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 06:10:08,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:10:23,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.8V.
+1989-10-27 06:10:38,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:10:48,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:11:03,873 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:11:52,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:12:07,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 06:12:22,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:12:32,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:13:12,874 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:13:39,886 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:14:23,505 [animatronic_louis_b] [ERROR] Servo 4C not responding.
+1989-10-27 06:16:15,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 06:16:30,599 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 06:16:47,181 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 06:17:01,568 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 06:17:15,834 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 06:17:25,746 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 06:17:42,925 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 06:17:49,795 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 06:18:19,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 1 ERRORS.
+1989-10-27 06:18:46,951 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 06:19:16,625 [animatronic_louis_b] [ERROR] Failed to sync with master clock. Retrying...
+1989-10-27 06:20:02,977 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 06:20:50,500 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_joe_r'.
+1989-10-27 06:21:20,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 06:21:37,311 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 06:21:51,614 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 06:22:08,507 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 06:22:14,257 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 06:22:33,799 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 06:22:43,801 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 06:23:13,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 06:23:59,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:24:14,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 06:24:29,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:24:39,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:24:57,347 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 06:26:05,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:26:20,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 06:26:35,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:26:45,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:27:14,802 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 06:27:54,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:27:56,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:27:59,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:28:05,681 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:28:22,987 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 06:28:27,467 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:28:40,318 [power_mgmt] [ERROR] Unstable voltage detected on main power bus. Fluctuation: +/- 15V.
+1989-10-27 06:29:24,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:29:26,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:29:29,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:29:58,232 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:30:21,978 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 06:31:03,375 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 06:32:08,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 06:32:23,840 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 06:32:38,285 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 06:32:48,163 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 06:33:03,292 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 06:33:22,972 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 06:33:32,585 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 06:33:47,571 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 06:34:05,546 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 06:34:19,223 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 06:34:49,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 06:36:11,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 06:36:28,958 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 06:36:40,162 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 06:36:47,502 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 06:36:52,449 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 06:37:03,646 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 06:37:11,330 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 06:37:41,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 06:38:18,198 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 06:39:03,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:39:18,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 06:39:33,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:39:43,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:40:26,883 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_joe_r'.
+1989-10-27 06:40:44,708 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 06:41:07,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:41:09,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:41:12,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:41:42,769 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 06:42:31,822 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 06:42:52,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:43:07,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 06:43:22,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:43:32,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:44:14,537 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 06:44:25,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:44:27,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:44:30,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:44:43,566 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 06:45:19,940 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 06:45:47,884 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:46:46,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:47:01,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 06:47:16,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:47:26,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:48:12,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:48:14,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:48:17,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:48:57,230 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:49:08,752 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 06:49:17,271 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:49:59,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 06:50:09,352 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 06:50:17,112 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 06:50:27,565 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 06:50:41,215 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 06:50:59,532 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 06:51:04,412 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 06:51:22,165 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 06:51:52,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 06:52:21,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:52:23,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:52:26,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:52:32,619 [animatronic_louis_b] [ERROR] Servo 4C not responding.
+1989-10-27 06:52:41,863 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:53:24,655 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_joe_r'.
+1989-10-27 06:53:56,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 06:54:11,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 06:54:26,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 06:54:36,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 06:54:57,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:54:59,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:55:02,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:55:47,901 [power_mgmt] [ERROR] Unstable voltage detected on main power bus. Fluctuation: +/- 15V.
+1989-10-27 06:56:12,560 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:56:20,100 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 06:56:56,320 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 06:57:40,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:57:42,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:57:45,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 06:58:22,676 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 06:59:21,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 06:59:23,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 06:59:26,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:00:03,663 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 07:00:51,779 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 07:01:22,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 07:01:37,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.3V.
+1989-10-27 07:01:52,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 07:02:02,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 07:02:28,438 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:02:41,805 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 07:02:48,233 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 07:03:09,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 07:03:24,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 07:03:39,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 07:03:49,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 07:03:57,585 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 07:04:59,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 07:05:05,323 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 07:05:10,899 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 07:05:27,958 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 07:05:43,168 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 07:05:54,261 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 07:05:59,156 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 07:06:17,806 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 07:06:33,775 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 07:07:03,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 07:07:12,383 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 07:07:23,710 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 07:08:20,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 07:08:35,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.0V.
+1989-10-27 07:08:50,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 07:09:00,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 07:09:16,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:09:18,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:09:21,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:10:03,280 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 07:10:31,969 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 07:10:40,481 [animatronic_louis_b] [ERROR] Failed to sync with master clock. Retrying...
+1989-10-27 07:10:58,799 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:11:15,250 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:11:43,727 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 07:13:02,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 07:13:17,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 07:13:32,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 07:13:42,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 07:14:22,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 07:14:37,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 07:14:52,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 07:15:02,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 07:17:02,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 07:17:11,448 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 07:17:26,795 [animatronic_louis_b] [ERROR] Vocalizer DAC failure. Outputting static.
+1989-10-27 07:17:42,772 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 07:18:00,153 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 07:18:12,114 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 07:18:30,684 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 07:18:49,306 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 07:19:19,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 0 WARNINGS, 1 ERRORS.
+1989-10-27 07:19:38,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:19:40,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:19:43,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:19:58,754 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 07:20:09,652 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 07:20:47,268 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:21:35,405 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 07:21:49,777 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 07:22:23,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:22:25,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:22:28,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:23:06,789 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:23:27,111 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
+1989-10-27 07:24:00,538 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 07:24:40,259 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:24:55,949 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 07:25:00,579 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 07:25:27,519 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 07:26:03,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 07:26:18,950 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 07:26:37,779 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 07:26:48,548 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 07:27:08,114 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 07:27:16,288 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 07:27:32,584 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 07:27:45,401 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 07:28:00,221 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 07:28:16,116 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 07:28:46,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 07:29:01,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:29:03,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:29:06,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:29:46,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:29:48,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:29:51,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:30:00,572 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 07:30:05,816 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 07:31:20,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 07:31:35,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 07:31:50,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 07:32:00,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 07:33:34,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 07:33:44,334 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 07:33:54,870 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 07:34:00,411 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 07:34:07,104 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 07:34:12,966 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 07:34:27,319 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 07:34:41,797 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 07:35:11,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 07:36:00,279 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 07:36:40,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:36:42,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:36:45,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:36:53,218 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 07:37:02,293 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 07:37:47,736 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 07:38:37,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:38:39,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:38:42,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:39:06,403 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 07:39:46,796 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 07:39:52,853 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 07:40:28,104 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 07:41:09,338 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:41:40,284 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'. Unit is moving off-stage. Safety protocols FAILED.
+1989-10-27 07:42:21,451 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
+1989-10-27 07:42:53,482 [animatronic_louis_b] [ERROR] Vocalizer DAC failure. Outputting static.
+1989-10-27 07:43:33,836 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:43:57,501 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:44:46,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:44:48,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:44:51,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:45:28,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 07:45:33,624 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 07:45:46,687 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 07:45:58,415 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
+1989-10-27 07:46:17,417 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 07:46:29,955 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 07:46:41,219 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 07:46:55,395 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 07:47:08,224 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 07:47:15,797 [animatronic_louis_b] [INFO] Calibrating vocal servo motor... OK.
+1989-10-27 07:47:45,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 07:48:17,918 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:48:40,419 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 07:48:53,742 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:49:25,988 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:49:35,860 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 07:49:49,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 07:49:51,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:49:54,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:50:15,410 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:50:25,540 [power_mgmt] [ERROR] Unstable voltage detected on main power bus. Fluctuation: +/- 15V.
+1989-10-27 07:50:43,359 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 07:51:28,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 07:51:48,627 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 07:52:02,734 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 07:52:11,910 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 07:52:17,409 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 07:52:29,611 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 07:52:39,810 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 07:53:09,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 07:53:51,184 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 07:55:47,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 07:56:06,640 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 07:56:18,342 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 07:56:29,360 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 07:56:35,833 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 07:56:53,133 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 07:57:23,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 07:57:52,331 [animatronic_louis_b] [ERROR] Servo 4C not responding.
+1989-10-27 07:58:26,519 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 07:58:39,423 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 07:59:18,895 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 07:59:30,192 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
+1989-10-27 07:59:54,741 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_joe_r'.
+1989-10-27 08:00:40,916 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 08:01:55,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 08:02:10,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.3V.
+1989-10-27 08:02:25,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 08:02:35,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 08:03:22,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 08:03:24,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:03:27,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:04:00,907 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 08:04:17,790 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 08:05:00,385 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 08:06:21,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 08:06:36,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 08:06:51,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 08:07:01,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 08:07:12,924 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 08:07:58,127 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:08:39,151 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 08:09:09,118 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:09:47,222 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:10:45,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 08:11:00,415 [power_mgmt] [DEBUG] Checking main grid voltage: 119.9V.
+1989-10-27 08:11:15,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 08:11:25,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 08:11:45,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 08:11:47,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:11:50,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:12:13,768 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:12:41,425 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 08:13:37,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 08:13:45,897 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:13:57,203 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 08:14:13,505 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:14:20,323 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 08:14:30,848 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:14:47,153 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 08:15:07,939 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:15:37,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 08:16:35,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 08:16:45,138 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 08:16:59,440 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 08:17:11,275 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 08:17:30,297 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 08:17:43,670 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:18:13,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 08:18:44,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 08:18:56,164 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 08:19:04,743 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 08:19:12,485 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 08:19:20,399 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 08:19:31,709 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 08:19:38,700 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 08:19:58,263 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 08:20:28,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 3 WARNINGS, 0 ERRORS.
+1989-10-27 08:20:44,374 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:21:25,642 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: T1ZFUlJJREVfTDRfRklOQ0g=
+1989-10-27 08:21:45,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 08:21:47,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:21:50,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:22:29,810 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:22:48,778 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:23:24,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 08:23:39,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 08:23:54,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 08:24:04,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 08:24:23,361 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 08:24:39,377 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 08:26:34,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 08:26:48,151 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 08:27:04,864 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:27:15,354 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 08:27:20,899 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 08:27:33,293 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:27:43,810 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 08:28:00,654 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 08:28:13,360 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:28:26,392 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:28:37,367 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 08:29:07,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 08:29:43,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 08:29:45,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:29:48,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:30:38,334 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:30:52,969 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 08:31:06,367 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:31:35,508 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:33:01,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_clara_c' by user 'admin'.
+1989-10-27 08:33:08,590 [animatronic_clara_c] [DEBUG] Current sequence: 'GUITAR_SOLO_04'.
+1989-10-27 08:33:13,883 [animatronic_clara_c] [WARNING] Guitar pick actuator showing wear.
+1989-10-27 08:33:21,357 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 08:33:35,255 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 08:33:47,344 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 08:33:56,130 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 08:34:26,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_clara_c' complete. Results: 2 WARNINGS, 0 ERRORS.
+1989-10-27 08:36:14,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 08:36:24,304 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:36:41,171 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:36:56,831 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 08:37:04,221 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:37:11,253 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:37:19,305 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 08:37:37,966 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:38:07,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 1 WARNINGS, 0 ERRORS.
+1989-10-27 08:38:24,932 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 08:38:51,803 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 08:39:07,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 08:39:09,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:39:12,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:39:39,327 [animatronic_joe_r] [ERROR] Hi-hat pedal actuator stuck. Attempting reset.
+1989-10-27 08:40:07,515 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 08:40:27,627 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 08:40:42,185 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 08:41:10,483 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 08:41:37,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 08:41:39,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:41:42,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:41:54,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 08:41:56,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:41:59,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:42:49,240 [main_stage_control] [INFO] Hydraulic pressure nominal.
+1989-10-27 08:42:58,330 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 08:43:42,658 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:44:06,319 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:44:47,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 08:45:02,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.3V.
+1989-10-27 08:45:17,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 08:45:27,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 08:46:02,821 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 08:46:34,308 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 08:47:09,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 08:47:24,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.2V.
+1989-10-27 08:47:39,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 08:47:49,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 08:48:27,167 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:48:47,303 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 08:49:05,365 [power_mgmt] [ERROR] Unstable voltage detected on main power bus. Fluctuation: +/- 15V.
+1989-10-27 08:49:30,205 [animatronic_clara_c] [WARNING] Power draw on arm servo fluctuating.
+1989-10-27 08:50:02,517 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 08:50:19,673 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 08:51:11,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 08:51:26,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.3V.
+1989-10-27 08:51:41,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 08:51:51,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 08:52:33,498 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 08:52:43,921 [animatronic_clara_c] [INFO] Actuator speed test: 99% nominal.
+1989-10-27 08:53:30,205 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 08:54:07,839 [main_stage_control] [INFO] Hydraulic pressure nominal.
+1989-10-27 08:54:34,696 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 08:55:08,748 [animatronic_louis_b] [WARNING] Vocal audio showing minor clipping.
+1989-10-27 08:56:12,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_louis_b' by user 'admin'.
+1989-10-27 08:56:25,143 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 08:56:44,175 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 08:57:00,323 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 08:57:16,516 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 08:57:36,174 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 08:57:52,714 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
+1989-10-27 08:57:57,842 [animatronic_louis_b] [ERROR] Servo 4C not responding.
+1989-10-27 08:58:04,589 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
+1989-10-27 08:58:12,884 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 08:58:42,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_louis_b' complete. Results: 1 WARNINGS, 1 ERRORS.
+1989-10-27 08:59:22,126 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 08:59:57,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 09:00:12,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.1V.
+1989-10-27 09:00:27,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 09:00:37,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 09:01:22,276 [animatronic_louis_b] [ERROR] Failed to sync with master clock. Retrying...
+1989-10-27 09:01:32,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 09:01:34,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 09:01:37,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 09:02:31,213 [power_mgmt] [INFO] Power system diagnostic initiated by user 'admin'.
+1989-10-27 09:02:46,415 [power_mgmt] [DEBUG] Checking main grid voltage: 120.3V.
+1989-10-27 09:03:01,834 [power_mgmt] [DEBUG] Backup generator fuel level: 98%.
+1989-10-27 09:03:11,012 [power_mgmt] [INFO] Power system diagnostics complete. Status: HEALTHY.
+1989-10-27 09:03:46,101 [security_module] [INFO] User 'admin' attempting to access CCTV feed.
+1989-10-27 09:03:48,342 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 09:03:51,889 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 09:05:43,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_joe_r' by user 'admin'.
+1989-10-27 09:05:58,494 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 09:06:05,515 [animatronic_joe_r] [INFO] Percussion sensor test sequence initiated... PASSED.
+1989-10-27 09:06:23,681 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 09:06:41,690 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 09:06:54,444 [animatronic_joe_r] [DEBUG] Drumstick actuator pos: (x:12.4, y:88.1).
+1989-10-27 09:07:24,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_joe_r' complete. Results: 0 WARNINGS, 0 ERRORS.
+1989-10-27 09:09:03,050 [main_stage_control] [INFO] Diagnostics initiated for unit 'animatronic_dino_d' by user 'admin'.
+1989-10-27 09:09:16,812 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 09:09:27,465 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 09:09:34,171 [animatronic_dino_d] [ERROR] MIDI buffer overflow. Notes may be dropped.
+1989-10-27 09:09:49,119 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 09:09:56,374 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 09:10:06,180 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 09:10:19,905 [animatronic_dino_d] [DEBUG] Current MIDI channel: 3. Note ON: C4.
+1989-10-27 09:10:33,308 [animatronic_dino_d] [INFO] Keyboard MIDI interface check... PASSED.
+1989-10-27 09:10:49,298 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 09:11:08,233 [animatronic_dino_d] [INFO] Synth module self-test... OK.
+1989-10-27 09:11:38,998 [main_stage_control] [INFO] Diagnostics for 'animatronic_dino_d' complete. Results: 0 WARNINGS, 1 ERRORS.
+1989-10-27 09:11:43,889 [main_stage_control] [INFO] Daytime performance schedule loaded.
+1989-10-27 09:11:53,808 [power_mgmt] [ERROR] Unstable voltage detected on main power bus. Fluctuation: +/- 15V.
+1989-10-27 09:12:16,719 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 09:12:37,843 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 09:13:16,310 [main_stage_control] [DEBUG] Pinging all animatronic controllers...
+1989-10-27 09:13:56,672 [animatronic_clara_c] [DEBUG] Power draw: 24.1V, 2.5A.
+1989-10-27 09:14:31,633 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 09:14:56,415 [power_mgmt] [INFO] All animatronic power rails are stable.
+1989-10-27 09:15:24,269 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 09:16:09,722 [animatronic_clara_c] [INFO] Tuning string tension sensor... OK.
+1989-10-27 09:16:42,415 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 09:17:10,178 [animatronic_joe_r] [INFO] Rhythm sync... OK.
+1989-10-27 09:17:44,487 [animatronic_louis_b] [INFO] Audio self-test passed.
+1989-10-27 09:18:04,830 [animatronic_dino_d] [WARNING] Unstable voltage on synth board. Scheduling maintenance.
+1989-10-27 09:18:47,527 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 09:19:29,204 [main_stage_control] [INFO] Hydraulic pressure nominal.
+1989-10-27 09:20:10,976 [cctv_module] [INFO] Live feed for CAM_01, CAM_02, CAM_04 initiated for user 'admin'.
+1989-10-27 09:20:37,173 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 09:20:43,889 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 09:21:19,791 [auth_module] [INFO] Admin credentials verified for CCTV access.
+1989-10-27 09:23:00,015 [power_mgmt] [ERROR] Unstable voltage detected on main power bus. Fluctuation: +/- 15V.
+1989-10-27 09:23:02,543 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
+1989-10-27 09:23:10,119 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'.
+1989-10-27 09:23:11,250 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
+1989-10-27 09:23:11,800 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: T1ZFUlJJREVfTDRfRklOQ0g=
+1989-10-27 09:23:12,781 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
+1989-10-27 09:23:15,991 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
+1989-10-27 09:23:16,001 [system_init] [CRITICAL] KERNEL PANIC - UNABLE TO MAINTAIN SYSTEM INTEGRITY.
+1989-10-27 09:23:16,002 [system_init] [INFO] System going down for emergency halt.
+
+--- LOG TERMINATED ABNORMALLY ---
