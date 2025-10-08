@@ -7,45 +7,34 @@
     <style>
         body, html { height: 100%; margin: 0; background-color: #000; color: #d2d2d2; font-family: 'Courier New', Courier, monospace; overflow: hidden; }
         .fullscreen { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; }
-        
         #blacklist-screen { font-size: 1.5em; }
         #boot-screen { padding: 20px; font-size: 1.2em; display: block; }
         #boot-text { white-space: pre; }
         .cursor { display: inline-block; background-color: #d2d2d2; width: 12px; height: 20px; animation: blink-cursor 1s step-end infinite; }
         @keyframes blink-cursor { from, to { background-color: transparent; } 50% { background-color: #d2d2d2; } }
-        
         #login-prompt { flex-direction: column; }
-        #enter-button {
-            font-family: 'Courier New', Courier, monospace; font-size: 1.5em; color: #d2d2d2; background-color: #1a1a1a;
-            border: 1px solid #555; padding: 15px 30px; cursor: pointer;
-        }
+        #enter-button { font-family: 'Courier New', Courier, monospace; font-size: 1.5em; color: #d2d2d2; background-color: #1a1a1a; border: 1px solid #555; padding: 15px 30px; cursor: pointer; }
         #enter-button:hover { background-color: #333; }
-
         #main-container { flex-direction: column; }
         #timer-container { position: absolute; top: 30px; left: 50%; transform: translateX(-50%) scaleX(1.8); font-size: 3em; color: #ffcc00; text-shadow: 1px 1px 3px #000; }
         @keyframes blinking-text { 50% { opacity: 0.2; } }
         .blinking { animation: blinking-text 0.8s linear infinite; }
-        
         #riddle-container { text-align: center; max-width: 700px; }
         .emergency-signal { color: #ff4444; font-size: 2.5em; letter-spacing: 5px; margin-bottom: 20px; }
         #riddle-container p { line-height: 1.6; font-size: 1.1em; margin-bottom: 25px; }
-        
         #answer-input { background: #101010; border: 1px solid #333; color: #fff; padding: 12px; font-size: 1.2em; text-align: center; width: 350px; font-family: 'Courier New', Courier, monospace; margin-bottom: 20px; }
         #submit-button { display: block; margin: 0 auto; font-family: 'Courier New', Courier, monospace; font-size: 1.2em; color: #d2d2d2; background-color: #1a1a1a; border: 1px solid #555; padding: 10px 25px; cursor: pointer; }
         #submit-button:hover { background-color: #333; }
-
         #final-screen { font-size: 2em; text-align: center; white-space: pre; z-index: 3000; color: rgba(200, 200, 200, 0.5); }
     </style>
 </head>
 <body>
-    
     <div id="blacklist-screen" class="fullscreen">Вы не смогли выполнить задачу.</div>
     <div id="boot-screen"><pre id="boot-text"></pre></div>
     <div id="login-prompt" class="fullscreen">
         <p>Система готова к подключению.</p>
         <button id="enter-button">Войти</button>
     </div>
-    
     <div id="main-container" class="fullscreen">
         <div id="timer-container">03:00</div>
         <div id="riddle-container">
@@ -57,12 +46,9 @@
             </div>
         </div>
     </div>
-
     <div id="final-screen" class="fullscreen"></div> 
-    
     <audio id="task-music" src="task-music.mp3" loop></audio>
     <audio id="final-sound" src="final-sound.mp3" loop></audio>
-
     <script>
         const elements = {
             blacklist: document.getElementById('blacklist-screen'), boot: document.getElementById('boot-screen'), bootText: document.getElementById('boot-text'),
@@ -72,7 +58,6 @@
             taskMusic: document.getElementById('task-music'), finalSound: document.getElementById('final-sound')
         };
         let timerIntervalId = null, loopCount = 0;
-
         const gameState = localStorage.getItem('gameState');
         if (gameState === 'completed') {
             elements.boot.style.display = 'none';
@@ -89,7 +74,6 @@
         } else {
             runBootAnimation();
         }
-
         function runBootAnimation() {
             const bootLines = ['Phoenix BIOS 4.0 Release 6.0','Copyright 1982-1989 Phoenix Technologies Ltd.','','CPU: 80386 @ 25MHz','Memory Test: 1024K OK','','Checking for Moonlight Animatronics Sub-System...','MA-BIOS v2.1.89 detected.','Boot successful.',''];
             let lineIndex = 0; elements.bootText.innerHTML = '<span class="cursor"></span>';
@@ -105,7 +89,6 @@
                 }
             }, 300);
         }
-
         function triggerDownload(fileUrl) {
             const a = document.createElement('a');
             a.style.display = 'none';
@@ -115,19 +98,14 @@
             a.click();
             document.body.removeChild(a);
         }
-
         elements.enterBtn.addEventListener('click', () => {
             elements.login.style.display = 'none';
             elements.main.style.display = 'flex';
-            
             triggerDownload('kernel_log_archive.txt');
-            
             startTimer();
-            
             elements.taskMusic.volume = 0.7;
             elements.taskMusic.play();
         });
-
         function startTimer() {
             let timeLeft = 3 * 60; 
             timerIntervalId = setInterval(() => {
@@ -141,21 +119,27 @@
             }, 1000);
         }
         
+        // --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ---
         function triggerSuccessSequence(finalMessage) {
             localStorage.setItem('gameState', 'completed');
             elements.final.textContent = finalMessage;
-            clearInterval(timerIntervalId); elements.timer.classList.add('blinking');
-            elements.taskMusic.pause(); elements.finalSound.currentTime = 0; elements.finalSound.play();
-            elements.finalSound.addEventListener('timeupdate', function fn() {
-                if (this.currentTime > this.duration - 0.5) {
-                    loopCount++;
-                    if (loopCount >= 9) {
-                        // --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
-                        finalSound.pause(); // Останавливаем финальный звук
-                        elements.main.style.display = 'none'; 
-                        elements.final.style.display = 'flex';
-                        this.removeEventListener('timeupdate', fn);
-                    }
+            clearInterval(timerIntervalId); 
+            elements.timer.classList.add('blinking');
+            elements.taskMusic.pause(); 
+            elements.finalSound.currentTime = 0; 
+            elements.finalSound.play();
+            
+            // Заменяем 'timeupdate' на 'ended' для надежного подсчета
+            elements.finalSound.addEventListener('ended', function fn() {
+                loopCount++;
+                console.log(`Финальный звук завершился. Повтор номер: ${loopCount}`); // Для отладки
+
+                if (loopCount >= 9) {
+                    finalSound.pause(); // Останавливаем звук
+                    finalSound.loop = false; // На всякий случай отключаем повтор
+                    elements.main.style.display = 'none'; 
+                    elements.final.style.display = 'flex';
+                    this.removeEventListener('ended', fn); // Удаляем слушатель, чтобы он не сработал снова
                 }
             });
         }
@@ -163,7 +147,6 @@
         function checkAnswer() {
             const userAnswer = elements.answer.value;
             const serverUrl = 'https://supamupa.pythonanywhere.com/check';
-            
             fetch(serverUrl, {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer: userAnswer })
             })
