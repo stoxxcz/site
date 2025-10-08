@@ -47,8 +47,10 @@
         </div>
     </div>
     <div id="final-screen" class="fullscreen"></div> 
+    
     <audio id="task-music" src="task-music.mp3" loop></audio>
-    <audio id="final-sound" src="final-sound.mp3" loop></audio>
+    <audio id="final-sound" src="final-sound.mp3"></audio>
+
     <script>
         const elements = {
             blacklist: document.getElementById('blacklist-screen'), boot: document.getElementById('boot-screen'), bootText: document.getElementById('boot-text'),
@@ -119,27 +121,31 @@
             }, 1000);
         }
         
-        // --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ---
+        // --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ УПРАВЛЕНИЯ ПОВТОРАМИ ---
         function triggerSuccessSequence(finalMessage) {
             localStorage.setItem('gameState', 'completed');
             elements.final.textContent = finalMessage;
             clearInterval(timerIntervalId); 
             elements.timer.classList.add('blinking');
-            elements.taskMusic.pause(); 
-            elements.finalSound.currentTime = 0; 
-            elements.finalSound.play();
+            elements.taskMusic.pause();
             
-            // Заменяем 'timeupdate' на 'ended' для надежного подсчета
+            elements.finalSound.loop = false; // Убеждаемся, что HTML-атрибут отключен
+            elements.finalSound.currentTime = 0;
+            elements.finalSound.play();
+
             elements.finalSound.addEventListener('ended', function fn() {
                 loopCount++;
-                console.log(`Финальный звук завершился. Повтор номер: ${loopCount}`); // Для отладки
+                console.log(`Финальный звук завершился. Повтор: ${loopCount}/9`);
 
-                if (loopCount >= 9) {
-                    finalSound.pause(); // Останавливаем звук
-                    finalSound.loop = false; // На всякий случай отключаем повтор
+                if (loopCount < 9) {
+                    // Если нужно еще повторить, просто запускаем звук заново
+                    this.currentTime = 0;
+                    this.play();
+                } else {
+                    // Если это был последний раз, показываем финальный экран и больше не запускаем звук
                     elements.main.style.display = 'none'; 
                     elements.final.style.display = 'flex';
-                    this.removeEventListener('ended', fn); // Удаляем слушатель, чтобы он не сработал снова
+                    this.removeEventListener('ended', fn); // Удаляем слушатель
                 }
             });
         }
