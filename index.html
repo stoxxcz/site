@@ -6,114 +6,206 @@
     <title>SYSTEM_ACCESS</title>
     <style>
         body, html { height: 100%; margin: 0; background-color: #000; color: #d2d2d2; font-family: 'Courier New', Courier, monospace; overflow: hidden; }
-        #blacklist-screen { display: none; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; font-size: 1.5em; }
-        #boot-screen { padding: 20px; font-size: 1.2em; }
+        .fullscreen { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; }
+        
+        #blacklist-screen { font-size: 1.5em; }
+        #boot-screen { padding: 20px; font-size: 1.2em; display: block; } /* Показываем по умолчанию */
         #boot-text { white-space: pre; }
         .cursor { display: inline-block; background-color: #d2d2d2; width: 12px; height: 20px; animation: blink-cursor 1s step-end infinite; }
         @keyframes blink-cursor { from, to { background-color: transparent; } 50% { background-color: #d2d2d2; } }
-        #main-container { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; flex-direction: column; }
+        
+        /* Стили для кнопки "Войти" */
+        #login-prompt { flex-direction: column; }
+        #enter-button {
+            font-family: 'Courier New', Courier, monospace; font-size: 1.5em; color: #d2d2d2; background-color: #1a1a1a;
+            border: 1px solid #555; padding: 15px 30px; cursor: pointer;
+        }
+        #enter-button:hover { background-color: #333; }
+
+        #main-container { flex-direction: column; }
         #timer-container { position: absolute; top: 30px; left: 50%; transform: translateX(-50%) scaleX(1.8); font-size: 3em; color: #ffcc00; text-shadow: 1px 1px 3px #000; }
         @keyframes blinking-text { 50% { opacity: 0.2; } }
         .blinking { animation: blinking-text 0.8s linear infinite; }
+        
         #riddle-container { text-align: center; max-width: 700px; }
         .emergency-signal { color: #ff4444; font-size: 2.5em; letter-spacing: 5px; margin-bottom: 20px; }
         #riddle-container p { line-height: 1.6; font-size: 1.1em; margin-bottom: 25px; }
-        #loading-animation { font-size: 1.2em; margin-bottom: 25px; color: #aaccff; }
-        #spinner { display: inline-block; animation: spin 1s steps(4) infinite; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        #answer-input { background: #101010; border: 1px solid #333; color: #fff; padding: 12px; font-size: 1.2em; text-align: center; width: 350px; font-family: 'Courier New', Courier, monospace; }
-        #final-screen { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: #000; justify-content: center; align-items: center; color: rgba(200, 200, 200, 0.5); font-size: 2em; text-align: center; white-space: pre; z-index: 3000; }
+        
+        /* Стили для прогресс-бара */
+        #loading-container { font-size: 1.2em; margin-bottom: 25px; color: #aaccff; width: 350px; text-align: left;}
+        #progress-bar { width: 100%; background-color: #333; border: 1px solid #555; height: 20px; margin-top: 10px; }
+        #progress-bar-inner { width: 0%; height: 100%; background-color: #aaccff; animation: load 3s linear forwards; }
+        @keyframes load { from { width: 0%; } to { width: 100%; } }
+
+        #answer-input { background: #101010; border: 1px solid #333; color: #fff; padding: 12px; font-size: 1.2em; text-align: center; width: 350px; font-family: 'Courier New', Courier, monospace; margin-bottom: 20px; }
+        #submit-button { display: block; margin: 0 auto; font-family: 'Courier New', Courier, monospace; font-size: 1.2em; color: #d2d2d2; background-color: #1a1a1a; border: 1px solid #555; padding: 10px 25px; cursor: pointer; }
+        #submit-button:hover { background-color: #333; }
+
+        #final-screen { font-size: 2em; text-align: center; white-space: pre; z-index: 3000; color: rgba(200, 200, 200, 0.5); }
     </style>
 </head>
 <body>
     
-    <div id="blacklist-screen">Вы не смогли выполнить задачу.</div>
+    <div id="blacklist-screen" class="fullscreen">Вы не смогли выполнить задачу.</div>
     <div id="boot-screen"><pre id="boot-text"></pre></div>
-    <div id="main-container">
+    <div id="login-prompt" class="fullscreen">
+        <p>Система готова к подключению.</p>
+        <button id="enter-button">Войти</button>
+    </div>
+    
+    <div id="main-container" class="fullscreen">
         <div id="timer-container">03:00</div>
         <div id="riddle-container">
-            <h1 class="emergency-signal">signal: EMERGENCY</h1>
-            <p>Потеряна связь со складовым бункером L-3 после скачка напряжения. Система безопасности перешла в аварийный режим и требует ключ ручной отмены блокировки. Зашифрованный ключ был автоматически заархивирован в последнем фрагменте лога перед отключением. Найдите и расшифруйте его.</p>
-            <div id="loading-animation">Анализ дампа... [<span id="spinner">/</span>]</div>
-            <input type="text" id="answer-input">
+            <div id="riddle-content" style="display: none;">
+                <h1 class="emergency-signal">signal: EMERGENCY</h1>
+                <p>Потеряна связь со складовым бункером L-3 после скачка напряжения. Система безопасности перешла в аварийный режим и требует ключ ручной отмены блокировки. Зашифрованный ключ был автоматически заархивирован в последнем фрагменте лога перед отключением. Найдите и расшифруйте его.</p>
+                <input type="text" id="answer-input">
+                <button id="submit-button">ПОДТВЕРДИТЬ</button>
+            </div>
+            <div id="loading-container">
+                <p>Загрузка файла `kernel_log_archive.txt`...</p>
+                <div id="progress-bar"><div id="progress-bar-inner"></div></div>
+            </div>
         </div>
     </div>
-    <div id="final-screen"></div> 
+
+    <div id="final-screen" class="fullscreen"></div> 
     
     <audio id="task-music" src="task-music.mp3" loop></audio>
     <audio id="final-sound" src="final-sound.mp3" loop></audio>
 
     <script>
-        const blacklistScreen = document.getElementById('blacklist-screen'), bootScreen = document.getElementById('boot-screen'), mainContainer = document.getElementById('main-container'), bootText = document.getElementById('boot-text'), timerContainer = document.getElementById('timer-container'), answerInput = document.getElementById('answer-input'), finalScreen = document.getElementById('final-screen'), taskMusic = document.getElementById('task-music'), finalSound = document.getElementById('final-sound');
+        // --- Все элементы страницы ---
+        const elements = {
+            blacklist: document.getElementById('blacklist-screen'),
+            boot: document.getElementById('boot-screen'),
+            bootText: document.getElementById('boot-text'),
+            login: document.getElementById('login-prompt'),
+            enterBtn: document.getElementById('enter-button'),
+            main: document.getElementById('main-container'),
+            timer: document.getElementById('timer-container'),
+            loading: document.getElementById('loading-container'),
+            riddle: document.getElementById('riddle-content'),
+            answer: document.getElementById('answer-input'),
+            submitBtn: document.getElementById('submit-button'),
+            final: document.getElementById('final-screen'),
+            taskMusic: document.getElementById('task-music'),
+            finalSound: document.getElementById('final-sound')
+        };
         let timerIntervalId = null, loopCount = 0;
 
-        if (localStorage.getItem('blacklisted') === 'true') {
-            bootScreen.style.display = 'none'; blacklistScreen.style.display = 'flex';
+        // --- ЛОГИКА ---
+
+        // 1. ПРОВЕРКА СОСТОЯНИЯ ИГРЫ (localStorage)
+        const gameState = localStorage.getItem('gameState');
+        if (gameState === 'completed') {
+            // Если игра пройдена, сразу показываем финальный экран
+            // (текст будет загружен позже из сервера для безопасности)
+            elements.boot.style.display = 'none';
+            // Делаем запрос на сервер за финальным текстом
+            fetch('/check', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer: "OVERRIDE_L3_FINCH" }) })
+            .then(res => res.json()).then(data => {
+                if(data.final_message) {
+                    elements.final.textContent = data.final_message;
+                    elements.final.style.display = 'flex';
+                }
+            });
+        } else if (gameState === 'blacklisted') {
+            // Если в черном списке
+            elements.boot.style.display = 'none';
+            elements.blacklist.style.display = 'flex';
         } else {
-            blacklistScreen.style.display = 'none'; runBootAnimation();
+            // Новая игра
+            runBootAnimation();
         }
+
+        // 2. АНИМАЦИЯ ЗАГРУЗКИ BIOS
         function runBootAnimation() {
-            const bootLines = ['Phoenix BIOS 4.0 Release 6.0','Copyright 1982-1989 Phoenix Technologies Ltd.','All Rights Reserved','','CPU: 80386 @ 25MHz','Memory Test: 1024K OK','','Checking for Moonlight Animatronics Sub-System...','MA-BIOS v2.1.89 detected.','Initializing Stage Controller...','Loading Kernel...','Boot successful.',''];
-            let lineIndex = 0; bootText.innerHTML = '<span class="cursor"></span>';
+            const bootLines = ['Phoenix BIOS 4.0 Release 6.0','Copyright 1982-1989 Phoenix Technologies Ltd.','','CPU: 80386 @ 25MHz','Memory Test: 1024K OK','','Checking for Moonlight Animatronics Sub-System...','MA-BIOS v2.1.89 detected.','Boot successful.',''];
+            let lineIndex = 0; elements.bootText.innerHTML = '<span class="cursor"></span>';
             const intervalId = setInterval(() => {
                 if (lineIndex < bootLines.length) {
-                    bootText.innerHTML = bootText.innerHTML.replace('<span class="cursor"></span>', '') + bootLines[lineIndex] + '\n<span class="cursor"></span>'; lineIndex++;
+                    elements.bootText.innerHTML = elements.bootText.innerHTML.replace('<span class="cursor"></span>', '') + bootLines[lineIndex] + '\n<span class="cursor"></span>'; lineIndex++;
                 } else {
-                    clearInterval(intervalId); setTimeout(() => { bootScreen.style.display = 'none'; startTask(); }, 500);
+                    clearInterval(intervalId);
+                    setTimeout(() => {
+                        elements.boot.style.display = 'none';
+                        elements.login.style.display = 'flex'; // Показываем кнопку "Войти"
+                    }, 500);
                 }
             }, 300);
         }
-        function startTask() {
-            mainContainer.style.display = 'flex'; taskMusic.volume = 0.7; taskMusic.play();
-            const spinner = document.getElementById('spinner'), spinChars = ['/', '—', '\\', '|'];
-            let spinIndex = 0; setInterval(() => { spinner.textContent = spinChars[spinIndex]; spinIndex = (spinIndex + 1) % spinChars.length; }, 200);
-            let timeLeft = 3 * 60; 
+
+        // 3. НАЧАЛО ЗАДАЧИ (ПОСЛЕ КНОПКИ "ВОЙТИ")
+        elements.enterBtn.addEventListener('click', () => {
+            elements.login.style.display = 'none';
+            elements.main.style.display = 'flex';
+            
+            // Показываем прогресс-бар на 3 секунды, потом запускаем таймер
+            setTimeout(() => {
+                elements.loading.style.display = 'none';
+                elements.riddle.style.display = 'block';
+                startTimer();
+            }, 3000); // 3 секунды на анимацию прогресс-бара
+            
+            elements.taskMusic.volume = 0.7;
+            elements.taskMusic.play();
+        });
+
+        function startTimer() {
+            let timeLeft = 3 * 60; // Таймер на 3 минуты
             timerIntervalId = setInterval(() => {
                 timeLeft--; const minutes = Math.floor(timeLeft / 60); let seconds = timeLeft % 60;
-                timerContainer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-                if (timeLeft <= 0) { clearInterval(timerIntervalId); localStorage.setItem('blacklisted', 'true'); location.reload(); }
+                elements.timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeLeft <= 0) {
+                    clearInterval(timerIntervalId);
+                    localStorage.setItem('gameState', 'blacklisted'); // Меняем состояние на 'blacklisted'
+                    location.reload();
+                }
             }, 1000);
         }
+        
+        // 4. ПРОВЕРКА ОТВЕТА И ФИНАЛ
         function triggerSuccessSequence(finalMessage) {
-            finalScreen.textContent = finalMessage;
-            clearInterval(timerIntervalId); timerContainer.classList.add('blinking');
-            taskMusic.pause(); finalSound.currentTime = 0; finalSound.play();
-            finalSound.addEventListener('timeupdate', function fn() {
+            localStorage.setItem('gameState', 'completed'); // Меняем состояние на 'completed'
+            elements.final.textContent = finalMessage;
+            clearInterval(timerIntervalId); elements.timer.classList.add('blinking');
+            elements.taskMusic.pause(); elements.finalSound.currentTime = 0; elements.finalSound.play();
+            elements.finalSound.addEventListener('timeupdate', function fn() {
                 if (this.currentTime > this.duration - 0.5) {
                     loopCount++;
-                    if (loopCount >= 3) {
-                        mainContainer.style.display = 'none'; finalScreen.style.display = 'flex';
+                    if (loopCount >= 9) { // ИЗМЕНЕНИЕ: повторяем 9 раз
+                        elements.main.style.display = 'none'; elements.final.style.display = 'flex';
                         this.removeEventListener('timeupdate', fn);
                     }
                 }
             });
         }
+
         function checkAnswer() {
-            const userAnswer = answerInput.value;
-            // !!! ВАЖНО: ЗАМЕНИТЕ ЭТОТ АДРЕС НА ВАШ АДРЕС С PYTHONANYWHERE !!!
+            const userAnswer = elements.answer.value;
             const serverUrl = 'https://supamupa.pythonanywhere.com/check';
             
             fetch(serverUrl, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ answer: userAnswer })
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer: userAnswer })
             })
             .then(response => response.json())
             .then(data => {
                 if (data.correct) {
                     triggerSuccessSequence(data.final_message);
                 } else {
-                    answerInput.style.borderColor = 'red';
-                    setTimeout(() => { answerInput.style.borderColor = '#333'; }, 500);
+                    elements.answer.style.borderColor = 'red';
+                    setTimeout(() => { elements.answer.style.borderColor = '#333'; }, 500);
                 }
             })
             .catch(error => {
                 console.error("ОШИБКА: Не удалось подключиться к серверу проверки.", error);
-                riddleContainer.querySelector('p').textContent = "ОШИБКА: СЕРВЕР ПРОВЕРКИ НЕ ОТВЕЧАЕТ.";
+                elements.riddle.querySelector('p').textContent = "ОШИБКА: СЕРВЕР ПРОВЕРКИ НЕ ОТВЕЧАЕТ.";
             });
         }
-        answerInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') checkAnswer(); });
+        
+        elements.submitBtn.addEventListener('click', checkAnswer);
+        elements.answer.addEventListener('keydown', (event) => { if (event.key === 'Enter') checkAnswer(); });
     </script>
 </body>
-
 </html>
