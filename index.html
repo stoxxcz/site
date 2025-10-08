@@ -122,7 +122,6 @@
             
             triggerDownload('kernel_log_archive.txt');
             
-            // ИЗМЕНЕНИЕ: Убран setTimeout, таймер и загадка запускаются сразу
             startTimer();
             
             elements.taskMusic.volume = 0.7;
@@ -151,7 +150,10 @@
                 if (this.currentTime > this.duration - 0.5) {
                     loopCount++;
                     if (loopCount >= 9) {
-                        elements.main.style.display = 'none'; elements.final.style.display = 'flex';
+                        // --- ИЗМЕНЕНИЕ ЗДЕСЬ ---
+                        finalSound.pause(); // Останавливаем финальный звук
+                        elements.main.style.display = 'none'; 
+                        elements.final.style.display = 'flex';
                         this.removeEventListener('timeupdate', fn);
                     }
                 }
