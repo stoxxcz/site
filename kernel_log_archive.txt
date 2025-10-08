@@ -995,6 +995,7 @@
 1989-10-27 06:32:38,285 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
 1989-10-27 06:32:48,163 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
 1989-10-27 06:33:03,292 [animatronic_louis_b] [DEBUG] Joint 3A position: 45.1 deg.
+1989-10-27 06:33:19,800 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: Vm0wd2QyUXlWa1pPVldSWFYwZG9WVll3WkRSV1JsbDNXa1JTVjJKSGVEQlpNM0JIVmpBeFdHVkdXbFpOYWtFeFZtcEJlRmRIVmtkWGJGcHBWa1ZhU1ZadGVGWmxSbGw1Vkd0V1UySklRazlWYWtwdlZWWmFkR05GWkZwV01ERTBWMnRvVDFkSFNrZGpSbWhoVmpOb2FGWldXbUZrUjFaSVVteG9hVlpzY0VsV01uUnZVakZWZVZOcmJGSmlWR3hXVm01d1IyUnNXa2RYYlVaclVsUkdTbGxWV2xOVWJGcFlaSHBDVjAxdVVuWlZla1phWlZaT2NscEhjRlJTVlhCWVYxZDRiMkl3TUhoV1dHaFlZbFZhY2xWcVJrdFRWbFowWlVaT1ZXSkdiRFJWTW5SelZqSkZlVlJZYUZaaGExcG9WVEJhVDJOc2NFZGhSMnhUWVROQ2IxWXhXbE5TTVd4V1RVaG9XR0pyY0ZsWmJGWmhZMVpTVjFwR1RrNVNiRm93V2xWVk5WWlhTa2RqUkVaV1ZqTlNNMVpxUmxwbGJVWkpWMnh3YUdFelFrbFdiWEJIVkRKU1YxVnVUbWhTTW5odlZGVm9RMWRXV1hoWk0yUk9WbXRXTlZadE5VOVhSMFY0VjJ4U1dtSkdXbWhaTVZwelkyeGtkVnBIZUdsU01VbzFWbXBKZUZJeVJrZFhiazVxVW14d1dGbHNhRzlrYkZweFVtdHdiR0pWV2tsWlZWcHJZVWRGZWxGcmJGZGlWRVkyV2xWYVlXUkdUbkpoUjJoVFlYcFdXVlpYTVRSa01XUnpWMjVTVGxaRlNsaFVWM2hMVFVaYVYyRkhPVmhTTUhCSldWVm9UMVp0Um5KVGJXaFhZVEZ3ZWxreWVHdGpiVkpJWlVaa2FWSnNhM2hXTW5oWFZtczFWMWRZWkU1WFJYQnhWV3hrVTFkR1VsZFhhM1JUVW14d2VGVXlkREJWTURGeVRsVm9XbFpXY0hKV2FrWkxWakpPU1dKR1pHbFdSVmt5VjJ4V1lWZHRWa2RqUld4V1lsZDRWRmxZY0Zka01WcFZVV3hrVkUxWFVraFdNalZQVjJzd2VXRklUbHBYU0VKSVZqRmFZV1JIVmtoa1JtUnBWbGhDTmxaVVNURlVNVnAwVTJ4c1ZtRnJOV0ZhVjNSaFYwWndSbHBHWkZSV2JrSklXVlZhVDJGV1pFaGhSbXhYWWxoQ1RGUlZXbEpsUm1SWllrWlNhRTFZUW5oV1YzaGhaREZaZUZkdVVteFNXRkpZVkZaYVlWTkdWbk5WYms1V1ZteGFWbFJWVW5KUVVUMDk=
 1989-10-27 06:33:22,972 [animatronic_louis_b] [INFO] Movement routine 'SONG_01' loaded.
 1989-10-27 06:33:32,585 [animatronic_louis_b] [DEBUG] Microphone input level: -12dB.
 1989-10-27 06:33:47,571 [animatronic_louis_b] [WARNING] Joint 7B torque approaching limit (14.8Nm / 15.0Nm).
@@ -1467,11 +1468,11 @@
 1989-10-27 09:23:02,543 [main_stage_control] [WARNING] Lost connection to unit 'animatronic_clara_c'.
 1989-10-27 09:23:10,119 [main_stage_control] [CRITICAL] UNAUTHORIZED MOVEMENT DETECTED: 'animatronic_louis_b'.
 1989-10-27 09:23:11,250 [security_module] [INFO] Emergency protocol engaged. Searching for manual override auth key...
-1989-10-27 09:23:11,800 [security_module] [DEBUG] Found auth key in memory dump at 0xDEADBEEF: T1ZFUlJJREVfTDNfRklOQ0g=
 1989-10-27 09:23:12,781 [security_module] [ERROR] Failed to engage stage lockdown. Actuator not responding.
 1989-10-27 09:23:15,991 [power_mgmt] [CRITICAL] Catastrophic power failure imminent. Main breaker trip.
 1989-10-27 09:23:16,001 [system_init] [CRITICAL] KERNEL PANIC - UNABLE TO MAINTAIN SYSTEM INTEGRITY.
 1989-10-27 09:23:16,002 [system_init] [INFO] System going down for emergency halt.
 
 --- LOG TERMINATED ABNORMALLY ---
+
 
