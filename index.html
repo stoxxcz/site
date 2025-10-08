@@ -91,7 +91,7 @@
         function checkAnswer() {
             const userAnswer = answerInput.value;
             // !!! ВАЖНО: ЗАМЕНИТЕ ЭТОТ АДРЕС НА ВАШ АДРЕС С PYTHONANYWHERE !!!
-            const serverUrl = 'https://ВАШЕ_ИМЯ.pythonanywhere.com/check';
+            const serverUrl = 'https://supamupa.pythonanywhere.com/check';
             
             fetch(serverUrl, {
                 method: 'POST',
@@ -115,4 +115,5 @@
         answerInput.addEventListener('keydown', (event) => { if (event.key === 'Enter') checkAnswer(); });
     </script>
 </body>
+
 </html>
