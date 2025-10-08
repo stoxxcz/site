@@ -7,14 +7,11 @@
     <style>
         body, html { height: 100%; margin: 0; background-color: #000; color: #d2d2d2; font-family: 'Courier New', Courier, monospace; overflow: hidden; }
         .fullscreen { display: none; width: 100%; height: 100%; justify-content: center; align-items: center; position: fixed; top: 0; left: 0; }
-        #blacklist-screen { font-size: 1.5em; }
-        #boot-screen { padding: 20px; font-size: 1.2em; display: block; }
+        #blacklist-screen, #error-screen { font-size: 1.5em; text-align: center; }
+        #boot-screen { padding: 20px; font-size: 1.2em; display: flex; }
         #boot-text { white-space: pre; }
         .cursor { display: inline-block; background-color: #d2d2d2; width: 12px; height: 20px; animation: blink-cursor 1s step-end infinite; }
         @keyframes blink-cursor { from, to { background-color: transparent; } 50% { background-color: #d2d2d2; } }
-        #login-prompt { flex-direction: column; }
-        #enter-button { font-family: 'Courier New', Courier, monospace; font-size: 1.5em; color: #d2d2d2; background-color: #1a1a1a; border: 1px solid #555; padding: 15px 30px; cursor: pointer; }
-        #enter-button:hover { background-color: #333; }
         #main-container { flex-direction: column; }
         #timer-container { position: absolute; top: 30px; left: 50%; transform: translateX(-50%) scaleX(1.8); font-size: 3em; color: #ffcc00; text-shadow: 1px 1px 3px #000; }
         @keyframes blinking-text { 50% { opacity: 0.2; } }
@@ -29,23 +26,20 @@
     </style>
 </head>
 <body>
+    <div id="boot-screen" class="fullscreen"><pre id="boot-text"></pre></div>
     <div id="blacklist-screen" class="fullscreen">Вы не смогли выполнить задачу.</div>
-    <div id="boot-screen"><pre id="boot-text"></pre></div>
-    <div id="login-prompt" class="fullscreen">
-        <p>Система готова к подключению.</p>
-        <button id="enter-button">Войти</button>
-    </div>
+    <div id="error-screen" class="fullscreen">ОШИБКА: СЕРВЕР НЕ ОТВЕЧАЕТ.</div>
+
     <div id="main-container" class="fullscreen">
         <div id="timer-container">03:00</div>
         <div id="riddle-container">
-            <div id="riddle-content">
-                <h1 class="emergency-signal">signal: EMERGENCY</h1>
-                <p>Потеряна связь со складовым бункером L-3 после скачка напряжения. Система безопасности перешла в аварийный режим и требует ключ ручной отмены блокировки. Зашифрованный ключ был автоматически заархивирован в последнем фрагменте лога перед отключением. Найдите и расшифруйте его.</p>
-                <input type="text" id="answer-input">
-                <button id="submit-button">ПОДТВЕРДИТЬ</button>
-            </div>
+            <h1 class="emergency-signal">signal: EMERGENCY</h1>
+            <p>Потеряна связь со складовым бункером L-3... Зашифрованный ключ был автоматически заархивирован в последнем фрагменте лога перед отключением. Найдите и расшифруйте его.</p>
+            <input type="text" id="answer-input">
+            <button id="submit-button">ПОДТВЕРДИТЬ</button>
         </div>
     </div>
+
     <div id="final-screen" class="fullscreen"></div> 
     
     <audio id="task-music" src="task-music.mp3" loop></audio>
@@ -53,126 +47,141 @@
 
     <script>
         const elements = {
-            blacklist: document.getElementById('blacklist-screen'), boot: document.getElementById('boot-screen'), bootText: document.getElementById('boot-text'),
-            login: document.getElementById('login-prompt'), enterBtn: document.getElementById('enter-button'), main: document.getElementById('main-container'),
-            timer: document.getElementById('timer-container'), riddle: document.getElementById('riddle-content'),
-            answer: document.getElementById('answer-input'), submitBtn: document.getElementById('submit-button'), final: document.getElementById('final-screen'),
+            boot: document.getElementById('boot-screen'), blacklist: document.getElementById('blacklist-screen'),
+            error: document.getElementById('error-screen'), main: document.getElementById('main-container'),
+            timer: document.getElementById('timer-container'), answer: document.getElementById('answer-input'),
+            submitBtn: document.getElementById('submit-button'), final: document.getElementById('final-screen'),
             taskMusic: document.getElementById('task-music'), finalSound: document.getElementById('final-sound')
         };
+        const serverUrl = 'https://supamupa.pythonanywhere.com';
         let timerIntervalId = null, loopCount = 0;
-        const gameState = localStorage.getItem('gameState');
-        if (gameState === 'completed') {
-            elements.boot.style.display = 'none';
-            const serverUrl = 'https://supamupa.pythonanywhere.com/check';
-            fetch(serverUrl, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer: "OVERRIDE_L3_FINCH" }) })
-            .then(res => res.json()).then(data => {
-                if(data.final_message) {
-                    elements.final.textContent = data.final_message;
-                    elements.final.style.display = 'flex';
-                }
+
+        function showScreen(screen) {
+            ['boot', 'blacklist', 'error', 'main', 'final'].forEach(s => {
+                elements[s].style.display = 'none';
             });
-        } else if (gameState === 'blacklisted') {
-            elements.boot.style.display = 'none'; elements.blacklist.style.display = 'flex';
-        } else {
-            runBootAnimation();
+            elements[screen].style.display = 'flex';
         }
-        function runBootAnimation() {
-            const bootLines = ['Phoenix BIOS 4.0 Release 6.0','Copyright 1982-1989 Phoenix Technologies Ltd.','','CPU: 80386 @ 25MHz','Memory Test: 1024K OK','','Checking for Moonlight Animatronics Sub-System...','MA-BIOS v2.1.89 detected.','Boot successful.',''];
-            let lineIndex = 0; elements.bootText.innerHTML = '<span class="cursor"></span>';
-            const intervalId = setInterval(() => {
-                if (lineIndex < bootLines.length) {
-                    elements.bootText.innerHTML = elements.bootText.innerHTML.replace('<span class="cursor"></span>', '') + bootLines[lineIndex] + '\n<span class="cursor"></span>'; lineIndex++;
+
+        // --- ГЛАВНАЯ ЛОГИКА ---
+        async function initialize() {
+            showScreen('boot');
+            let userId = localStorage.getItem('user_id');
+            let serverResponse;
+
+            try {
+                if (userId) {
+                    // Пользователь уже был здесь, проверяем его статус
+                    const response = await fetch(`${serverUrl}/status`, {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ user_id: userId })
+                    });
+                    serverResponse = await response.json();
                 } else {
-                    clearInterval(intervalId);
-                    setTimeout(() => {
-                        elements.boot.style.display = 'none';
-                        elements.login.style.display = 'flex';
-                    }, 500);
+                    // Новый пользователь, запускаем таймер на сервере
+                    const response = await fetch(`${serverUrl}/start`, { method: 'POST' });
+                    serverResponse = await response.json();
+                    if (serverResponse.user_id) {
+                        localStorage.setItem('user_id', serverResponse.user_id);
+                    }
                 }
-            }, 300);
+            } catch (error) {
+                console.error("Server connection failed:", error);
+                showScreen('error');
+                return;
+            }
+
+            // Обрабатываем ответ от сервера
+            if (serverResponse.status === 'running') {
+                showScreen('main');
+                triggerDownload('kernel_log_archive.txt');
+                startTimer(serverResponse.time_left);
+                elements.taskMusic.volume = 0.7;
+                elements.taskMusic.play();
+            } else if (serverResponse.status === 'blacklisted') {
+                showScreen('blacklist');
+            } else if (serverResponse.status === 'completed') {
+                // Если уже прошел, запрашиваем финальное сообщение
+                 const checkResponse = await fetch(`${serverUrl}/check`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_id: userId, answer: "OVERRIDE_L3_FINCH" })
+                });
+                const checkData = await checkResponse.json();
+                elements.final.textContent = checkData.final_message;
+                showScreen('final');
+            } else {
+                // Если сервер не нашел ID, сбрасываем localStorage и перезагружаемся
+                localStorage.removeItem('user_id');
+                location.reload();
+            }
         }
+
         function triggerDownload(fileUrl) {
             const a = document.createElement('a');
-            a.style.display = 'none';
-            a.href = fileUrl;
-            a.download = fileUrl.split('/').pop();
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+            a.style.display = 'none'; a.href = fileUrl; a.download = fileUrl.split('/').pop();
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         }
-        elements.enterBtn.addEventListener('click', () => {
-            elements.login.style.display = 'none';
-            elements.main.style.display = 'flex';
-            triggerDownload('kernel_log_archive.txt');
-            startTimer();
-            elements.taskMusic.volume = 0.7;
-            elements.taskMusic.play();
-        });
-        function startTimer() {
-            let timeLeft = 3 * 60; 
+
+        function startTimer(timeLeft) {
             timerIntervalId = setInterval(() => {
-                timeLeft--; const minutes = Math.floor(timeLeft / 60); let seconds = timeLeft % 60;
+                timeLeft--;
+                if (timeLeft < 0) timeLeft = 0;
+                const minutes = Math.floor(timeLeft / 60); let seconds = timeLeft % 60;
                 elements.timer.textContent = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
                 if (timeLeft <= 0) {
                     clearInterval(timerIntervalId);
-                    localStorage.setItem('gameState', 'blacklisted');
-                    location.reload();
+                    showScreen('blacklist');
                 }
             }, 1000);
         }
         
-        // --- ИСПРАВЛЕННАЯ ФУНКЦИЯ ДЛЯ УПРАВЛЕНИЯ ПОВТОРАМИ ---
         function triggerSuccessSequence(finalMessage) {
-            localStorage.setItem('gameState', 'completed');
             elements.final.textContent = finalMessage;
-            clearInterval(timerIntervalId); 
-            elements.timer.classList.add('blinking');
+            clearInterval(timerIntervalId); elements.timer.classList.add('blinking');
             elements.taskMusic.pause();
-            
-            elements.finalSound.loop = false; // Убеждаемся, что HTML-атрибут отключен
-            elements.finalSound.currentTime = 0;
-            elements.finalSound.play();
-
+            elements.finalSound.loop = false; elements.finalSound.currentTime = 0; elements.finalSound.play();
             elements.finalSound.addEventListener('ended', function fn() {
                 loopCount++;
-                console.log(`Финальный звук завершился. Повтор: ${loopCount}/9`);
-
                 if (loopCount < 9) {
-                    // Если нужно еще повторить, просто запускаем звук заново
-                    this.currentTime = 0;
-                    this.play();
+                    this.currentTime = 0; this.play();
                 } else {
-                    // Если это был последний раз, показываем финальный экран и больше не запускаем звук
-                    elements.main.style.display = 'none'; 
-                    elements.final.style.display = 'flex';
-                    this.removeEventListener('ended', fn); // Удаляем слушатель
+                    showScreen('final');
+                    this.removeEventListener('ended', fn);
                 }
             });
         }
 
-        function checkAnswer() {
+        async function checkAnswer() {
             const userAnswer = elements.answer.value;
-            const serverUrl = 'https://supamupa.pythonanywhere.com/check';
-            fetch(serverUrl, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ answer: userAnswer })
-            })
-            .then(response => response.json())
-            .then(data => {
+            const userId = localStorage.getItem('user_id');
+            try {
+                const response = await fetch(`${serverUrl}/check`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ answer: userAnswer, user_id: userId })
+                });
+                const data = await response.json();
+
+                if (data.status === 'blacklisted') {
+                    showScreen('blacklist');
+                    return;
+                }
+                
                 if (data.correct) {
                     triggerSuccessSequence(data.final_message);
                 } else {
                     elements.answer.style.borderColor = 'red';
                     setTimeout(() => { elements.answer.style.borderColor = '#333'; }, 500);
                 }
-            })
-            .catch(error => {
-                console.error("ОШИБКА: Не удалось подключиться к серверу проверки.", error);
-                elements.riddle.querySelector('p').textContent = "ОШИБКА: СЕРВЕР ПРОВЕРКИ НЕ ОТВЕЧАЕТ.";
-            });
+            } catch (error) {
+                showScreen('error');
+            }
         }
         
         elements.submitBtn.addEventListener('click', checkAnswer);
         elements.answer.addEventListener('keydown', (event) => { if (event.key === 'Enter') checkAnswer(); });
+
+        // Запускаем всю логику
+        initialize();
     </script>
 </body>
 </html>
