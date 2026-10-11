@@ -1,0 +1,6302 @@
+<roblox version="4">
+  <Item class="Lighting" referent="0">
+    <Properties>
+      <string name="Name">Lighting</string>
+      <float name="Brightness">2.5</float>
+      <float name="ClockTime">17.8</float>
+      <bool name="GlobalShadows">true</bool>
+      <token name="Technology">3</token>
+    </Properties>
+  </Item>
+  <Item class="Players" referent="1">
+    <Properties>
+      <string name="Name">Players</string>
+    </Properties>
+  </Item>
+  <Item class="ReplicatedStorage" referent="2">
+    <Properties>
+      <string name="Name">ReplicatedStorage</string>
+    </Properties>
+    <Item class="Folder" referent="3">
+      <Properties>
+        <string name="Name">Shared</string>
+      </Properties>
+      <Item class="ModuleScript" referent="4">
+        <Properties>
+          <string name="Name">Config</string>
+          <string name="Source"><![CDATA[-- Все настройки игры в одном месте. Меняй числа здесь, чтобы подкрутить баланс.
+
+local Config = {}
+
+Config.GameName = "АЗАРТ АРЕНА"
+Config.DataStoreName = "AzartArena_Data_v1"
+Config.StartCoins = 250
+
+Config.LobbySpawn = Vector3.new(0, 4, 20)
+Config.ArenaOrigin = Vector3.new(0, 300, 900)
+
+Config.Round = {
+	MinPlayers = 1,
+	Intermission = 25, -- перерыв между раундами (время на ставки)
+	Countdown = 3,
+	Results = 7,
+}
+
+Config.Rewards = {
+	Participation = 10, -- каждому участнику раунда
+	SoloSurvivor = 150, -- единственному выжившему
+	Survivor = 80, -- каждому выжившему, если их несколько
+	RacePlaces = { 150, 100, 75 }, -- места в гонках
+	RaceFinisher = 50, -- остальным финишировавшим
+}
+
+Config.Betting = {
+	MinBet = 10,
+	HouseBonus = 1.25, -- казино докидывает +25% к банку ставок
+	StartJackpot = 200,
+}
+
+Config.Welfare = {
+	Threshold = 25, -- если монет меньше — можно взять пособие
+	Amount = 120,
+	Cooldown = 90,
+}
+
+Config.Slots = {
+	SpinTime = 2.6,
+	PairMultiplier = 1, -- два одинаковых символа = возврат ставки
+	BigWinMultiplier = 25,
+	Machines = {
+		{ Id = 1, Name = "МИНИ", Stake = 10, Color = Color3.fromRGB(40, 140, 255) },
+		{ Id = 2, Name = "КЛАССИКА", Stake = 100, Color = Color3.fromRGB(170, 60, 255) },
+		{ Id = 3, Name = "ХАЙРОЛЛЕР", Stake = 1000, Color = Color3.fromRGB(255, 185, 30) },
+	},
+	Symbols = {
+		{ Icon = "🍒", Weight = 30, Triple = 5 },
+		{ Icon = "🍋", Weight = 25, Triple = 8 },
+		{ Icon = "🍇", Weight = 20, Triple = 15 },
+		{ Icon = "🔔", Weight = 12, Triple = 30 },
+		{ Icon = "💎", Weight = 8, Triple = 75 },
+		{ Icon = "👑", Weight = 5, Triple = 200 },
+	},
+}
+
+Config.Roulette = {
+	BetTime = 20,
+	SpinTime = 7,
+	ResultTime = 4,
+	MinBet = 10,
+	-- порядок секторов на колесе (1 = верх в начале)
+	Segments = {
+		"green", "red", "black", "red", "black", "red", "black", "red",
+		"black", "red", "black", "red", "black", "red", "black",
+	},
+	Colors = {
+		red = { Name = "КРАСНОЕ", Multiplier = 2, Color = Color3.fromRGB(220, 40, 55), Icon = "🔴" },
+		black = { Name = "ЧЁРНОЕ", Multiplier = 2, Color = Color3.fromRGB(28, 28, 34), Icon = "⚫" },
+		green = { Name = "ЗЕЛЁНОЕ", Multiplier = 14, Color = Color3.fromRGB(30, 190, 80), Icon = "🟢" },
+	},
+	ColorOrder = { "red", "black", "green" },
+}
+
+Config.Duel = {
+	MinBet = 10,
+	InviteTimeout = 15,
+	FlipTime = 3.2,
+}
+
+Config.Trails = {
+	{ Id = "neon", Name = "Неоновый", Price = 500, Colors = { Color3.fromRGB(0, 255, 255), Color3.fromRGB(0, 120, 255) } },
+	{ Id = "fire", Name = "Огненный", Price = 2000, Colors = { Color3.fromRGB(255, 240, 80), Color3.fromRGB(255, 120, 0), Color3.fromRGB(255, 20, 0) } },
+	{ Id = "toxic", Name = "Токсичный", Price = 5000, Colors = { Color3.fromRGB(200, 255, 0), Color3.fromRGB(0, 200, 60) } },
+	{
+		Id = "rainbow",
+		Name = "Радужный",
+		Price = 15000,
+		Colors = {
+			Color3.fromRGB(255, 0, 0),
+			Color3.fromRGB(255, 160, 0),
+			Color3.fromRGB(255, 255, 0),
+			Color3.fromRGB(0, 220, 0),
+			Color3.fromRGB(0, 140, 255),
+			Color3.fromRGB(170, 0, 255),
+		},
+	},
+	{ Id = "gold", Name = "Золотой", Price = 50000, Colors = { Color3.fromRGB(255, 240, 150), Color3.fromRGB(255, 190, 0) }, Sparkles = true },
+	{ Id = "royal", Name = "Королевский", Price = 250000, Colors = { Color3.fromRGB(150, 0, 255), Color3.fromRGB(255, 200, 0), Color3.fromRGB(150, 0, 255) }, Sparkles = true },
+}
+
+Config.Ranks = {
+	{ Min = 0, Name = "Новичок", Icon = "🪙", Color = Color3.fromRGB(210, 210, 220) },
+	{ Min = 1000, Name = "Игрок", Icon = "🎲", Color = Color3.fromRGB(110, 220, 255) },
+	{ Min = 5000, Name = "Хайроллер", Icon = "💵", Color = Color3.fromRGB(110, 255, 140) },
+	{ Min = 25000, Name = "Магнат", Icon = "💎", Color = Color3.fromRGB(200, 120, 255) },
+	{ Min = 100000, Name = "Король казино", Icon = "👑", Color = Color3.fromRGB(255, 210, 60) },
+}
+
+function Config.GetRank(coins: number)
+	local best = Config.Ranks[1]
+	for _, rank in Config.Ranks do
+		if coins >= rank.Min then
+			best = rank
+		end
+	end
+	return best
+end
+
+function Config.GetTrail(id: string)
+	for _, trail in Config.Trails do
+		if trail.Id == id then
+			return trail
+		end
+	end
+	return nil
+end
+
+-- 1234567 -> "1 234 567"
+function Config.Format(n: number): string
+	n = math.floor(n)
+	local digits = tostring(math.abs(n))
+	local formatted = (string.gsub(string.reverse(digits), "(%d%d%d)", "%1 "))
+	formatted = string.reverse(formatted)
+	formatted = (string.gsub(formatted, "^ ", ""))
+	if n < 0 then
+		formatted = "-" .. formatted
+	end
+	return formatted
+end
+
+function Config.ColorSequenceFrom(colors: { Color3 }): ColorSequence
+	if #colors == 1 then
+		return ColorSequence.new(colors[1])
+	end
+	local keypoints = {}
+	for i, color in colors do
+		table.insert(keypoints, ColorSequenceKeypoint.new((i - 1) / (#colors - 1), color))
+	end
+	return ColorSequence.new(keypoints)
+end
+
+return Config
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="5">
+        <Properties>
+          <string name="Name">Net</string>
+          <string name="Source"><![CDATA[-- Сетевые события и общее состояние игры (атрибуты папки GameState).
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+
+local EVENTS = {
+	"Notify",
+	"Announce",
+	"PlaceBet",
+	"BetUpdate",
+	"SlotResult",
+	"RouletteBet",
+	"RouletteSpin",
+	"RouletteMyBets",
+	"DuelRequest",
+	"DuelInvite",
+	"DuelRespond",
+	"DuelResult",
+	"ShopAction",
+	"ShopState",
+	"ClaimWelfare",
+	"Knockback",
+	"RequestSync",
+}
+
+local Net = {}
+
+local remotes: Instance
+local state: Instance
+
+if RunService:IsServer() then
+	local existing = ReplicatedStorage:FindFirstChild("Remotes")
+	if existing then
+		remotes = existing
+	else
+		local folder = Instance.new("Folder")
+		folder.Name = "Remotes"
+		for _, name in EVENTS do
+			local event = Instance.new("RemoteEvent")
+			event.Name = name
+			event.Parent = folder
+		end
+		folder.Parent = ReplicatedStorage
+		remotes = folder
+	end
+
+	local existingState = ReplicatedStorage:FindFirstChild("GameState")
+	if existingState then
+		state = existingState
+	else
+		local folder = Instance.new("Folder")
+		folder.Name = "GameState"
+		folder:SetAttribute("Phase", "Waiting")
+		folder:SetAttribute("Title", "")
+		folder:SetAttribute("Desc", "")
+		folder:SetAttribute("Next", "")
+		folder:SetAttribute("NextDesc", "")
+		folder:SetAttribute("EndsAt", 0)
+		folder:SetAttribute("Alive", 0)
+		folder:SetAttribute("Total", 0)
+		folder:SetAttribute("Jackpot", 0)
+		folder:SetAttribute("BetsOpen", false)
+		folder:SetAttribute("RoulettePhase", "Betting")
+		folder:SetAttribute("RouletteEndsAt", 0)
+		folder:SetAttribute("RouletteHistory", "")
+		folder:SetAttribute("RouletteTotals", "{}")
+		folder.Parent = ReplicatedStorage
+		state = folder
+	end
+else
+	remotes = ReplicatedStorage:WaitForChild("Remotes")
+	state = ReplicatedStorage:WaitForChild("GameState")
+end
+
+function Net.Event(name: string): RemoteEvent
+	return remotes:WaitForChild(name) :: RemoteEvent
+end
+
+function Net.State(): Instance
+	return state
+end
+
+function Net.Now(): number
+	return workspace:GetServerTimeNow()
+end
+
+return Net
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="ServerScriptService" referent="6">
+    <Properties>
+      <string name="Name">ServerScriptService</string>
+    </Properties>
+    <Item class="Script" referent="7">
+      <Properties>
+        <string name="Name">Server</string>
+        <token name="RunContext">0</token>
+        <string name="Source"><![CDATA[-- АЗАРТ АРЕНА — точка входа сервера.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Net = require(ReplicatedStorage.Shared.Net)
+
+local MapBuilder = require(script.MapBuilder)
+local map = MapBuilder.Build()
+
+local Data = require(script.Data)
+Data.Init()
+
+local Characters = require(script.Characters)
+Characters.Init()
+
+local Feed = require(script.Feed)
+Feed.Init(map.LeaderboardLabel, map.FeedLabel)
+
+local Betting = require(script.Betting)
+Betting.Init()
+
+local Shop = require(script.Shop)
+Shop.Init()
+
+require(script.Slots).Init(map.SlotMachines)
+
+local Roulette = require(script.Roulette)
+Roulette.Init(map.RouletteLabel)
+
+require(script.Duels).Init()
+
+-- клиент просит актуальное состояние, когда готов его принять
+Net.Event("RequestSync").OnServerEvent:Connect(function(player: Player)
+	if not Data.WaitFor(player, 20) then
+		return
+	end
+	Betting.SendTo(player)
+	Shop.SendState(player)
+	Roulette.SendTo(player)
+end)
+
+require(script.RoundManager).Start()
+
+print(string.format("[AzartArena] Сервер запущен. Игроков: %d", #Players:GetPlayers()))
+]]></string>
+      </Properties>
+      <Item class="ModuleScript" referent="8">
+        <Properties>
+          <string name="Name">Betting</string>
+          <string name="Source"><![CDATA[-- Тотализатор: в перерыве игроки ставят монеты на того, кто выиграет раунд.
+-- Банк делится между угадавшими пропорционально ставкам. Никто не угадал — всё уходит в джекпот.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Data = require(script.Parent.Data)
+local Feed = require(script.Parent.Feed)
+local Util = require(script.Parent.Util)
+
+local Betting = {}
+
+-- bettor -> (targetUserId -> amount)
+local bets: { [Player]: { [number]: number } } = {}
+local isOpen = false
+local state = Net.State()
+
+local function summary(): ({ [string]: number }, number)
+	local pools: { [string]: number } = {}
+	local total = 0
+	for _, targets in bets do
+		for userId, amount in targets do
+			local key = tostring(userId)
+			pools[key] = (pools[key] or 0) + amount
+			total += amount
+		end
+	end
+	return pools, total
+end
+
+local function sendTo(player: Player, pools: { [string]: number }, total: number)
+	local mine: { [string]: number } = {}
+	local targets = bets[player]
+	if targets then
+		for userId, amount in targets do
+			mine[tostring(userId)] = amount
+		end
+	end
+	Net.Event("BetUpdate"):FireClient(player, pools, mine, total)
+end
+
+function Betting.Broadcast()
+	local pools, total = summary()
+	for _, player in Players:GetPlayers() do
+		sendTo(player, pools, total)
+	end
+end
+
+function Betting.SendTo(player: Player)
+	local pools, total = summary()
+	sendTo(player, pools, total)
+end
+
+function Betting.Open()
+	isOpen = true
+	state:SetAttribute("BetsOpen", true)
+	Betting.Broadcast()
+end
+
+function Betting.Close()
+	isOpen = false
+	state:SetAttribute("BetsOpen", false)
+end
+
+local function refund(bettor: Player, amount: number)
+	if bettor.Parent and amount > 0 then
+		Data.AddCoins(bettor, amount)
+	end
+end
+
+-- Возвращает ставки на тех, кто не участвует в раунде.
+function Betting.Lock(participants: { Player })
+	local inRound: { [number]: boolean } = {}
+	for _, player in participants do
+		inRound[player.UserId] = true
+	end
+	for bettor, targets in bets do
+		for userId, amount in targets do
+			if not inRound[userId] then
+				targets[userId] = nil
+				refund(bettor, amount)
+				Util.Notify(bettor, "↩️ Ставка возвращена: игрок не участвует в раунде", "info")
+			end
+		end
+	end
+	Betting.Broadcast()
+end
+
+function Betting.RefundAll()
+	for bettor, targets in bets do
+		local sum = 0
+		for _, amount in targets do
+			sum += amount
+		end
+		refund(bettor, sum)
+	end
+	bets = {}
+	Betting.Broadcast()
+end
+
+function Betting.Resolve(winners: { Player })
+	local winnerIds: { [number]: boolean } = {}
+	for _, player in winners do
+		winnerIds[player.UserId] = true
+	end
+
+	local totalStakes, winningStakes = 0, 0
+	for _, targets in bets do
+		for userId, amount in targets do
+			totalStakes += amount
+			if winnerIds[userId] then
+				winningStakes += amount
+			end
+		end
+	end
+	if totalStakes == 0 then
+		return
+	end
+
+	local jackpot = state:GetAttribute("Jackpot") or 0
+	if winningStakes == 0 then
+		jackpot += totalStakes
+		state:SetAttribute("Jackpot", jackpot)
+		for bettor in bets do
+			if bettor.Parent then
+				Util.Notify(bettor, "🎲 Ставка не сыграла...", "error")
+			end
+		end
+		Util.NotifyAll(string.format("🎰 Никто не угадал! Джекпот вырос до %s 💰", Config.Format(jackpot)), "bigwin")
+	else
+		local pool = math.floor(totalStakes * Config.Betting.HouseBonus) + jackpot
+		for bettor, targets in bets do
+			local mine = 0
+			for userId, amount in targets do
+				if winnerIds[userId] then
+					mine += amount
+				end
+			end
+			if bettor.Parent then
+				if mine > 0 then
+					local payout = math.floor(pool * mine / winningStakes)
+					Data.AddCoins(bettor, payout)
+					Util.Notify(bettor, string.format("🎲 Ставка сыграла! +%s 💰", Config.Format(payout)), "success")
+					Feed.Report(bettor, payout, "ставка на раунд")
+				else
+					Util.Notify(bettor, "🎲 Ставка не сыграла...", "error")
+				end
+			end
+		end
+		if jackpot > 0 then
+			Util.NotifyAll(string.format("💥 ДЖЕКПОТ %s 💰 сорван!", Config.Format(jackpot)), "bigwin")
+		end
+		state:SetAttribute("Jackpot", 0)
+	end
+	bets = {}
+	Betting.Broadcast()
+end
+
+function Betting.Init()
+	state:SetAttribute("Jackpot", Config.Betting.StartJackpot)
+
+	Net.Event("PlaceBet").OnServerEvent:Connect(function(player: Player, targetUserId: any, amount: any)
+		if type(targetUserId) ~= "number" or type(amount) ~= "number" then
+			return
+		end
+		if amount ~= amount or amount == math.huge then
+			return
+		end
+		amount = math.floor(amount)
+		if not isOpen then
+			Util.Notify(player, "⛔ Ставки сейчас закрыты — дождись перерыва", "error")
+			return
+		end
+		if amount < Config.Betting.MinBet then
+			Util.Notify(player, string.format("Минимальная ставка: %d 💰", Config.Betting.MinBet), "error")
+			return
+		end
+		local target = Players:GetPlayerByUserId(targetUserId)
+		if not target then
+			return
+		end
+		if not Data.TrySpend(player, amount) then
+			Util.Notify(player, "Не хватает монет!", "error")
+			return
+		end
+		local targets = bets[player]
+		if not targets then
+			targets = {}
+			bets[player] = targets
+		end
+		targets[targetUserId] = (targets[targetUserId] or 0) + amount
+		Util.Notify(player, string.format("✅ Ставка %s 💰 на %s принята", Config.Format(amount), target.DisplayName), "success")
+		if target ~= player and amount >= 100 then
+			Util.Notify(target, string.format("👀 %s поставил на тебя %s 💰!", player.DisplayName, Config.Format(amount)), "info")
+		end
+		Betting.Broadcast()
+	end)
+
+	Players.PlayerAdded:Connect(function()
+		Betting.Broadcast()
+	end)
+	Players.PlayerRemoving:Connect(function()
+		task.defer(Betting.Broadcast)
+	end)
+end
+
+return Betting
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="9">
+        <Properties>
+          <string name="Name">Characters</string>
+          <string name="Source"><![CDATA[-- Табличка с рангом над головой и купленный след за персонажем.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Data = require(script.Parent.Data)
+local Util = require(script.Parent.Util)
+
+local Characters = {}
+
+local function updateTag(player: Player)
+	local character = player.Character
+	local head = character and character:FindFirstChild("Head")
+	if not character or not head then
+		return
+	end
+	local profile = Data.Get(player)
+	local tag = head:FindFirstChild("RankTag")
+	if not tag then
+		-- свой ник + ранг вместо стандартной подписи Roblox
+		local humanoid = character:FindFirstChildOfClass("Humanoid")
+		if humanoid then
+			humanoid.DisplayDistanceType = Enum.HumanoidDisplayDistanceType.None
+		end
+		tag = Util.Make("BillboardGui", {
+			Name = "RankTag",
+			Size = UDim2.fromOffset(240, 50),
+			StudsOffset = Vector3.new(0, 2.8, 0),
+			MaxDistance = 100,
+			LightInfluence = 0,
+			Parent = head,
+		})
+		local nameLabel = Util.Make("TextLabel", {
+			Name = "PlayerName",
+			Size = UDim2.fromScale(1, 0.52),
+			BackgroundTransparency = 1,
+			TextScaled = true,
+			Font = Enum.Font.GothamBlack,
+			TextColor3 = Color3.new(1, 1, 1),
+			Text = player.DisplayName,
+			Parent = tag,
+		})
+		Util.Make("UIStroke", { Thickness = 2, Color = Color3.new(0, 0, 0), Parent = nameLabel })
+		local label = Util.Make("TextLabel", {
+			Name = "Label",
+			Size = UDim2.fromScale(1, 0.44),
+			Position = UDim2.fromScale(0, 0.56),
+			BackgroundTransparency = 1,
+			TextScaled = true,
+			Font = Enum.Font.GothamBlack,
+			TextColor3 = Color3.new(1, 1, 1),
+			Parent = tag,
+		})
+		Util.Make("UIStroke", { Thickness = 2, Color = Color3.new(0, 0, 0), Parent = label })
+	end
+	local label = (tag :: Instance):FindFirstChild("Label") :: TextLabel?
+	if label then
+		local coins = profile and profile.Coins or 0
+		local wins = profile and profile.Wins or 0
+		local rank = Config.GetRank(coins)
+		label.Text = string.format("%s %s  🏆%d", rank.Icon, rank.Name, wins)
+		label.TextColor3 = rank.Color
+	end
+end
+
+local function applyTrail(player: Player)
+	local root = Util.GetRoot(player)
+	if not root then
+		return
+	end
+	for _, name in { "AzTrail", "AzTrailA0", "AzTrailA1", "AzSparkles" } do
+		local old = root:FindFirstChild(name)
+		if old then
+			old:Destroy()
+		end
+	end
+	local profile = Data.Get(player)
+	if not profile or profile.Equipped == "" then
+		return
+	end
+	local item = Config.GetTrail(profile.Equipped)
+	if not item then
+		return
+	end
+	local a0 = Util.Make("Attachment", { Name = "AzTrailA0", Position = Vector3.new(0, 0.9, 0), Parent = root })
+	local a1 = Util.Make("Attachment", { Name = "AzTrailA1", Position = Vector3.new(0, -0.9, 0), Parent = root })
+	Util.Make("Trail", {
+		Name = "AzTrail",
+		Attachment0 = a0,
+		Attachment1 = a1,
+		Color = Config.ColorSequenceFrom(item.Colors),
+		Lifetime = 0.7,
+		MinLength = 0.05,
+		LightEmission = 0.7,
+		Transparency = NumberSequence.new(0.1, 1),
+		WidthScale = NumberSequence.new(1, 0.3),
+		Parent = root,
+	})
+	if item.Sparkles then
+		Util.Make("Sparkles", { Name = "AzSparkles", SparkleColor = item.Colors[1], Parent = root })
+	end
+end
+
+local function onCharacter(player: Player, character: Model)
+	player:SetAttribute("InRound", false)
+	local humanoid = character:WaitForChild("Humanoid", 10)
+	character:WaitForChild("Head", 10)
+	character:WaitForChild("HumanoidRootPart", 10)
+	if not humanoid or character.Parent == nil then
+		return
+	end
+	Data.WaitFor(player, 15)
+	updateTag(player)
+	applyTrail(player)
+end
+
+local function onPlayer(player: Player)
+	player.CharacterAdded:Connect(function(character)
+		onCharacter(player, character)
+	end)
+	if player.Character then
+		task.spawn(onCharacter, player, player.Character)
+	end
+end
+
+function Characters.Init()
+	Players.RespawnTime = 3
+	Players.PlayerAdded:Connect(onPlayer)
+	for _, player in Players:GetPlayers() do
+		onPlayer(player)
+	end
+	Data.Changed:Connect(function(player: Player, field: string)
+		if field == "Coins" or field == "Wins" then
+			updateTag(player)
+		elseif field == "Equipped" then
+			applyTrail(player)
+		end
+	end)
+	Data.Loaded:Connect(function(player: Player)
+		updateTag(player)
+		applyTrail(player)
+	end)
+end
+
+return Characters
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="10">
+        <Properties>
+          <string name="Name">Data</string>
+          <string name="Source"><![CDATA[-- Монеты, победы, покупки. Сохраняется в DataStore (работает в опубликованной игре
+-- или в Studio с включённым "Enable Studio Access to API Services").
+
+local DataStoreService = game:GetService("DataStoreService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+
+export type Profile = {
+	Coins: number,
+	Wins: number,
+	BiggestWin: number,
+	Owned: { [string]: boolean },
+	Equipped: string,
+	CanSave: boolean,
+	LastWelfare: number,
+}
+
+local Data = {}
+
+local profiles: { [Player]: Profile } = {}
+local changedEvent = Instance.new("BindableEvent")
+local loadedEvent = Instance.new("BindableEvent")
+
+-- (player, field)
+Data.Changed = changedEvent.Event
+-- (player)
+Data.Loaded = loadedEvent.Event
+
+local store: DataStore? = nil
+do
+	local ok, result = pcall(function()
+		return DataStoreService:GetDataStore(Config.DataStoreName)
+	end)
+	if ok then
+		store = result
+	else
+		warn("[AzartArena] DataStore недоступен, прогресс не будет сохраняться:", result)
+	end
+end
+
+local function newProfile(): Profile
+	return {
+		Coins = Config.StartCoins,
+		Wins = 0,
+		BiggestWin = 0,
+		Owned = {},
+		Equipped = "",
+		CanSave = false,
+		LastWelfare = 0,
+	}
+end
+
+local function keyFor(player: Player): string
+	return "player_" .. player.UserId
+end
+
+local function sync(player: Player)
+	local profile = profiles[player]
+	if not profile then
+		return
+	end
+	local stats = player:FindFirstChild("leaderstats")
+	if stats then
+		local coins = stats:FindFirstChild("Монеты")
+		local wins = stats:FindFirstChild("Победы")
+		if coins and coins:IsA("IntValue") then
+			coins.Value = profile.Coins
+		end
+		if wins and wins:IsA("IntValue") then
+			wins.Value = profile.Wins
+		end
+	end
+	player:SetAttribute("Coins", profile.Coins)
+	player:SetAttribute("Wins", profile.Wins)
+end
+
+local function save(player: Player, profile: Profile)
+	if not store or not profile.CanSave then
+		return
+	end
+	local owned = {}
+	for id in profile.Owned do
+		table.insert(owned, id)
+	end
+	local payload = {
+		Coins = profile.Coins,
+		Wins = profile.Wins,
+		BiggestWin = profile.BiggestWin,
+		Owned = owned,
+		Equipped = profile.Equipped,
+	}
+	local dataStore = store :: DataStore
+	local ok, err = pcall(function()
+		dataStore:SetAsync(keyFor(player), payload, { player.UserId })
+	end)
+	if not ok then
+		warn("[AzartArena] Не удалось сохранить", player.Name, err)
+	end
+end
+
+local function load(player: Player)
+	local profile = newProfile()
+
+	if store then
+		local dataStore = store :: DataStore
+		local ok, saved = false, nil
+		for _ = 1, 3 do
+			ok, saved = pcall(function()
+				return dataStore:GetAsync(keyFor(player))
+			end)
+			if ok then
+				break
+			end
+			task.wait(1)
+		end
+		if ok then
+			profile.CanSave = true
+			if type(saved) == "table" then
+				profile.Coins = tonumber(saved.Coins) or profile.Coins
+				profile.Wins = tonumber(saved.Wins) or 0
+				profile.BiggestWin = tonumber(saved.BiggestWin) or 0
+				if type(saved.Owned) == "table" then
+					for _, id in saved.Owned do
+						if type(id) == "string" then
+							profile.Owned[id] = true
+						end
+					end
+				end
+				if type(saved.Equipped) == "string" then
+					profile.Equipped = saved.Equipped
+				end
+			end
+		else
+			warn("[AzartArena] Не удалось загрузить данные", player.Name, saved)
+		end
+	end
+
+	if not player.Parent then
+		return
+	end
+
+	local stats = Instance.new("Folder")
+	stats.Name = "leaderstats"
+	local coins = Instance.new("IntValue")
+	coins.Name = "Монеты"
+	coins.Parent = stats
+	local wins = Instance.new("IntValue")
+	wins.Name = "Победы"
+	wins.Parent = stats
+	stats.Parent = player
+
+	profiles[player] = profile
+	sync(player)
+	loadedEvent:Fire(player)
+end
+
+function Data.Get(player: Player): Profile?
+	return profiles[player]
+end
+
+-- Ждёт загрузки профиля (до timeout секунд).
+function Data.WaitFor(player: Player, timeout: number?): Profile?
+	local deadline = os.clock() + (timeout or 15)
+	while not profiles[player] and player.Parent and os.clock() < deadline do
+		task.wait(0.1)
+	end
+	return profiles[player]
+end
+
+function Data.GetCoins(player: Player): number
+	local profile = profiles[player]
+	return profile and profile.Coins or 0
+end
+
+function Data.AddCoins(player: Player, amount: number)
+	local profile = profiles[player]
+	if not profile or amount == 0 then
+		return
+	end
+	profile.Coins = math.max(0, math.floor(profile.Coins + amount))
+	sync(player)
+	changedEvent:Fire(player, "Coins")
+end
+
+-- Списывает монеты, если хватает. Возвращает true при успехе.
+function Data.TrySpend(player: Player, amount: number): boolean
+	local profile = profiles[player]
+	if not profile then
+		return false
+	end
+	amount = math.floor(amount)
+	if amount <= 0 or profile.Coins < amount then
+		return false
+	end
+	profile.Coins -= amount
+	sync(player)
+	changedEvent:Fire(player, "Coins")
+	return true
+end
+
+function Data.AddWin(player: Player)
+	local profile = profiles[player]
+	if not profile then
+		return
+	end
+	profile.Wins += 1
+	sync(player)
+	changedEvent:Fire(player, "Wins")
+end
+
+function Data.RecordWin(player: Player, amount: number)
+	local profile = profiles[player]
+	if profile and amount > profile.BiggestWin then
+		profile.BiggestWin = amount
+	end
+end
+
+function Data.SetOwned(player: Player, id: string)
+	local profile = profiles[player]
+	if profile then
+		profile.Owned[id] = true
+		changedEvent:Fire(player, "Owned")
+	end
+end
+
+function Data.SetEquipped(player: Player, id: string)
+	local profile = profiles[player]
+	if profile then
+		profile.Equipped = id
+		changedEvent:Fire(player, "Equipped")
+	end
+end
+
+function Data.Init()
+	Players.PlayerAdded:Connect(load)
+	for _, player in Players:GetPlayers() do
+		task.spawn(load, player)
+	end
+
+	Players.PlayerRemoving:Connect(function(player)
+		local profile = profiles[player]
+		if profile then
+			save(player, profile)
+			profiles[player] = nil
+		end
+	end)
+
+	game:BindToClose(function()
+		local pending = 0
+		for player, profile in profiles do
+			pending += 1
+			task.spawn(function()
+				save(player, profile)
+				pending -= 1
+			end)
+		end
+		local deadline = os.clock() + 25
+		while pending > 0 and os.clock() < deadline do
+			task.wait(0.1)
+		end
+	end)
+
+	-- автосохранение
+	task.spawn(function()
+		while true do
+			task.wait(120)
+			for player, profile in profiles do
+				task.spawn(save, player, profile)
+			end
+		end
+	end)
+end
+
+return Data
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="11">
+        <Properties>
+          <string name="Name">Duels</string>
+          <string name="Source"><![CDATA[-- Дуэли в монетку 1 на 1: оба ставят одинаково, победитель забирает всё.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Data = require(script.Parent.Data)
+local Feed = require(script.Parent.Feed)
+local Util = require(script.Parent.Util)
+
+local Duels = {}
+
+type Invite = { From: Player, To: Player, Amount: number }
+
+local invites: { [string]: Invite } = {}
+local outgoing: { [Player]: string } = {}
+local flipping: { [Player]: boolean } = {}
+local counter = 0
+
+local function onRequest(player: Player, targetUserId: any, amount: any)
+	if type(targetUserId) ~= "number" or type(amount) ~= "number" then
+		return
+	end
+	if amount ~= amount or amount == math.huge then
+		return
+	end
+	amount = math.floor(amount)
+	local target = Players:GetPlayerByUserId(targetUserId)
+	if not target or target == player then
+		return
+	end
+	if amount < Config.Duel.MinBet then
+		Util.Notify(player, string.format("Минимальная ставка: %d 💰", Config.Duel.MinBet), "error")
+		return
+	end
+	if outgoing[player] then
+		Util.Notify(player, "Ты уже ждёшь ответа на вызов", "error")
+		return
+	end
+	if Data.GetCoins(player) < amount then
+		Util.Notify(player, "Не хватает монет!", "error")
+		return
+	end
+	if Data.GetCoins(target) < amount then
+		Util.Notify(player, string.format("У %s нет столько монет", target.DisplayName), "error")
+		return
+	end
+
+	counter += 1
+	local id = tostring(counter)
+	invites[id] = { From = player, To = target, Amount = amount }
+	outgoing[player] = id
+	Net.Event("DuelInvite"):FireClient(target, id, player.DisplayName, amount, Config.Duel.InviteTimeout)
+	Util.Notify(player, string.format("⚔️ Вызов отправлен %s на %s 💰", target.DisplayName, Config.Format(amount)), "info")
+
+	task.delay(Config.Duel.InviteTimeout, function()
+		if invites[id] then
+			invites[id] = nil
+			if outgoing[player] == id then
+				outgoing[player] = nil
+			end
+			if player.Parent then
+				Util.Notify(player, string.format("⌛ %s не ответил на вызов", target.DisplayName), "error")
+			end
+		end
+	end)
+end
+
+local function onRespond(player: Player, id: any, accept: any)
+	if type(id) ~= "string" then
+		return
+	end
+	local invite = invites[id]
+	if not invite or invite.To ~= player then
+		return
+	end
+	invites[id] = nil
+	if outgoing[invite.From] == id then
+		outgoing[invite.From] = nil
+	end
+	local challenger = invite.From
+	local amount = invite.Amount
+
+	if accept ~= true then
+		if challenger.Parent then
+			Util.Notify(challenger, string.format("🙅 %s отказался от дуэли", player.DisplayName), "error")
+		end
+		return
+	end
+	if not challenger.Parent then
+		return
+	end
+	if flipping[challenger] or flipping[player] then
+		Util.Notify(player, "Кто-то из вас уже в дуэли", "error")
+		return
+	end
+	if Data.GetCoins(challenger) < amount or Data.GetCoins(player) < amount then
+		Util.Notify(player, "У кого-то не хватает монет — дуэль отменена", "error")
+		Util.Notify(challenger, "У кого-то не хватает монет — дуэль отменена", "error")
+		return
+	end
+	Data.TrySpend(challenger, amount)
+	Data.TrySpend(player, amount)
+	flipping[challenger] = true
+	flipping[player] = true
+
+	local challengerWins = math.random() < 0.5
+	local winner = challengerWins and challenger or player
+	local loser = challengerWins and player or challenger
+	for _, participant in { challenger, player } do
+		Net.Event("DuelResult"):FireClient(participant, {
+			Challenger = challenger.DisplayName,
+			Opponent = player.DisplayName,
+			Winner = winner.DisplayName,
+			Amount = amount,
+			YouWon = participant == winner,
+			ChallengerWins = challengerWins,
+			FlipTime = Config.Duel.FlipTime,
+		})
+	end
+
+	task.delay(Config.Duel.FlipTime, function()
+		flipping[challenger] = nil
+		flipping[player] = nil
+		local prize = amount * 2
+		if winner.Parent then
+			Data.AddCoins(winner, prize)
+			Util.Notify(winner, string.format("🪙 Победа в дуэли! +%s 💰", Config.Format(prize)), "success")
+		end
+		if loser.Parent then
+			Util.Notify(loser, string.format("🪙 Дуэль проиграна: -%s 💰", Config.Format(amount)), "error")
+		end
+		if amount >= 500 then
+			Util.NotifyAll(
+				string.format("🪙 %s обыграл %s в монетку на %s 💰!", winner.DisplayName, loser.DisplayName, Config.Format(amount)),
+				"bigwin"
+			)
+		end
+		if winner.Parent then
+			Feed.Report(winner, prize, "дуэль")
+		end
+	end)
+end
+
+function Duels.Init()
+	Net.Event("DuelRequest").OnServerEvent:Connect(onRequest)
+	Net.Event("DuelRespond").OnServerEvent:Connect(onRespond)
+	Players.PlayerRemoving:Connect(function(player)
+		outgoing[player] = nil
+		flipping[player] = nil
+		for id, invite in invites do
+			if invite.From == player or invite.To == player then
+				invites[id] = nil
+			end
+		end
+	end)
+end
+
+return Duels
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="12">
+        <Properties>
+          <string name="Name">Feed</string>
+          <string name="Source"><![CDATA[-- Табло лидеров сервера и лента крупных выигрышей.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Data = require(script.Parent.Data)
+local Util = require(script.Parent.Util)
+
+local Feed = {}
+
+local leaderboardLabel: TextLabel? = nil
+local feedLabel: TextLabel? = nil
+local entries: { string } = {}
+
+local MEDALS = { "🥇", "🥈", "🥉" }
+
+local function escape(text: string): string
+	text = string.gsub(text, "&", "&amp;")
+	text = string.gsub(text, "<", "&lt;")
+	text = string.gsub(text, ">", "&gt;")
+	return text
+end
+
+local function refreshLeaderboard()
+	if not leaderboardLabel then
+		return
+	end
+	local list = {}
+	for _, player in Players:GetPlayers() do
+		local profile = Data.Get(player)
+		if profile then
+			table.insert(list, { Name = player.DisplayName, Coins = profile.Coins, Wins = profile.Wins })
+		end
+	end
+	table.sort(list, function(a, b)
+		return a.Coins > b.Coins
+	end)
+	local lines = {}
+	for i = 1, math.min(#list, 10) do
+		local row = list[i]
+		local rank = Config.GetRank(row.Coins)
+		table.insert(
+			lines,
+			string.format(
+				'%s %s <font color="#FFC83C">%s 💰</font>  <font color="#9AE6FF">🏆%d</font>  %s',
+				MEDALS[i] or (i .. "."),
+				escape(row.Name),
+				Config.Format(row.Coins),
+				row.Wins,
+				rank.Icon
+			)
+		)
+	end
+	if #lines == 0 then
+		lines = { "Загрузка..." }
+	end
+	leaderboardLabel.Text = table.concat(lines, "\n")
+end
+
+local function refreshFeed()
+	if feedLabel then
+		feedLabel.Text = #entries > 0 and table.concat(entries, "\n") or "Пока пусто... стань первым!"
+	end
+end
+
+-- Сообщает о выигрыше: крупные попадают в ленту и в уведомления всем.
+function Feed.Report(player: Player, amount: number, source: string, multiplier: number?)
+	Data.RecordWin(player, amount)
+	local big = amount >= 1000 or (multiplier ~= nil and multiplier >= Config.Slots.BigWinMultiplier)
+	if not big then
+		return
+	end
+	local text = string.format("%s — %s: +%s 💰", player.DisplayName, source, Config.Format(amount))
+	if multiplier and multiplier > 1 then
+		text ..= string.format(" (x%d)", multiplier)
+	end
+	Util.NotifyAll("🔥 " .. text, "bigwin")
+	table.insert(entries, 1, string.format('<font color="#FF8AD8">%s</font>', escape(text)))
+	while #entries > 9 do
+		table.remove(entries)
+	end
+	refreshFeed()
+end
+
+function Feed.Init(leaderboard: TextLabel, feed: TextLabel)
+	leaderboardLabel = leaderboard
+	feedLabel = feed
+	refreshFeed()
+	task.spawn(function()
+		while true do
+			refreshLeaderboard()
+			task.wait(3)
+		end
+	end)
+end
+
+return Feed
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="13">
+        <Properties>
+          <string name="Name">MapBuilder</string>
+          <string name="Source"><![CDATA[-- Строит лобби-казино: пол, стены, слоты, рулетку, стойки, табло, освещение.
+
+local Lighting = game:GetService("Lighting")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Util = require(script.Parent.Util)
+
+local MapBuilder = {}
+
+local DARK = Color3.fromRGB(26, 20, 40)
+local GOLD = Color3.fromRGB(255, 200, 60)
+local PINK = Color3.fromRGB(255, 60, 170)
+local CYAN = Color3.fromRGB(40, 220, 255)
+
+export type SlotMachine = {
+	Config: any,
+	Prompt: ProximityPrompt,
+	ReelsLabel: TextLabel,
+	Top: BasePart,
+	Model: Model,
+}
+
+export type Map = {
+	Folder: Folder,
+	SlotMachines: { SlotMachine },
+	RouletteLabel: TextLabel,
+	LeaderboardLabel: TextLabel,
+	FeedLabel: TextLabel,
+}
+
+local function addStroke(label: TextLabel, thickness: number?)
+	Util.Make("UIStroke", {
+		Thickness = thickness or 3,
+		Color = Color3.new(0, 0, 0),
+		Transparency = 0.2,
+		Parent = label,
+	})
+end
+
+local function surfaceText(part: BasePart, text: string, color: Color3, pixelsPerStud: number?): TextLabel
+	local gui = Util.Make("SurfaceGui", {
+		Face = Enum.NormalId.Front,
+		SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud,
+		PixelsPerStud = pixelsPerStud or 20,
+		LightInfluence = 0,
+		Parent = part,
+	})
+	local label = Util.Make("TextLabel", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Text = text,
+		TextScaled = true,
+		RichText = true,
+		Font = Enum.Font.GothamBlack,
+		TextColor3 = color,
+		Parent = gui,
+	})
+	Util.Make("UIPadding", {
+		PaddingLeft = UDim.new(0.03, 0),
+		PaddingRight = UDim.new(0.03, 0),
+		PaddingTop = UDim.new(0.06, 0),
+		PaddingBottom = UDim.new(0.06, 0),
+		Parent = label,
+	})
+	addStroke(label)
+	return label
+end
+
+local function sign(parent: Instance, cf: CFrame, size: Vector3, text: string, color: Color3, glow: Color3?): TextLabel
+	local part = Util.Part({
+		Name = "Sign",
+		Size = size,
+		CFrame = cf,
+		Color = DARK,
+		Material = Enum.Material.SmoothPlastic,
+		Parent = parent,
+	})
+	-- неоновая рамка позади
+	Util.Part({
+		Name = "SignGlow",
+		Size = Vector3.new(size.X + 1, size.Y + 1, 0.3),
+		CFrame = cf * CFrame.new(0, 0, size.Z / 2 + 0.2),
+		Color = glow or color,
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Parent = parent,
+	})
+	return surfaceText(part, text, color)
+end
+
+local function prompt(parent: Instance, action: string, objectText: string, panel: string?): ProximityPrompt
+	local p = Util.Make("ProximityPrompt", {
+		ActionText = action,
+		ObjectText = objectText,
+		HoldDuration = 0,
+		MaxActivationDistance = 11,
+		RequiresLineOfSight = false,
+		KeyboardKeyCode = Enum.KeyCode.E,
+		Parent = parent,
+	})
+	if panel then
+		p:SetAttribute("OpenPanel", panel)
+	end
+	return p
+end
+
+local function setupLighting()
+	Lighting.ClockTime = 17.8
+	Lighting.Brightness = 2.5
+	Lighting.Ambient = Color3.fromRGB(70, 50, 90)
+	Lighting.OutdoorAmbient = Color3.fromRGB(130, 110, 150)
+	Lighting.EnvironmentDiffuseScale = 0.5
+	Lighting.EnvironmentSpecularScale = 0.5
+
+	for _, child in Lighting:GetChildren() do
+		if child:IsA("PostEffect") or child:IsA("Atmosphere") then
+			child:Destroy()
+		end
+	end
+	Util.Make("BloomEffect", { Intensity = 0.8, Size = 28, Threshold = 0.95, Parent = Lighting })
+	Util.Make("ColorCorrectionEffect", {
+		Saturation = 0.2,
+		Contrast = 0.08,
+		TintColor = Color3.fromRGB(255, 245, 255),
+		Parent = Lighting,
+	})
+	Util.Make("Atmosphere", {
+		Density = 0.28,
+		Offset = 0.1,
+		Color = Color3.fromRGB(200, 160, 220),
+		Decay = Color3.fromRGB(90, 60, 120),
+		Glare = 0.4,
+		Haze = 1.2,
+		Parent = Lighting,
+	})
+end
+
+local function buildShell(folder: Folder)
+	-- пол-ковёр
+	Util.Part({
+		Name = "Floor",
+		Size = Vector3.new(220, 4, 220),
+		Position = Vector3.new(0, -2, 0),
+		Color = Color3.fromRGB(80, 18, 40),
+		Material = Enum.Material.Fabric,
+		Parent = folder,
+	})
+	-- золотые полосы на полу
+	for _, data in {
+		{ Vector3.new(120, 0.2, 1), Vector3.new(0, 0.1, -60) },
+		{ Vector3.new(120, 0.2, 1), Vector3.new(0, 0.1, 60) },
+		{ Vector3.new(1, 0.2, 120), Vector3.new(-60, 0.1, 0) },
+		{ Vector3.new(1, 0.2, 120), Vector3.new(60, 0.1, 0) },
+	} do
+		Util.Part({
+			Name = "FloorLine",
+			Size = data[1],
+			Position = data[2],
+			Color = GOLD,
+			Material = Enum.Material.Neon,
+			CanCollide = false,
+			Parent = folder,
+		})
+	end
+	-- стены
+	for _, data in {
+		{ Vector3.new(224, 14, 2), Vector3.new(0, 7, -111) },
+		{ Vector3.new(224, 14, 2), Vector3.new(0, 7, 111) },
+		{ Vector3.new(2, 14, 224), Vector3.new(-111, 7, 0) },
+		{ Vector3.new(2, 14, 224), Vector3.new(111, 7, 0) },
+	} do
+		Util.Part({
+			Name = "Wall",
+			Size = data[1],
+			Position = data[2],
+			Color = DARK,
+			Material = Enum.Material.SmoothPlastic,
+			Parent = folder,
+		})
+		Util.Part({
+			Name = "WallNeon",
+			Size = data[1] * Vector3.new(1, 0, 1) + Vector3.new(0.4, 0.8, 0.4),
+			Position = data[2] + Vector3.new(0, 7.4, 0),
+			Color = PINK,
+			Material = Enum.Material.Neon,
+			Parent = folder,
+		})
+	end
+	-- угловые колонны со светом
+	for _, corner in { Vector3.new(-100, 0, -100), Vector3.new(100, 0, -100), Vector3.new(-100, 0, 100), Vector3.new(100, 0, 100) } do
+		local pillar = Util.Part({
+			Name = "Pillar",
+			Size = Vector3.new(5, 40, 5),
+			Position = corner + Vector3.new(0, 20, 0),
+			Color = CYAN,
+			Material = Enum.Material.Neon,
+			Parent = folder,
+		})
+		Util.Make("PointLight", { Color = CYAN, Range = 50, Brightness = 2, Parent = pillar })
+	end
+	-- спавн
+	local spawnLocation = Instance.new("SpawnLocation")
+	spawnLocation.Name = "LobbySpawn"
+	spawnLocation.Anchored = true
+	spawnLocation.Size = Vector3.new(16, 1, 16)
+	spawnLocation.Position = Vector3.new(Config.LobbySpawn.X, 0.5, Config.LobbySpawn.Z)
+	spawnLocation.Color = GOLD
+	spawnLocation.Material = Enum.Material.SmoothPlastic
+	spawnLocation.Neutral = true
+	spawnLocation.Duration = 0
+	spawnLocation.TopSurface = Enum.SurfaceType.Smooth
+	spawnLocation.Parent = folder
+
+	-- большая вращающаяся монета над центром
+	local coin = Util.Part({
+		Name = "BigCoin",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(1.5, 14, 14),
+		CFrame = CFrame.new(0, 26, -20) * CFrame.Angles(0, 0, 0),
+		Color = GOLD,
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Parent = folder,
+	})
+	coin:SetAttribute("Spin", 1.2)
+	Util.Make("PointLight", { Color = GOLD, Range = 40, Brightness = 2, Parent = coin })
+	Util.Make("Sparkles", { SparkleColor = GOLD, Parent = coin })
+
+	-- батуты
+	for _, pos in { Vector3.new(-70, 0, 70), Vector3.new(70, 0, 70), Vector3.new(-70, 0, -40), Vector3.new(70, 0, -40) } do
+		local pad = Util.Part({
+			Name = "JumpPad",
+			Shape = Enum.PartType.Cylinder,
+			Size = Vector3.new(1, 10, 10),
+			CFrame = CFrame.new(pos + Vector3.new(0, 0.5, 0)) * CFrame.Angles(0, 0, math.rad(90)),
+			Color = Color3.fromRGB(80, 255, 120),
+			Material = Enum.Material.Neon,
+			Parent = folder,
+		})
+		local debounce: { [Player]: number } = {}
+		pad.Touched:Connect(function(hit)
+			local player = Util.PlayerFromHit(hit)
+			if not player then
+				return
+			end
+			local now = os.clock()
+			if (debounce[player] or 0) > now then
+				return
+			end
+			debounce[player] = now + 1
+			Net.Event("Knockback"):FireClient(player, Vector3.new(0, 140, 0), 0)
+		end)
+	end
+end
+
+local function buildSlotMachine(parent: Instance, pos: Vector3, facing: Vector3, cfg): SlotMachine
+	local model = Instance.new("Model")
+	model.Name = "Slot_" .. cfg.Id
+	local base = CFrame.lookAt(pos, pos + facing)
+	local body = cfg.Color:Lerp(Color3.new(0, 0, 0), 0.6)
+
+	local cabinet = Util.Part({
+		Name = "Cabinet",
+		Size = Vector3.new(8, 10, 5),
+		CFrame = base * CFrame.new(0, 5, 0),
+		Color = body,
+		Material = Enum.Material.SmoothPlastic,
+		Parent = model,
+	})
+	for _, x in { -4.15, 4.15 } do
+		Util.Part({
+			Name = "Strip",
+			Size = Vector3.new(0.3, 10, 5.2),
+			CFrame = base * CFrame.new(x, 5, 0),
+			Color = cfg.Color,
+			Material = Enum.Material.Neon,
+			Parent = model,
+		})
+	end
+	local top = Util.Part({
+		Name = "Top",
+		Size = Vector3.new(8.6, 2.6, 5.4),
+		CFrame = base * CFrame.new(0, 11.3, 0),
+		Color = cfg.Color,
+		Material = Enum.Material.Neon,
+		Parent = model,
+	})
+	Util.Make("PointLight", { Color = cfg.Color, Range = 16, Brightness = 1.5, Parent = top })
+
+	local topPanel = Util.Part({
+		Name = "TopPanel",
+		Size = Vector3.new(8, 2.2, 0.2),
+		CFrame = base * CFrame.new(0, 11.3, -2.8),
+		Color = DARK,
+		Parent = model,
+	})
+	surfaceText(topPanel, cfg.Name .. " • " .. Config.Format(cfg.Stake) .. " 💰", Color3.new(1, 1, 1), 30)
+
+	local screen = Util.Part({
+		Name = "Screen",
+		Size = Vector3.new(6.6, 3.6, 0.3),
+		CFrame = base * CFrame.new(0, 7, -2.6),
+		Color = Color3.fromRGB(8, 8, 14),
+		Parent = model,
+	})
+	local reels = surfaceText(screen, "🍒 🔔 👑", Color3.new(1, 1, 1), 40)
+
+	local lines = {}
+	for i = #Config.Slots.Symbols, 1, -1 do
+		local s = Config.Slots.Symbols[i]
+		table.insert(lines, string.format("%s%s%s  x%d", s.Icon, s.Icon, s.Icon, s.Triple))
+	end
+	local payText = table.concat(lines, "   ", 1, 2)
+		.. "\n"
+		.. table.concat(lines, "   ", 3, 4)
+		.. "\n"
+		.. table.concat(lines, "   ", 5, 6)
+		.. "\nДва одинаковых — возврат ставки"
+	local payPanel = Util.Part({
+		Name = "PayTable",
+		Size = Vector3.new(6.6, 3.6, 0.3),
+		CFrame = base * CFrame.new(0, 2.9, -2.6),
+		Color = Color3.fromRGB(14, 10, 24),
+		Parent = model,
+	})
+	surfaceText(payPanel, payText, GOLD, 40)
+
+	-- рычаг
+	Util.Part({
+		Name = "LeverStick",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(4, 0.5, 0.5),
+		CFrame = base * CFrame.new(4.7, 7.5, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		Color = Color3.fromRGB(200, 200, 210),
+		Material = Enum.Material.Metal,
+		Parent = model,
+	})
+	Util.Part({
+		Name = "LeverBall",
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(1.4, 1.4, 1.4),
+		CFrame = base * CFrame.new(4.7, 9.6, 0),
+		Color = Color3.fromRGB(255, 40, 60),
+		Material = Enum.Material.Neon,
+		Parent = model,
+	})
+
+	local p = prompt(cabinet, "Крутить", string.format("Слоты %s: ставка %s", cfg.Name, Config.Format(cfg.Stake)))
+	p:SetAttribute("MachineId", cfg.Id)
+
+	model.Parent = parent
+	return {
+		Config = cfg,
+		Prompt = p,
+		ReelsLabel = reels,
+		Top = top,
+		Model = model,
+	}
+end
+
+local function buildRoulette(parent: Folder): TextLabel
+	local folder = Instance.new("Folder")
+	folder.Name = "Roulette"
+
+	local center = Vector3.new(-95, 18, 0)
+	local base = CFrame.lookAt(center, center + Vector3.new(1, 0, 0))
+	local radius = 12
+	local segments = Config.Roulette.Segments
+	local count = #segments
+	local segAngle = math.pi * 2 / count
+
+	local wheel = Instance.new("Model")
+	wheel.Name = "Wheel"
+	wheel:SetAttribute("Base", base)
+	wheel:SetAttribute("Segments", count)
+
+	-- задний диск (золотые разделители между секторами)
+	Util.Part({
+		Name = "Back",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.6, radius * 2 + 1.2, radius * 2 + 1.2),
+		CFrame = base * CFrame.new(0, 0, 0.6) * CFrame.Angles(0, math.rad(90), 0),
+		Color = GOLD,
+		Material = Enum.Material.Metal,
+		CanCollide = false,
+		Parent = wheel,
+	})
+	local rMid = radius - 2
+	local chord = 2 * rMid * math.sin(segAngle / 2)
+	for i, colorId in segments do
+		local theta = (i - 1) * segAngle
+		-- соседние секторы разной толщины, чтобы не мерцали на стыках
+		local thickness = if i == 1 then 1 elseif i % 2 == 0 then 0.8 else 0.9
+		local tile = Util.Part({
+			Name = "Segment" .. i,
+			Size = Vector3.new(chord - 0.35, 4, thickness),
+			CFrame = base * CFrame.Angles(0, 0, -theta) * CFrame.new(0, rMid, 0),
+			Color = Config.Roulette.Colors[colorId].Color,
+			Material = Enum.Material.SmoothPlastic,
+			CanCollide = false,
+			Parent = wheel,
+		})
+		tile:SetAttribute("Segment", i)
+	end
+	Util.Part({
+		Name = "Hub",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(1, (rMid - 2) * 2 + 0.6, (rMid - 2) * 2 + 0.6),
+		CFrame = base * CFrame.new(0, 0, -0.4) * CFrame.Angles(0, math.rad(90), 0),
+		Color = Color3.fromRGB(60, 20, 30),
+		Material = Enum.Material.SmoothPlastic,
+		CanCollide = false,
+		Parent = wheel,
+	})
+	-- спицы на хабе
+	for i = 0, 3 do
+		Util.Part({
+			Name = "Spoke",
+			Size = Vector3.new(0.5, (rMid - 2) * 2, 0.3),
+			CFrame = base * CFrame.new(0, 0, -1) * CFrame.Angles(0, 0, i * math.pi / 4),
+			Color = GOLD,
+			Material = Enum.Material.Neon,
+			CanCollide = false,
+			Parent = wheel,
+		})
+	end
+	Util.Part({
+		Name = "Cap",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.8, 3.5, 3.5),
+		CFrame = base * CFrame.new(0, 0, -1.2) * CFrame.Angles(0, math.rad(90), 0),
+		Color = GOLD,
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Parent = wheel,
+	})
+	wheel.Parent = folder
+
+	-- указатель (не вращается)
+	local pointer = Util.Part({
+		Name = "Pointer",
+		Size = Vector3.new(2.4, 2.4, 1),
+		CFrame = base * CFrame.new(0, radius + 1.1, -0.9) * CFrame.Angles(0, 0, math.rad(45)),
+		Color = Color3.new(1, 1, 1),
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Parent = folder,
+	})
+	Util.Make("PointLight", { Color = Color3.new(1, 1, 1), Range = 12, Parent = pointer })
+
+	-- подставка
+	Util.Part({
+		Name = "Stand",
+		Size = Vector3.new(3, center.Y, 5),
+		Position = Vector3.new(center.X - 1.6, center.Y / 2, center.Z),
+		Color = DARK,
+		Parent = folder,
+	})
+	Util.Part({
+		Name = "StandBase",
+		Size = Vector3.new(8, 1, 14),
+		Position = Vector3.new(center.X - 1.6, 0.5, center.Z),
+		Color = GOLD,
+		Material = Enum.Material.Metal,
+		Parent = folder,
+	})
+
+	-- стол для ставок
+	local tableTop = Util.Part({
+		Name = "RouletteTable",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(1, 12, 12),
+		CFrame = CFrame.new(-74, 3.5, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		Color = Color3.fromRGB(20, 110, 50),
+		Material = Enum.Material.Fabric,
+		Parent = folder,
+	})
+	Util.Part({
+		Name = "TableRim",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.8, 12.8, 12.8),
+		CFrame = CFrame.new(-74, 3.3, 0) * CFrame.Angles(0, 0, math.rad(90)),
+		Color = GOLD,
+		Material = Enum.Material.Neon,
+		Parent = folder,
+	})
+	Util.Part({
+		Name = "TableLeg",
+		Size = Vector3.new(2, 3, 2),
+		Position = Vector3.new(-74, 1.5, 0),
+		Color = DARK,
+		Parent = folder,
+	})
+	prompt(tableTop, "Сделать ставку", "🎡 Рулетка", "Roulette")
+
+	-- табло над колесом
+	local boardAnchor = Util.Part({
+		Name = "BoardAnchor",
+		Size = Vector3.new(1, 1, 1),
+		Position = center + Vector3.new(0, radius + 6, 0),
+		Transparency = 1,
+		CanCollide = false,
+		Parent = folder,
+	})
+	local billboard = Util.Make("BillboardGui", {
+		Size = UDim2.fromOffset(360, 110),
+		AlwaysOnTop = false,
+		MaxDistance = 220,
+		LightInfluence = 0,
+		Parent = boardAnchor,
+	})
+	local label = Util.Make("TextLabel", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Text = "🎡 РУЛЕТКА",
+		TextScaled = true,
+		RichText = true,
+		Font = Enum.Font.GothamBlack,
+		TextColor3 = GOLD,
+		Parent = billboard,
+	})
+	addStroke(label)
+
+	folder.Parent = parent
+	return label
+end
+
+local function buildBooth(parent: Instance, pos: Vector3, facing: Vector3, title: string, color: Color3, panel: string, action: string)
+	local model = Instance.new("Model")
+	model.Name = panel .. "Booth"
+	local base = CFrame.lookAt(pos, pos + facing)
+
+	local counter = Util.Part({
+		Name = "Counter",
+		Size = Vector3.new(14, 4, 3),
+		CFrame = base * CFrame.new(0, 2, -2),
+		Color = DARK,
+		Parent = model,
+	})
+	Util.Part({
+		Name = "CounterTop",
+		Size = Vector3.new(14.4, 0.4, 3.4),
+		CFrame = base * CFrame.new(0, 4.2, -2),
+		Color = color,
+		Material = Enum.Material.Neon,
+		Parent = model,
+	})
+	Util.Part({
+		Name = "BackWall",
+		Size = Vector3.new(16, 12, 1),
+		CFrame = base * CFrame.new(0, 6, 3),
+		Color = color:Lerp(Color3.new(0, 0, 0), 0.65),
+		Parent = model,
+	})
+	for _, x in { -7.5, 7.5 } do
+		Util.Part({
+			Name = "Post",
+			Size = Vector3.new(1, 12, 1),
+			CFrame = base * CFrame.new(x, 6, -2),
+			Color = color,
+			Material = Enum.Material.Neon,
+			Parent = model,
+		})
+	end
+	local roof = Util.Part({
+		Name = "Roof",
+		Size = Vector3.new(17, 1, 7),
+		CFrame = base * CFrame.new(0, 12.5, 0.5),
+		Color = DARK,
+		Parent = model,
+	})
+	Util.Make("PointLight", { Color = color, Range = 18, Brightness = 1.5, Parent = roof })
+	sign(model, base * CFrame.new(0, 15.5, -1), Vector3.new(16, 4.5, 0.5), title, Color3.new(1, 1, 1), color)
+	prompt(counter, action, title, panel)
+	model.Parent = parent
+end
+
+local function buildBoard(parent: Instance, cf: CFrame, title: string, color: Color3): TextLabel
+	local size = Vector3.new(34, 24, 1)
+	local part = Util.Part({
+		Name = "Board",
+		Size = size,
+		CFrame = cf,
+		Color = Color3.fromRGB(16, 12, 28),
+		Parent = parent,
+	})
+	Util.Part({
+		Name = "BoardGlow",
+		Size = Vector3.new(size.X + 1.2, size.Y + 1.2, 0.3),
+		CFrame = cf * CFrame.new(0, 0, 0.6),
+		Color = color,
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Parent = parent,
+	})
+	local gui = Util.Make("SurfaceGui", {
+		Face = Enum.NormalId.Front,
+		SizingMode = Enum.SurfaceGuiSizingMode.PixelsPerStud,
+		PixelsPerStud = 20,
+		LightInfluence = 0,
+		Parent = part,
+	})
+	local titleLabel = Util.Make("TextLabel", {
+		Size = UDim2.new(1, 0, 0.16, 0),
+		BackgroundTransparency = 1,
+		Text = title,
+		TextScaled = true,
+		Font = Enum.Font.GothamBlack,
+		TextColor3 = color,
+		Parent = gui,
+	})
+	addStroke(titleLabel)
+	local body = Util.Make("TextLabel", {
+		Size = UDim2.new(1, -40, 0.8, 0),
+		Position = UDim2.new(0, 20, 0.18, 0),
+		BackgroundTransparency = 1,
+		Text = "",
+		TextSize = 30,
+		TextWrapped = true,
+		RichText = true,
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextYAlignment = Enum.TextYAlignment.Top,
+		Font = Enum.Font.GothamBold,
+		TextColor3 = Color3.new(1, 1, 1),
+		Parent = gui,
+	})
+	return body
+end
+
+function MapBuilder.Build(): Map
+	setupLighting()
+
+	local old = workspace:FindFirstChild("Lobby")
+	if old then
+		old:Destroy()
+	end
+	local baseplate = workspace:FindFirstChild("Baseplate")
+	if baseplate then
+		baseplate:Destroy()
+	end
+
+	local folder = Instance.new("Folder")
+	folder.Name = "Lobby"
+	-- сначала оболочка со спавном, чтобы игроки сразу появлялись в лобби
+	buildShell(folder)
+	folder.Parent = workspace
+
+	-- заголовок
+	sign(
+		folder,
+		CFrame.lookAt(Vector3.new(0, 34, -108), Vector3.new(0, 34, 0)),
+		Vector3.new(90, 18, 1),
+		'🎰 <font color="#FFC83C">АЗАРТ</font> АРЕНА 🎰',
+		Color3.new(1, 1, 1),
+		PINK
+	)
+
+	-- слоты
+	local casino = Instance.new("Folder")
+	casino.Name = "Casino"
+	local machines = {}
+	for i, cfg in Config.Slots.Machines do
+		local x = (i - 2) * 26
+		table.insert(machines, buildSlotMachine(casino, Vector3.new(x, 0, -72), Vector3.new(0, 0, 1), cfg))
+	end
+	sign(
+		casino,
+		CFrame.lookAt(Vector3.new(0, 20, -78), Vector3.new(0, 20, 0)),
+		Vector3.new(40, 5, 0.5),
+		"🎰 СЛОТЫ — жми E у автомата",
+		Color3.new(1, 1, 1),
+		GOLD
+	)
+	casino.Parent = folder
+
+	local rouletteLabel = buildRoulette(folder)
+
+	buildBooth(folder, Vector3.new(-50, 0, 78), Vector3.new(0, 0, -1), "🎲 СТАВКИ НА РАУНД", Color3.fromRGB(255, 140, 0), "Bets", "Поставить")
+	buildBooth(folder, Vector3.new(50, 0, 78), Vector3.new(0, 0, -1), "🪙 ДУЭЛИ В МОНЕТКУ", Color3.fromRGB(60, 200, 255), "Duel", "Вызвать")
+	buildBooth(folder, Vector3.new(92, 0, 0), Vector3.new(-1, 0, 0), "🛒 МАГАЗИН СЛЕДОВ", Color3.fromRGB(180, 80, 255), "Shop", "Открыть")
+
+	local boardZ = 109.4
+	local leaderboard = buildBoard(
+		folder,
+		CFrame.lookAt(Vector3.new(-42, 16, boardZ), Vector3.new(-42, 16, 0)),
+		"🏆 ТОП СЕРВЕРА",
+		GOLD
+	)
+	local howTo = buildBoard(
+		folder,
+		CFrame.lookAt(Vector3.new(0, 16, boardZ), Vector3.new(0, 16, 0)),
+		"❓ КАК ИГРАТЬ",
+		CYAN
+	)
+	howTo.Text = table.concat({
+		"🎮 Каждые ~2 минуты — раунд с мини-игрой.",
+		"🎲 В перерыве ставь монеты на того, кто победит!",
+		"🎰 Если никто не угадал — растёт ДЖЕКПОТ.",
+		"🎡 Рулетка крутится каждые 30 секунд.",
+		"🪙 Вызывай друзей на дуэль в монетку.",
+		"🛒 Копи на крутые следы и ранги.",
+		"💸 Банкрот? Возьми пособие в меню слева.",
+	}, "\n")
+	howTo.TextSize = 28
+	local feed = buildBoard(
+		folder,
+		CFrame.lookAt(Vector3.new(42, 16, boardZ), Vector3.new(42, 16, 0)),
+		"🔥 КРУПНЫЕ ВЫИГРЫШИ",
+		PINK
+	)
+	feed.Text = "Пока пусто... стань первым!"
+
+	return {
+		Folder = folder,
+		SlotMachines = machines,
+		RouletteLabel = rouletteLabel,
+		LeaderboardLabel = leaderboard,
+		FeedLabel = feed,
+	}
+end
+
+return MapBuilder
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="Folder" referent="14">
+        <Properties>
+          <string name="Name">Minigames</string>
+        </Properties>
+        <Item class="ModuleScript" referent="15">
+          <Properties>
+            <string name="Name">ColorFloor</string>
+            <string name="Source"><![CDATA[-- 🎨 Цветной пол: называется цвет, все остальные плитки исчезают. С каждым разом быстрее.
+
+local Util = require(script.Parent.Parent.Util)
+
+local COLORS = {
+	{ Name = "🟥 КРАСНЫЙ", Color = Color3.fromRGB(235, 50, 50) },
+	{ Name = "🟦 СИНИЙ", Color = Color3.fromRGB(40, 110, 255) },
+	{ Name = "🟩 ЗЕЛЁНЫЙ", Color = Color3.fromRGB(40, 200, 80) },
+	{ Name = "🟨 ЖЁЛТЫЙ", Color = Color3.fromRGB(255, 215, 40) },
+	{ Name = "🟪 ФИОЛЕТОВЫЙ", Color = Color3.fromRGB(160, 60, 230) },
+	{ Name = "🟧 ОРАНЖЕВЫЙ", Color = Color3.fromRGB(255, 130, 30) },
+}
+local GRID = 12
+local TILE = 6
+
+type Tile = { Part: BasePart, Color: number }
+
+local ColorFloor = {
+	Id = "ColorFloor",
+	Title = "🎨 Цветной пол",
+	Description = "Беги на плитку названного цвета — остальные исчезнут!",
+	Mode = "survival",
+	Duration = 110,
+}
+
+local function paint(tiles: { Tile }, pick: number?)
+	repeat
+		local count = 0
+		for _, tile in tiles do
+			tile.Color = math.random(#COLORS)
+			if tile.Color == pick then
+				count += 1
+			end
+		end
+	until pick == nil or count >= 8
+	for _, tile in tiles do
+		tile.Part.Color = COLORS[tile.Color].Color
+		tile.Part.Transparency = 0
+		tile.Part.CanCollide = true
+	end
+end
+
+function ColorFloor.Build(ctx)
+	local origin: Vector3 = ctx.Origin
+	local tiles: { Tile } = {}
+	local half = (GRID + 1) / 2
+	for x = 1, GRID do
+		for z = 1, GRID do
+			local part = Util.Part({
+				Name = "Tile",
+				Size = Vector3.new(TILE - 0.15, 1, TILE - 0.15),
+				Position = origin + Vector3.new((x - half) * TILE, -0.5, (z - half) * TILE),
+				Material = Enum.Material.SmoothPlastic,
+				Parent = ctx.Folder,
+			})
+			table.insert(tiles, { Part = part, Color = 1 })
+		end
+	end
+
+	local pillars = {}
+	local edge = GRID * TILE / 2 + 5
+	for _, corner in { Vector2.new(1, 1), Vector2.new(-1, 1), Vector2.new(1, -1), Vector2.new(-1, -1) } do
+		local pillar = Util.Part({
+			Name = "ColorPillar",
+			Size = Vector3.new(4, 40, 4),
+			Position = origin + Vector3.new(corner.X * edge, 5, corner.Y * edge),
+			Material = Enum.Material.Neon,
+			Color = Color3.new(1, 1, 1),
+			Parent = ctx.Folder,
+		})
+		Util.Make("PointLight", { Range = 40, Brightness = 2, Parent = pillar })
+		table.insert(pillars, pillar)
+	end
+
+	paint(tiles, nil)
+	ctx.Data.Tiles = tiles
+	ctx.Data.Pillars = pillars
+	ctx.KillY = origin.Y - 40
+
+	local spawns = {}
+	for i = 1, 16 do
+		spawns[i] = CFrame.new(origin + Vector3.new(math.random(-28, 28), 4, math.random(-28, 28)))
+	end
+	return spawns
+end
+
+function ColorFloor.Run(ctx)
+	local tiles: { Tile } = ctx.Data.Tiles
+	local pillars: { BasePart } = ctx.Data.Pillars
+	local waitTime = 4.5
+	task.wait(1.5)
+	while not ctx.Ended do
+		local pick = math.random(#COLORS)
+		paint(tiles, pick)
+		for _, pillar in pillars do
+			pillar.Color = COLORS[pick].Color
+			local light = pillar:FindFirstChildOfClass("PointLight")
+			if light then
+				light.Color = COLORS[pick].Color
+			end
+		end
+		ctx:Announce(COLORS[pick].Name, COLORS[pick].Color, waitTime)
+		task.wait(waitTime)
+		if ctx.Ended then
+			break
+		end
+		for _, tile in tiles do
+			if tile.Color ~= pick then
+				tile.Part.Transparency = 1
+				tile.Part.CanCollide = false
+			end
+		end
+		task.wait(2.5)
+		waitTime = math.max(1.4, waitTime - 0.35)
+	end
+end
+
+return ColorFloor
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="16">
+          <Properties>
+            <string name="Name">FallingTiles</string>
+            <string name="Source"><![CDATA[-- 🧊 Падающие плиты: три этажа плиток, каждая исчезает, если на неё наступить.
+
+local Util = require(script.Parent.Parent.Util)
+
+local GRID = 12
+local TILE = 6
+local LAYERS = 3
+local LAYER_GAP = 24
+local LAYER_COLORS = {
+	Color3.fromRGB(60, 220, 255),
+	Color3.fromRGB(255, 70, 200),
+	Color3.fromRGB(255, 220, 60),
+}
+
+local FallingTiles = {
+	Id = "FallingTiles",
+	Title = "🧊 Падающие плиты",
+	Description = "Плитки исчезают под ногами. Не стой на месте! Последний выживший побеждает.",
+	Mode = "survival",
+	Duration = 120,
+}
+
+function FallingTiles.Build(ctx)
+	local origin: Vector3 = ctx.Origin
+	local half = (GRID + 1) / 2
+	local states: { [BasePart]: string } = {}
+	for layer = 1, LAYERS do
+		local y = -(layer - 1) * LAYER_GAP - 0.5
+		for x = 1, GRID do
+			for z = 1, GRID do
+				local part = Util.Part({
+					Name = "FallTile",
+					Size = Vector3.new(TILE - 0.25, 1, TILE - 0.25),
+					Position = origin + Vector3.new((x - half) * TILE, y, (z - half) * TILE),
+					Color = LAYER_COLORS[layer],
+					Material = Enum.Material.Glass,
+					Transparency = 0.15,
+					Parent = ctx.Folder,
+				})
+				states[part] = "solid"
+			end
+		end
+	end
+	ctx.Data.States = states
+	ctx.KillY = origin.Y - (LAYERS - 1) * LAYER_GAP - 30
+
+	local spawns = {}
+	for i = 1, 16 do
+		spawns[i] = CFrame.new(origin + Vector3.new(math.random(-30, 30), 4, math.random(-30, 30)))
+	end
+	return spawns
+end
+
+function FallingTiles.Run(ctx)
+	local states: { [BasePart]: string } = ctx.Data.States
+	local params = RaycastParams.new()
+	params.FilterType = Enum.RaycastFilterType.Include
+	params.FilterDescendantsInstances = { ctx.Folder }
+
+	local function trigger(part: BasePart)
+		states[part] = "falling"
+		part.Color = Color3.new(1, 1, 1)
+		part.Material = Enum.Material.Neon
+		task.delay(0.45, function()
+			part.Transparency = 1
+			part.CanCollide = false
+			states[part] = "gone"
+		end)
+	end
+
+	task.wait(1)
+	while not ctx.Ended do
+		for _, player in ctx:AlivePlayers() do
+			local root = Util.GetRoot(player)
+			if root then
+				-- проверяем центр и чуть впереди, чтобы плитки исчезали честно
+				for _, offset in { Vector3.zero, root.AssemblyLinearVelocity * Vector3.new(0.05, 0, 0.05) } do
+					local result = workspace:Raycast(root.Position + offset, Vector3.new(0, -7, 0), params)
+					local hit = result and result.Instance
+					if hit and hit:IsA("BasePart") and states[hit] == "solid" then
+						trigger(hit)
+					end
+				end
+			end
+		end
+		task.wait(0.08)
+	end
+end
+
+return FallingTiles
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="17">
+          <Properties>
+            <string name="Name">GlassBridge</string>
+            <string name="Source"><![CDATA[-- 🌉 Стеклянный мост: в каждом ряду одна плита фальшивая. Упал — назад на старт.
+-- Каждое падение раскрывает путь остальным. Первый дошедший забирает больше всех.
+
+local Debris = game:GetService("Debris")
+
+local Util = require(script.Parent.Parent.Util)
+
+local ROWS = 10
+local LATERAL = 4.6
+local SPACING = 9
+local FIRST_ROW_Z = 13
+local GLASS = Color3.fromRGB(170, 225, 255)
+
+local GlassBridge = {
+	Id = "GlassBridge",
+	Title = "🌉 Стеклянный мост",
+	Description = "Одна из двух плит в каждом ряду — ловушка. Дойди до финиша первым!",
+	Mode = "race",
+	Duration = 100,
+}
+
+local function shatter(ctx, panel: BasePart)
+	panel.CanCollide = false
+	panel.Transparency = 1
+	Util.PlaySoundAt(panel.Position, Util.Sounds.Glass, 1, 0.6)
+	for _ = 1, 8 do
+		local shard = Util.Part({
+			Name = "Shard",
+			Size = Vector3.new(math.random(8, 20) / 10, 0.2, math.random(8, 20) / 10),
+			CFrame = panel.CFrame
+				* CFrame.new(math.random(-25, 25) / 10, 0, math.random(-25, 25) / 10)
+				* CFrame.Angles(math.random() * 3, math.random() * 3, math.random() * 3),
+			Color = GLASS,
+			Material = Enum.Material.Glass,
+			Transparency = 0.3,
+			Anchored = false,
+			CanCollide = false,
+			CanQuery = false,
+			CanTouch = false,
+			Parent = ctx.Folder,
+		})
+		Debris:AddItem(shard, 3)
+	end
+end
+
+function GlassBridge.Build(ctx)
+	local origin: Vector3 = ctx.Origin
+	local finishStart = FIRST_ROW_Z + (ROWS - 1) * SPACING + 6
+
+	Util.Part({
+		Name = "Start",
+		Size = Vector3.new(26, 2, 14),
+		Position = origin + Vector3.new(0, -1, 0),
+		Color = Color3.fromRGB(60, 50, 90),
+		Material = Enum.Material.Slate,
+		Parent = ctx.Folder,
+	})
+	Util.Part({
+		Name = "Finish",
+		Size = Vector3.new(26, 2, 16),
+		Position = origin + Vector3.new(0, -1, finishStart + 8),
+		Color = Color3.fromRGB(255, 200, 60),
+		Material = Enum.Material.SmoothPlastic,
+		Parent = ctx.Folder,
+	})
+	-- арка финиша
+	for _, x in { -12, 12 } do
+		Util.Part({
+			Name = "ArchPost",
+			Size = Vector3.new(1.5, 14, 1.5),
+			Position = origin + Vector3.new(x, 7, finishStart + 2),
+			Color = Color3.fromRGB(70, 255, 120),
+			Material = Enum.Material.Neon,
+			Parent = ctx.Folder,
+		})
+	end
+	local arch = Util.Part({
+		Name = "ArchTop",
+		Size = Vector3.new(25.5, 3, 1.5),
+		Position = origin + Vector3.new(0, 14.5, finishStart + 2),
+		Color = Color3.fromRGB(20, 20, 30),
+		Parent = ctx.Folder,
+	})
+	local gui = Util.Make("SurfaceGui", { Face = Enum.NormalId.Front, LightInfluence = 0, Parent = arch })
+	Util.Make("TextLabel", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Text = "🏁 ФИНИШ 🏁",
+		TextScaled = true,
+		Font = Enum.Font.GothamBlack,
+		TextColor3 = Color3.fromRGB(70, 255, 120),
+		Parent = gui,
+	})
+	-- надпись видна со старта: поворачиваем лицевую сторону к игрокам
+	arch.CFrame = CFrame.lookAt(arch.Position, arch.Position - Vector3.new(0, 0, 1))
+
+	for row = 1, ROWS do
+		local z = FIRST_ROW_Z + (row - 1) * SPACING
+		local fakeSide = math.random(2)
+		for side = 1, 2 do
+			local x = side == 1 and -LATERAL or LATERAL
+			local panel = Util.Part({
+				Name = "Glass",
+				Size = Vector3.new(6, 0.6, 6),
+				Position = origin + Vector3.new(x, -0.3, z),
+				Color = GLASS,
+				Material = Enum.Material.Glass,
+				Transparency = 0.35,
+				Reflectance = 0.1,
+				Parent = ctx.Folder,
+			})
+			if side == fakeSide then
+				local broken = false
+				panel.Touched:Connect(function(hit)
+					if broken or ctx.Ended then
+						return
+					end
+					if not Util.PlayerFromHit(hit) then
+						return
+					end
+					broken = true
+					shatter(ctx, panel)
+				end)
+			end
+		end
+		-- опоры моста по бокам
+		for _, x in { -LATERAL * 2 - 1.5, LATERAL * 2 + 1.5 } do
+			Util.Part({
+				Name = "Rail",
+				Size = Vector3.new(0.6, 0.6, SPACING),
+				Position = origin + Vector3.new(x, -0.3, z),
+				Color = Color3.fromRGB(255, 60, 170),
+				Material = Enum.Material.Neon,
+				CanCollide = false,
+				Parent = ctx.Folder,
+			})
+		end
+	end
+
+	local spawns = {}
+	for i = 1, 12 do
+		spawns[i] = CFrame.lookAt(
+			origin + Vector3.new(math.random(-10, 10), 3.5, math.random(-5, 3)),
+			origin + Vector3.new(0, 3.5, 50)
+		)
+	end
+	ctx.Data.Spawns = spawns
+	ctx.Data.FinishZ = origin.Z + finishStart
+	ctx.KillY = origin.Y - 25
+	ctx.OnFall = function(player: Player)
+		Util.Teleport(player, spawns[math.random(#spawns)])
+		Util.Notify(player, "💥 Стекло треснуло! Назад на старт", "error")
+	end
+	return spawns
+end
+
+function GlassBridge.Run(ctx)
+	local origin: Vector3 = ctx.Origin
+	local finishZ: number = ctx.Data.FinishZ
+	while not ctx.Ended do
+		for _, player in ctx:AlivePlayers() do
+			local root = Util.GetRoot(player)
+			if root and root.Position.Z > finishZ and root.Position.Y > origin.Y - 2 then
+				ctx:Finish(player)
+			end
+		end
+		task.wait(0.15)
+	end
+end
+
+return GlassBridge
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="18">
+          <Properties>
+            <string name="Name">HammerBrawl</string>
+            <string name="Source"><![CDATA[-- 🔨 Битва молотов: у всех молоты, арена сужается, сбивай друзей в пропасть.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Net = require(ReplicatedStorage.Shared.Net)
+local Util = require(script.Parent.Parent.Util)
+
+local START_RADIUS = 36
+local MIN_RADIUS = 11
+local SHRINK_EVERY = 16
+local SHRINK_STEP = 6
+local HIT_RANGE = 9.5
+local BASE_POWER = 75
+local COOLDOWN = 0.7
+
+local POWERUPS = {
+	{ Id = "speed", Name = "⚡ СКОРОСТЬ", Color = Color3.fromRGB(80, 200, 255), Duration = 8 },
+	{ Id = "mega", Name = "💥 МЕГА-УДАР", Color = Color3.fromRGB(255, 80, 60), Duration = 10 },
+	{ Id = "shield", Name = "🛡 ЩИТ", Color = Color3.fromRGB(255, 220, 60), Duration = 8 },
+}
+
+local HammerBrawl = {
+	Id = "HammerBrawl",
+	Title = "🔨 Битва молотов",
+	Description = "Сбивай всех молотом с арены! Арена сужается. Бонусы на полу.",
+	Mode = "survival",
+	Duration = 120,
+	MinPlayers = 2, -- в одиночку некого сбивать
+}
+
+local function makeHammer(): Tool
+	local tool = Instance.new("Tool")
+	tool.Name = "Молот"
+	tool.ToolTip = "Кликни — удар!"
+	tool.CanBeDropped = false
+	tool.RequiresHandle = true
+	tool.Grip = CFrame.new(0, 0, -1.6)
+	tool:SetAttribute("ArenaTool", true)
+
+	local handle = Instance.new("Part")
+	handle.Name = "Handle"
+	handle.Size = Vector3.new(0.5, 0.5, 4.6)
+	handle.Color = Color3.fromRGB(120, 75, 40)
+	handle.Material = Enum.Material.Wood
+	handle.CanCollide = false
+	handle.Massless = true
+	handle.Parent = tool
+
+	local head = Instance.new("Part")
+	head.Name = "Head"
+	head.Size = Vector3.new(3, 1.7, 1.7)
+	head.CFrame = handle.CFrame * CFrame.new(0, 0, 2.4)
+	head.Color = Color3.fromRGB(255, 200, 60)
+	head.Material = Enum.Material.Metal
+	head.CanCollide = false
+	head.Massless = true
+	local weld = Instance.new("WeldConstraint")
+	weld.Part0 = handle
+	weld.Part1 = head
+	weld.Parent = head
+	head.Parent = tool
+	return tool
+end
+
+function HammerBrawl.Build(ctx)
+	local origin: Vector3 = ctx.Origin
+	local diameter = START_RADIUS * 2
+	local floor = Util.Part({
+		Name = "Platform",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(4, diameter, diameter),
+		CFrame = CFrame.new(origin + Vector3.new(0, -2, 0)) * CFrame.Angles(0, 0, math.rad(90)),
+		Color = Color3.fromRGB(50, 40, 80),
+		Material = Enum.Material.Slate,
+		Parent = ctx.Folder,
+	})
+	local rim = Util.Part({
+		Name = "Rim",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(3.6, diameter + 1, diameter + 1),
+		CFrame = CFrame.new(origin + Vector3.new(0, -2.3, 0)) * CFrame.Angles(0, 0, math.rad(90)),
+		Color = Color3.fromRGB(255, 60, 170),
+		Material = Enum.Material.Neon,
+		Parent = ctx.Folder,
+	})
+	ctx.Data.Floor = floor
+	ctx.Data.Rim = rim
+	ctx.Data.Radius = START_RADIUS
+	ctx.KillY = origin.Y - 25
+
+	local spawns = {}
+	for i = 1, 12 do
+		local angle = (i / 12) * math.pi * 2
+		local pos = origin + Vector3.new(math.cos(angle) * 22, 3.5, math.sin(angle) * 22)
+		spawns[i] = CFrame.lookAt(pos, origin + Vector3.new(0, 3.5, 0))
+	end
+	return spawns
+end
+
+function HammerBrawl.Run(ctx)
+	local origin: Vector3 = ctx.Origin
+	local cooldowns: { [Player]: number } = {}
+	local mega: { [Player]: number } = {}
+	local shield: { [Player]: number } = {}
+
+	local function swing(attacker: Player)
+		local root = Util.GetRoot(attacker)
+		if not root then
+			return
+		end
+		local look = Vector3.new(root.CFrame.LookVector.X, 0, root.CFrame.LookVector.Z)
+		look = look.Magnitude > 0.01 and look.Unit or Vector3.new(0, 0, -1)
+		local power = BASE_POWER * ((mega[attacker] or 0) > os.clock() and 1.9 or 1)
+		for _, victim in ctx:AlivePlayers() do
+			if victim ~= attacker then
+				local victimRoot = Util.GetRoot(victim)
+				if victimRoot then
+					local offset = victimRoot.Position - root.Position
+					local flat = Vector3.new(offset.X, 0, offset.Z)
+					local dist = flat.Magnitude
+					if dist < HIT_RANGE and math.abs(offset.Y) < 6 then
+						local dir = dist > 0.1 and flat.Unit or look
+						if dir:Dot(look) > 0.2 or dist < 3 then
+							if (shield[victim] or 0) > os.clock() then
+								Util.Notify(attacker, "🛡 У него щит!", "info")
+							else
+								Net.Event("Knockback"):FireClient(victim, dir * power + Vector3.new(0, 38, 0), 0.6)
+								Util.PlaySoundAt(victimRoot.Position, Util.Sounds.Swoosh, 1, 0.8)
+							end
+						end
+					end
+				end
+			end
+		end
+	end
+
+	for _, player in ctx:AlivePlayers() do
+		local tool = makeHammer()
+		tool.Activated:Connect(function()
+			if ctx.Ended or not ctx:IsAlive(player) or tool.Parent ~= player.Character then
+				return
+			end
+			local now = os.clock()
+			if (cooldowns[player] or 0) > now then
+				return
+			end
+			cooldowns[player] = now + COOLDOWN
+			local anim = Instance.new("StringValue")
+			anim.Name = "toolanim"
+			anim.Value = "Slash"
+			anim.Parent = tool
+			task.delay(0.12, swing, player)
+		end)
+		local backpack = player:FindFirstChildOfClass("Backpack")
+		local humanoid = Util.GetHumanoid(player)
+		if backpack and humanoid then
+			tool.Parent = backpack
+			humanoid:EquipTool(tool)
+		end
+	end
+
+	local function applyPowerup(player: Player, powerup)
+		local until_ = os.clock() + powerup.Duration
+		if powerup.Id == "speed" then
+			local humanoid = Util.GetHumanoid(player)
+			if humanoid then
+				humanoid.WalkSpeed = 28
+				task.delay(powerup.Duration, function()
+					if humanoid.Parent and not ctx.Ended then
+						humanoid.WalkSpeed = 16
+					end
+				end)
+			end
+		elseif powerup.Id == "mega" then
+			mega[player] = until_
+		elseif powerup.Id == "shield" then
+			shield[player] = until_
+			local character = player.Character
+			if character then
+				local field = Instance.new("ForceField")
+				field.Parent = character
+				game:GetService("Debris"):AddItem(field, powerup.Duration)
+			end
+		end
+		Util.AnnounceTo(player, powerup.Name, powerup.Color, 1.5)
+		Util.NotifyAll(string.format("%s подобрал %s", player.DisplayName, powerup.Name), "info")
+	end
+
+	local function spawnPowerup()
+		local radius: number = ctx.Data.Radius
+		local powerup = POWERUPS[math.random(#POWERUPS)]
+		local angle = math.random() * math.pi * 2
+		local dist = math.random() * (radius - 4)
+		local orb = Util.Part({
+			Name = "Powerup",
+			Shape = Enum.PartType.Ball,
+			Size = Vector3.new(3, 3, 3),
+			Position = origin + Vector3.new(math.cos(angle) * dist, 2.5, math.sin(angle) * dist),
+			Color = powerup.Color,
+			Material = Enum.Material.Neon,
+			CanCollide = false,
+			Parent = ctx.Folder,
+		})
+		Util.Make("PointLight", { Color = powerup.Color, Range = 12, Brightness = 2, Parent = orb })
+		local billboard = Util.Make("BillboardGui", {
+			Size = UDim2.fromOffset(140, 30),
+			StudsOffset = Vector3.new(0, 2.5, 0),
+			AlwaysOnTop = true,
+			MaxDistance = 120,
+			Parent = orb,
+		})
+		local label = Util.Make("TextLabel", {
+			Size = UDim2.fromScale(1, 1),
+			BackgroundTransparency = 1,
+			Text = powerup.Name,
+			TextScaled = true,
+			Font = Enum.Font.GothamBlack,
+			TextColor3 = powerup.Color,
+			Parent = billboard,
+		})
+		Util.Make("UIStroke", { Thickness = 2, Parent = label })
+		local taken = false
+		orb.Touched:Connect(function(hit)
+			if taken or ctx.Ended then
+				return
+			end
+			local player = Util.PlayerFromHit(hit)
+			if player and ctx:IsAlive(player) then
+				taken = true
+				orb:Destroy()
+				applyPowerup(player, powerup)
+			end
+		end)
+		task.delay(12, function()
+			if orb.Parent then
+				orb:Destroy()
+			end
+		end)
+	end
+
+	local function shrink()
+		local radius = math.max(MIN_RADIUS, (ctx.Data.Radius :: number) - SHRINK_STEP)
+		if radius == ctx.Data.Radius then
+			return
+		end
+		ctx.Data.Radius = radius
+		ctx:Announce("⚠️ Арена сужается!", Color3.fromRGB(255, 120, 60), 1.5)
+		local info = TweenInfo.new(3, Enum.EasingStyle.Quad)
+		local floor: BasePart = ctx.Data.Floor
+		local rim: BasePart = ctx.Data.Rim
+		TweenService:Create(floor, info, { Size = Vector3.new(4, radius * 2, radius * 2) }):Play()
+		TweenService:Create(rim, info, { Size = Vector3.new(3.6, radius * 2 + 1, radius * 2 + 1) }):Play()
+	end
+
+	local started = os.clock()
+	local nextShrink = started + SHRINK_EVERY
+	local nextPowerup = started + 4
+	while not ctx.Ended do
+		local now = os.clock()
+		if now >= nextShrink then
+			nextShrink = now + SHRINK_EVERY
+			shrink()
+		end
+		if now >= nextPowerup then
+			nextPowerup = now + math.random(5, 8)
+			spawnPowerup()
+		end
+		task.wait(0.25)
+	end
+end
+
+return HammerBrawl
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="19">
+          <Properties>
+            <string name="Name">LavaTower</string>
+            <string name="Source"><![CDATA[-- 🌋 Лавовая башня: прыгай по спирали вверх, пока лава поднимается. Монетки по пути.
+
+local TweenService = game:GetService("TweenService")
+
+local Data = require(script.Parent.Parent.Data)
+local Util = require(script.Parent.Parent.Util)
+
+local PLATFORMS = 30
+local PLATFORM_SIZE = 6
+local GRACE = 6
+local RISE_TIME = 95
+local COIN_VALUE = 15
+
+local LavaTower = {
+	Id = "LavaTower",
+	Title = "🌋 Лавовая башня",
+	Description = "Лава поднимается! Прыгай вверх по платформам. Первый наверху — победитель.",
+	Mode = "race",
+	Duration = 120,
+}
+
+function LavaTower.Build(ctx)
+	local origin: Vector3 = ctx.Origin
+
+	Util.Part({
+		Name = "Base",
+		Size = Vector3.new(64, 2, 64),
+		Position = origin + Vector3.new(0, -1, 0),
+		Color = Color3.fromRGB(50, 40, 40),
+		Material = Enum.Material.Basalt,
+		Parent = ctx.Folder,
+	})
+
+	-- генерируем спираль из платформ с проверенными расстояниями для прыжка
+	local angle = 0
+	local radius = 16
+	local y = 0
+	local top = Vector3.zero
+
+	-- следующая точка спирали: центр на расстоянии dist от предыдущего
+	local function step(dist: number, rise: number): Vector3
+		local newRadius = math.clamp(radius + math.random(-3, 3), 13, 21)
+		local cosDelta = (radius * radius + newRadius * newRadius - dist * dist) / (2 * radius * newRadius)
+		angle += math.acos(math.clamp(cosDelta, -1, 1))
+		radius = newRadius
+		y += rise
+		return Vector3.new(math.cos(angle) * radius, y, math.sin(angle) * radius)
+	end
+
+	for i = 1, PLATFORMS do
+		local pos = step(math.random(78, 92) / 10, math.random(26, 38) / 10)
+		local t = i / PLATFORMS
+		local color = Color3.fromRGB(60, 220, 120):Lerp(Color3.fromRGB(200, 80, 255), t)
+		local platform = Util.Part({
+			Name = "Step" .. i,
+			Size = Vector3.new(PLATFORM_SIZE, 1, PLATFORM_SIZE),
+			CFrame = CFrame.lookAt(origin + pos, origin + Vector3.new(0, pos.Y, 0)),
+			Color = color,
+			Material = Enum.Material.SmoothPlastic,
+			Parent = ctx.Folder,
+		})
+		if i % 4 == 0 then
+			local coin = Util.Part({
+				Name = "Coin",
+				Shape = Enum.PartType.Cylinder,
+				Size = Vector3.new(0.4, 2.2, 2.2),
+				CFrame = platform.CFrame * CFrame.new(0, 2.2, 0),
+				Color = Color3.fromRGB(255, 200, 40),
+				Material = Enum.Material.Neon,
+				CanCollide = false,
+				Parent = ctx.Folder,
+			})
+			local taken = false
+			coin.Touched:Connect(function(hit)
+				if taken then
+					return
+				end
+				local player = Util.PlayerFromHit(hit)
+				if player and ctx:IsAlive(player) then
+					taken = true
+					coin:Destroy()
+					Data.AddCoins(player, COIN_VALUE)
+					Util.Notify(player, "🪙 +" .. COIN_VALUE .. " монет", "success")
+				end
+			end)
+		end
+		top = pos
+	end
+
+	-- финиш: большая площадка следующим шагом спирали
+	local finishPos = step(11, 3)
+
+	-- центральная колонна
+	Util.Part({
+		Name = "Column",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(top.Y + 4, 9, 9),
+		CFrame = CFrame.new(origin + Vector3.new(0, (top.Y + 4) / 2 - 1, 0)) * CFrame.Angles(0, 0, math.rad(90)),
+		Color = Color3.fromRGB(40, 30, 50),
+		Material = Enum.Material.Slate,
+		Parent = ctx.Folder,
+	})
+
+	Util.Part({
+		Name = "FinishPad",
+		Size = Vector3.new(12, 1, 12),
+		Position = origin + finishPos,
+		Color = Color3.fromRGB(255, 200, 60),
+		Material = Enum.Material.Neon,
+		Parent = ctx.Folder,
+	})
+	local flag = Util.Part({
+		Name = "Flag",
+		Size = Vector3.new(0.6, 10, 0.6),
+		Position = origin + finishPos + Vector3.new(0, 5.5, 0),
+		Color = Color3.new(1, 1, 1),
+		Parent = ctx.Folder,
+	})
+	local billboard = Util.Make("BillboardGui", {
+		Size = UDim2.fromOffset(200, 50),
+		StudsOffset = Vector3.new(0, 6, 0),
+		AlwaysOnTop = true,
+		Parent = flag,
+	})
+	Util.Make("TextLabel", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		Text = "🏁 ФИНИШ",
+		TextScaled = true,
+		Font = Enum.Font.GothamBlack,
+		TextColor3 = Color3.fromRGB(70, 255, 120),
+		Parent = billboard,
+	})
+
+	local lava = Util.Part({
+		Name = "Lava",
+		Size = Vector3.new(160, 6, 160),
+		Position = origin + Vector3.new(0, -6, 0),
+		Color = Color3.fromRGB(255, 90, 20),
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		Transparency = 0.1,
+		Parent = ctx.Folder,
+	})
+	Util.Make("PointLight", { Color = Color3.fromRGB(255, 120, 30), Range = 60, Brightness = 3, Parent = lava })
+
+	ctx.Data.Lava = lava
+	ctx.Data.Finish = origin + finishPos
+	ctx.KillY = origin.Y - 40
+
+	local spawns = {}
+	for i = 1, 12 do
+		local a = (i / 12) * math.pi * 2
+		local pos = origin + Vector3.new(math.cos(a) * 24, 3.5, math.sin(a) * 24)
+		spawns[i] = CFrame.lookAt(pos, origin + Vector3.new(16, 3.5, 0))
+	end
+	return spawns
+end
+
+function LavaTower.Run(ctx)
+	local lava: BasePart = ctx.Data.Lava
+	local finish: Vector3 = ctx.Data.Finish
+	local started = os.clock()
+	local rising = false
+
+	while not ctx.Ended do
+		if not rising and os.clock() - started >= GRACE then
+			rising = true
+			ctx:Announce("🌋 ЛАВА ПОДНИМАЕТСЯ!", Color3.fromRGB(255, 120, 30), 2)
+			local targetY = finish.Y - 3 - lava.Size.Y / 2
+			TweenService:Create(lava, TweenInfo.new(RISE_TIME, Enum.EasingStyle.Linear), {
+				Position = Vector3.new(lava.Position.X, targetY, lava.Position.Z),
+			}):Play()
+		end
+		local lavaTop = lava.Position.Y + lava.Size.Y / 2
+		for _, player in ctx:AlivePlayers() do
+			local root = Util.GetRoot(player)
+			if root then
+				if root.Position.Y < lavaTop + 1.5 then
+					ctx:Eliminate(player, "сгорел в лаве", true)
+				else
+					local flat = Vector3.new(root.Position.X - finish.X, 0, root.Position.Z - finish.Z)
+					if root.Position.Y > finish.Y + 0.5 and flat.Magnitude < 7 then
+						ctx:Finish(player)
+					end
+				end
+			end
+		end
+		task.wait(0.1)
+	end
+end
+
+return LavaTower
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="20">
+          <Properties>
+            <string name="Name">MeteorShower</string>
+            <string name="Source"><![CDATA[-- ☄️ Метеоритный дождь: метеориты целятся в игроков и выбивают куски арены.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Net = require(ReplicatedStorage.Shared.Net)
+local Util = require(script.Parent.Parent.Util)
+
+local GRID = 14
+local TILE = 6
+local KILL_RADIUS = 6.5
+local PUSH_RADIUS = 13
+local FALL_TIME = 1.3
+
+local MeteorShower = {
+	Id = "MeteorShower",
+	Title = "☄️ Метеоритный дождь",
+	Description = "Уворачивайся от метеоритов! Красный круг — сюда сейчас прилетит.",
+	Mode = "survival",
+	Duration = 90,
+}
+
+function MeteorShower.Build(ctx)
+	local origin: Vector3 = ctx.Origin
+	local tiles: { BasePart } = {}
+	local half = (GRID + 1) / 2
+	for x = 1, GRID do
+		for z = 1, GRID do
+			local shade = ((x + z) % 2 == 0) and Color3.fromRGB(70, 60, 90) or Color3.fromRGB(55, 45, 75)
+			table.insert(
+				tiles,
+				Util.Part({
+					Name = "Tile",
+					Size = Vector3.new(TILE, 1, TILE),
+					Position = origin + Vector3.new((x - half) * TILE, -0.5, (z - half) * TILE),
+					Color = shade,
+					Material = Enum.Material.Slate,
+					Parent = ctx.Folder,
+				})
+			)
+		end
+	end
+	ctx.Data.Tiles = tiles
+	ctx.KillY = origin.Y - 30
+
+	local spawns = {}
+	for i = 1, 16 do
+		spawns[i] = CFrame.new(origin + Vector3.new(math.random(-32, 32), 4, math.random(-32, 32)))
+	end
+	return spawns
+end
+
+local function pickTarget(ctx): Vector3
+	local origin: Vector3 = ctx.Origin
+	if math.random() < 0.55 then
+		local alive = ctx:AlivePlayers()
+		if #alive > 0 then
+			local root = Util.GetRoot(alive[math.random(#alive)])
+			if root then
+				return Vector3.new(root.Position.X + math.random(-5, 5), origin.Y, root.Position.Z + math.random(-5, 5))
+			end
+		end
+	end
+	local extent = GRID * TILE / 2 - 3
+	return origin + Vector3.new(math.random(-extent, extent), 0, math.random(-extent, extent))
+end
+
+local function meteor(ctx, target: Vector3)
+	local marker = Util.Part({
+		Name = "Warning",
+		Shape = Enum.PartType.Cylinder,
+		Size = Vector3.new(0.2, KILL_RADIUS * 2, KILL_RADIUS * 2),
+		CFrame = CFrame.new(target + Vector3.new(0, 0.12, 0)) * CFrame.Angles(0, 0, math.rad(90)),
+		Color = Color3.fromRGB(255, 40, 40),
+		Material = Enum.Material.Neon,
+		Transparency = 0.6,
+		CanCollide = false,
+		CanQuery = false,
+		CanTouch = false,
+		Parent = ctx.Folder,
+	})
+	TweenService:Create(marker, TweenInfo.new(0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true), {
+		Transparency = 0.15,
+	}):Play()
+
+	local rock = Util.Part({
+		Name = "Meteor",
+		Shape = Enum.PartType.Ball,
+		Size = Vector3.new(5, 5, 5),
+		Position = target + Vector3.new(math.random(-20, 20), 90, math.random(-20, 20)),
+		Color = Color3.fromRGB(255, 110, 30),
+		Material = Enum.Material.Neon,
+		CanCollide = false,
+		CanQuery = false,
+		CanTouch = false,
+		Parent = ctx.Folder,
+	})
+	Util.Make("Fire", { Size = 8, Heat = 15, Parent = rock })
+	TweenService:Create(rock, TweenInfo.new(FALL_TIME, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+		Position = target,
+	}):Play()
+	task.wait(FALL_TIME)
+	rock:Destroy()
+	marker:Destroy()
+	if ctx.Ended then
+		return
+	end
+
+	local explosion = Instance.new("Explosion")
+	explosion.BlastPressure = 0
+	explosion.BlastRadius = KILL_RADIUS
+	explosion.DestroyJointRadiusPercent = 0
+	explosion.ExplosionType = Enum.ExplosionType.NoCraters
+	explosion.Position = target
+	explosion.Parent = ctx.Folder
+
+	for _, player in ctx:AlivePlayers() do
+		local root = Util.GetRoot(player)
+		if root then
+			local offset = root.Position - target
+			local dist = offset.Magnitude
+			if dist < KILL_RADIUS + 1 then
+				ctx:Eliminate(player, "попал под метеорит", true)
+			elseif dist < PUSH_RADIUS then
+				local flat = Vector3.new(offset.X, 0, offset.Z)
+				local dir = flat.Magnitude > 0.1 and flat.Unit or Vector3.new(1, 0, 0)
+				Net.Event("Knockback"):FireClient(player, dir * 55 + Vector3.new(0, 40, 0), 0.4)
+			end
+		end
+	end
+
+	for _, tile in ctx.Data.Tiles :: { BasePart } do
+		if tile.CanCollide then
+			local flat = Vector3.new(tile.Position.X - target.X, 0, tile.Position.Z - target.Z)
+			if flat.Magnitude < KILL_RADIUS - 1 then
+				tile.CanCollide = false
+				tile.Transparency = 1
+			end
+		end
+	end
+end
+
+function MeteorShower.Run(ctx)
+	task.wait(1.5)
+	local started = os.clock()
+	local interval = 1.1
+	while not ctx.Ended do
+		local count = 1 + math.floor((os.clock() - started) / 20)
+		for _ = 1, count do
+			task.spawn(meteor, ctx, pickTarget(ctx))
+		end
+		task.wait(interval)
+		interval = math.max(0.4, interval * 0.95)
+	end
+end
+
+return MeteorShower
+]]></string>
+          </Properties>
+        </Item>
+      </Item>
+      <Item class="ModuleScript" referent="21">
+        <Properties>
+          <string name="Name">Roulette</string>
+          <string name="Source"><![CDATA[-- Рулетка: приём ставок -> вращение -> выплаты. Крутится сама по кругу.
+
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Data = require(script.Parent.Data)
+local Feed = require(script.Parent.Feed)
+local Util = require(script.Parent.Util)
+
+local Roulette = {}
+
+local RC = Config.Roulette
+local state = Net.State()
+
+-- player -> color -> amount
+local bets: { [Player]: { [string]: number } } = {}
+local phase = "Betting"
+local history: { string } = {}
+
+local function totals(): { [string]: number }
+	local result = { red = 0, black = 0, green = 0 }
+	for _, colors in bets do
+		for color, amount in colors do
+			result[color] += amount
+		end
+	end
+	return result
+end
+
+local function publishTotals()
+	state:SetAttribute("RouletteTotals", HttpService:JSONEncode(totals()))
+end
+
+local function sendMine(player: Player)
+	Net.Event("RouletteMyBets"):FireClient(player, bets[player] or {})
+end
+
+local function setPhase(newPhase: string, duration: number)
+	phase = newPhase
+	state:SetAttribute("RoulettePhase", newPhase)
+	state:SetAttribute("RouletteEndsAt", Net.Now() + duration)
+end
+
+local function runBoard(label: TextLabel)
+	task.spawn(function()
+		while true do
+			local left = math.max(0, math.ceil((state:GetAttribute("RouletteEndsAt") or 0) - Net.Now()))
+			if phase == "Betting" then
+				label.Text = string.format('🎡 РУЛЕТКА\n<font color="#FFFFFF">Ставки: %d с</font>', left)
+			elseif phase == "Spinning" then
+				label.Text = '🎡 РУЛЕТКА\n<font color="#FF8AD8">Крутим!</font>'
+			else
+				local last = history[1]
+				local info = last and RC.Colors[last]
+				label.Text = info and string.format("🎡 Выпало:\n%s %s", info.Icon, info.Name) or "🎡 РУЛЕТКА"
+			end
+			task.wait(0.5)
+		end
+	end)
+end
+
+local function payout(color: string)
+	local info = RC.Colors[color]
+	for player, colors in bets do
+		if player.Parent then
+			local won = (colors[color] or 0) * info.Multiplier
+			local stake = 0
+			for _, amount in colors do
+				stake += amount
+			end
+			if won > 0 then
+				Data.AddCoins(player, won)
+				Util.Notify(player, string.format("🎡 %s %s! Выигрыш +%s 💰", info.Icon, info.Name, Config.Format(won)), "success")
+				Feed.Report(player, won, "рулетка", info.Multiplier >= 14 and info.Multiplier or nil)
+			elseif stake > 0 then
+				Util.Notify(player, string.format("🎡 %s %s. Ставка %s 💰 сгорела", info.Icon, info.Name, Config.Format(stake)), "error")
+			end
+		end
+	end
+	bets = {}
+	for _, player in Players:GetPlayers() do
+		sendMine(player)
+	end
+	publishTotals()
+end
+
+local function loop()
+	while true do
+		setPhase("Betting", RC.BetTime)
+		publishTotals()
+		task.wait(RC.BetTime)
+
+		local index = math.random(#RC.Segments)
+		local color = RC.Segments[index]
+		local offset = (math.random() - 0.5) * 0.7
+		setPhase("Spinning", RC.SpinTime)
+		Net.Event("RouletteSpin"):FireAllClients(index, offset, color, RC.SpinTime)
+		task.wait(RC.SpinTime)
+
+		table.insert(history, 1, color)
+		while #history > 12 do
+			table.remove(history)
+		end
+		state:SetAttribute("RouletteHistory", table.concat(history, ","))
+		setPhase("Result", RC.ResultTime)
+		payout(color)
+		task.wait(RC.ResultTime)
+	end
+end
+
+function Roulette.SendTo(player: Player)
+	sendMine(player)
+end
+
+function Roulette.Init(boardLabel: TextLabel)
+	Net.Event("RouletteBet").OnServerEvent:Connect(function(player: Player, color: any, amount: any)
+		if type(color) ~= "string" or type(amount) ~= "number" or not RC.Colors[color] then
+			return
+		end
+		if amount ~= amount or amount == math.huge then
+			return
+		end
+		amount = math.floor(amount)
+		if phase ~= "Betting" then
+			Util.Notify(player, "⛔ Колесо уже крутится — жди следующий круг", "error")
+			return
+		end
+		if amount < RC.MinBet then
+			Util.Notify(player, string.format("Минимальная ставка: %d 💰", RC.MinBet), "error")
+			return
+		end
+		if not Data.TrySpend(player, amount) then
+			Util.Notify(player, "Не хватает монет!", "error")
+			return
+		end
+		local colors = bets[player]
+		if not colors then
+			colors = {}
+			bets[player] = colors
+		end
+		colors[color] = (colors[color] or 0) + amount
+		sendMine(player)
+		publishTotals()
+	end)
+
+	runBoard(boardLabel)
+	task.spawn(loop)
+end
+
+return Roulette
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="22">
+        <Properties>
+          <string name="Name">RoundManager</string>
+          <string name="Source"><![CDATA[-- Цикл раундов: перерыв со ставками -> мини-игра -> награды -> снова.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Betting = require(script.Parent.Betting)
+local Data = require(script.Parent.Data)
+local Util = require(script.Parent.Util)
+
+local RoundManager = {}
+
+local state = Net.State()
+
+local MINIGAMES = {
+	require(script.Parent.Minigames.ColorFloor),
+	require(script.Parent.Minigames.GlassBridge),
+	require(script.Parent.Minigames.FallingTiles),
+	require(script.Parent.Minigames.HammerBrawl),
+	require(script.Parent.Minigames.LavaTower),
+	require(script.Parent.Minigames.MeteorShower),
+}
+
+local GOLD = Color3.fromRGB(255, 200, 60)
+local RED = Color3.fromRGB(255, 70, 80)
+local GREEN = Color3.fromRGB(70, 255, 120)
+
+------------------------------------------------------------------------
+-- Контекст раунда, который получают мини-игры
+------------------------------------------------------------------------
+
+local Context = {}
+Context.__index = Context
+
+function Context.new(minigame, participants: { Player })
+	local self = setmetatable({}, Context)
+	self.Minigame = minigame
+	self.Mode = minigame.Mode
+	self.Origin = Config.ArenaOrigin
+	self.Participants = participants
+	self.Alive = {} :: { [Player]: boolean }
+	self.Characters = {} :: { [Player]: Model }
+	self.Finished = {} :: { Player }
+	self.StartCount = #participants
+	self.Ended = false
+	self.EndsAt = math.huge
+	self.KillY = Config.ArenaOrigin.Y - 60
+	self.OnFall = nil :: ((Player) -> ())?
+	self.Data = {} :: { [string]: any }
+
+	local folder = Instance.new("Folder")
+	folder.Name = "Arena"
+	folder.Parent = workspace
+	self.Folder = folder
+	return self
+end
+
+function Context:AlivePlayers(): { Player }
+	local list = {}
+	for player in self.Alive do
+		table.insert(list, player)
+	end
+	return list
+end
+
+function Context:AliveCount(): number
+	local n = 0
+	for _ in self.Alive do
+		n += 1
+	end
+	return n
+end
+
+function Context:IsAlive(player: Player): boolean
+	return self.Alive[player] == true
+end
+
+function Context:Eliminate(player: Player, reason: string?, kill: boolean?)
+	if not self.Alive[player] then
+		return
+	end
+	self.Alive[player] = nil
+	player:SetAttribute("InRound", false)
+	if kill then
+		local humanoid = Util.GetHumanoid(player)
+		if humanoid and humanoid.Health > 0 then
+			humanoid.Health = 0
+		end
+	end
+	Util.NotifyAll(string.format("💀 %s выбывает%s", player.DisplayName, reason and (" — " .. reason) or ""), "death")
+	state:SetAttribute("Alive", self:AliveCount())
+end
+
+function Context:Finish(player: Player)
+	if not self.Alive[player] then
+		return
+	end
+	self.Alive[player] = nil
+	table.insert(self.Finished, player)
+	player:SetAttribute("InRound", false)
+	local place = #self.Finished
+	Util.NotifyAll(string.format("🏁 %s финишировал %d-м!", player.DisplayName, place), "success")
+	Util.AnnounceTo(player, place == 1 and "🥇 ПЕРВОЕ МЕСТО!" or ("🏁 ФИНИШ #" .. place), GOLD, 2.5)
+	if place == 1 then
+		self:SetEndsAt(math.min(self.EndsAt, Net.Now() + 20))
+	end
+	state:SetAttribute("Alive", self:AliveCount())
+end
+
+function Context:SetEndsAt(t: number)
+	self.EndsAt = t
+	state:SetAttribute("EndsAt", t)
+end
+
+function Context:Announce(text: string, color: Color3?, duration: number?)
+	Util.Announce(text, color, duration)
+end
+
+------------------------------------------------------------------------
+
+local function setPhase(phase: string, duration: number?)
+	state:SetAttribute("Phase", phase)
+	state:SetAttribute("EndsAt", duration and (Net.Now() + duration) or 0)
+end
+
+local bag = {}
+local lastId = nil
+local function pickMinigame(playerCount: number)
+	for _ = 1, #MINIGAMES * 2 do
+		if #bag == 0 then
+			for _, minigame in MINIGAMES do
+				table.insert(bag, minigame)
+			end
+			Util.Shuffle(bag)
+			if bag[#bag].Id == lastId and #bag > 1 then
+				bag[1], bag[#bag] = bag[#bag], bag[1]
+			end
+		end
+		local minigame = table.remove(bag)
+		if minigame and (minigame.MinPlayers or 1) <= playerCount then
+			lastId = minigame.Id
+			return minigame
+		end
+	end
+	return MINIGAMES[1]
+end
+
+local function removeArenaTools(player: Player)
+	local containers = { player:FindFirstChildOfClass("Backpack"), player.Character }
+	for _, container in containers do
+		if container then
+			for _, item in container:GetChildren() do
+				if item:IsA("Tool") and item:GetAttribute("ArenaTool") then
+					item:Destroy()
+				end
+			end
+		end
+	end
+end
+
+local function setAnchored(player: Player, anchored: boolean)
+	local root = Util.GetRoot(player)
+	if root then
+		root.Anchored = anchored
+	end
+end
+
+local function checkFalls(ctx)
+	for _, player in ctx:AlivePlayers() do
+		if not player.Parent then
+			ctx.Alive[player] = nil
+			continue
+		end
+		local character = player.Character
+		local humanoid = Util.GetHumanoid(player)
+		local root = Util.GetRoot(player)
+		if character ~= ctx.Characters[player] or not humanoid or not root or humanoid.Health <= 0 then
+			ctx:Eliminate(player)
+		elseif root.Position.Y < ctx.KillY then
+			if ctx.OnFall then
+				ctx.OnFall(player)
+			else
+				ctx:Eliminate(player, "упал", true)
+			end
+		end
+	end
+	state:SetAttribute("Alive", ctx:AliveCount())
+end
+
+local function shouldEnd(ctx): boolean
+	if Net.Now() >= ctx.EndsAt then
+		return true
+	end
+	local alive = ctx:AliveCount()
+	if alive == 0 then
+		return true
+	end
+	if ctx.Mode == "survival" and ctx.StartCount >= 2 and alive <= 1 then
+		return true
+	end
+	return false
+end
+
+local function namesOf(players: { Player }): string
+	local names = {}
+	for _, player in players do
+		table.insert(names, player.DisplayName)
+	end
+	return table.concat(names, ", ")
+end
+
+local function awardResults(ctx)
+	for _, player in ctx.Participants do
+		if player.Parent then
+			Data.AddCoins(player, Config.Rewards.Participation)
+		end
+	end
+
+	local betWinners: { Player } = {}
+	if ctx.Mode == "survival" then
+		local survivors = {}
+		for _, player in ctx:AlivePlayers() do
+			if player.Parent then
+				table.insert(survivors, player)
+			end
+		end
+		local reward = #survivors == 1 and Config.Rewards.SoloSurvivor or Config.Rewards.Survivor
+		for _, player in survivors do
+			Data.AddCoins(player, reward)
+			Data.AddWin(player)
+			Util.Notify(player, string.format("🏆 Ты выжил! +%d 💰", reward), "success")
+		end
+		betWinners = survivors
+		if #survivors == 1 then
+			Util.Announce("🏆 ПОБЕДИЛ " .. survivors[1].DisplayName .. "!", GOLD, 4)
+		elseif #survivors > 1 then
+			Util.Announce("🏆 Выжили: " .. namesOf(survivors), GREEN, 4)
+		else
+			Util.Announce("💀 Никто не выжил!", RED, 4)
+		end
+	else
+		for place, player in ctx.Finished do
+			if player.Parent then
+				local reward = Config.Rewards.RacePlaces[place] or Config.Rewards.RaceFinisher
+				Data.AddCoins(player, reward)
+				if place == 1 then
+					Data.AddWin(player)
+				end
+				Util.Notify(player, string.format("🏁 %d место! +%d 💰", place, reward), "success")
+			end
+		end
+		local first = ctx.Finished[1]
+		if first and first.Parent then
+			betWinners = { first }
+			Util.Announce("🥇 ПОБЕДИЛ " .. first.DisplayName .. "!", GOLD, 4)
+		else
+			Util.Announce("😱 Никто не дошёл до финиша!", RED, 4)
+		end
+	end
+
+	Betting.Resolve(betWinners)
+end
+
+local function runRound(minigame)
+	local participants: { Player } = {}
+	for _, player in Players:GetPlayers() do
+		if Util.IsAlive(player) and Data.Get(player) then
+			table.insert(participants, player)
+		end
+	end
+	if #participants == 0 then
+		Betting.RefundAll()
+		return
+	end
+	Betting.Lock(participants)
+
+	local ctx = Context.new(minigame, participants)
+	local ok, spawns = pcall(minigame.Build, ctx)
+	if not ok or type(spawns) ~= "table" or #spawns == 0 then
+		warn("[AzartArena] Ошибка постройки арены", minigame.Id, spawns)
+		ctx.Folder:Destroy()
+		Betting.RefundAll()
+		return
+	end
+
+	state:SetAttribute("Title", minigame.Title)
+	state:SetAttribute("Desc", minigame.Description)
+	state:SetAttribute("Total", #participants)
+	setPhase("Countdown", Config.Round.Countdown + 1)
+
+	task.wait(1) -- даём арене прогрузиться у клиентов
+
+	Util.Shuffle(participants)
+	for i, player in participants do
+		if Util.IsAlive(player) then
+			local spawnCf = spawns[(i - 1) % #spawns + 1]
+			Util.Teleport(player, spawnCf)
+			setAnchored(player, true)
+			ctx.Alive[player] = true
+			ctx.Characters[player] = player.Character
+			player:SetAttribute("InRound", true)
+		end
+	end
+	ctx.StartCount = ctx:AliveCount()
+	state:SetAttribute("Alive", ctx.StartCount)
+	state:SetAttribute("Total", ctx.StartCount)
+
+	Util.Announce(minigame.Title, GOLD, 1.5)
+	task.wait(1)
+	for n = Config.Round.Countdown, 1, -1 do
+		Util.Announce(tostring(n), Color3.new(1, 1, 1), 0.9)
+		task.wait(1)
+	end
+	for player in ctx.Alive do
+		setAnchored(player, false)
+	end
+	Util.Announce("ВПЕРЁД!", GREEN, 1.2)
+
+	ctx:SetEndsAt(Net.Now() + minigame.Duration)
+	setPhase("Playing")
+	state:SetAttribute("EndsAt", ctx.EndsAt)
+
+	task.spawn(function()
+		local runOk, err = pcall(minigame.Run, ctx)
+		if not runOk then
+			warn("[AzartArena] Ошибка мини-игры", minigame.Id, err)
+		end
+	end)
+
+	while true do
+		task.wait(0.2)
+		checkFalls(ctx)
+		if shouldEnd(ctx) then
+			break
+		end
+	end
+	ctx.Ended = true
+
+	setPhase("Results", Config.Round.Results)
+	awardResults(ctx)
+
+	task.wait(2.5)
+	for _, player in ctx.Participants do
+		if player.Parent then
+			removeArenaTools(player)
+			player:SetAttribute("InRound", false)
+			if Util.IsAlive(player) and player.Character == ctx.Characters[player] then
+				setAnchored(player, false)
+				Util.ResetMovement(player)
+				Util.TeleportToLobby(player)
+			end
+		end
+	end
+	ctx.Folder:Destroy()
+	task.wait(math.max(0, Config.Round.Results - 2.5))
+end
+
+function RoundManager.Start()
+	-- если игрок появился, пока идёт раунд, он просто ждёт в лобби
+	task.spawn(function()
+		while true do
+			if #Players:GetPlayers() < Config.Round.MinPlayers then
+				setPhase("Waiting")
+				task.wait(1)
+				continue
+			end
+
+			local minigame = pickMinigame(#Players:GetPlayers())
+			state:SetAttribute("Next", minigame.Title)
+			state:SetAttribute("NextDesc", minigame.Description)
+			setPhase("Intermission", Config.Round.Intermission)
+			Betting.Open()
+			Util.NotifyAll("⏳ Следующая игра: " .. minigame.Title .. ". Делай ставки!", "info")
+
+			local deadline = Net.Now() + Config.Round.Intermission
+			while Net.Now() < deadline do
+				task.wait(0.25)
+			end
+			Betting.Close()
+
+			local ok, err = pcall(runRound, minigame)
+			if not ok then
+				warn("[AzartArena] Ошибка раунда:", err)
+				local arena = workspace:FindFirstChild("Arena")
+				if arena then
+					arena:Destroy()
+				end
+				for _, player in Players:GetPlayers() do
+					player:SetAttribute("InRound", false)
+					removeArenaTools(player)
+					if Util.IsAlive(player) then
+						setAnchored(player, false)
+						Util.ResetMovement(player)
+						Util.TeleportToLobby(player)
+					end
+				end
+				Betting.RefundAll()
+				task.wait(3)
+			end
+		end
+	end)
+end
+
+return RoundManager
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="23">
+        <Properties>
+          <string name="Name">Shop</string>
+          <string name="Source"><![CDATA[-- Магазин следов и пособие для банкротов.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Data = require(script.Parent.Data)
+local Util = require(script.Parent.Util)
+
+local Shop = {}
+
+function Shop.SendState(player: Player)
+	local profile = Data.Get(player)
+	if not profile then
+		return
+	end
+	local owned = {}
+	for id in profile.Owned do
+		table.insert(owned, id)
+	end
+	Net.Event("ShopState"):FireClient(player, owned, profile.Equipped)
+end
+
+function Shop.Init()
+	Net.Event("ShopAction").OnServerEvent:Connect(function(player: Player, action: any, itemId: any)
+		if type(action) ~= "string" or type(itemId) ~= "string" then
+			return
+		end
+		local profile = Data.Get(player)
+		if not profile then
+			return
+		end
+		if action == "buy" then
+			local item = Config.GetTrail(itemId)
+			if not item or profile.Owned[itemId] then
+				return
+			end
+			if not Data.TrySpend(player, item.Price) then
+				Util.Notify(player, string.format("Не хватает монет: нужно %s 💰", Config.Format(item.Price)), "error")
+				return
+			end
+			Data.SetOwned(player, itemId)
+			Data.SetEquipped(player, itemId)
+			Util.Notify(player, string.format("🛒 Куплен след «%s»!", item.Name), "success")
+			if item.Price >= 15000 then
+				Util.NotifyAll(string.format("✨ %s купил %s след!", player.DisplayName, item.Name), "bigwin")
+			end
+		elseif action == "equip" then
+			if itemId == "" or profile.Owned[itemId] then
+				Data.SetEquipped(player, itemId)
+			end
+		end
+		Shop.SendState(player)
+	end)
+
+	Data.Loaded:Connect(Shop.SendState)
+
+	Net.Event("ClaimWelfare").OnServerEvent:Connect(function(player: Player)
+		local profile = Data.Get(player)
+		if not profile then
+			return
+		end
+		if profile.Coins >= Config.Welfare.Threshold then
+			Util.Notify(player, "Пособие только для тех, у кого меньше " .. Config.Welfare.Threshold .. " 💰", "error")
+			return
+		end
+		local now = os.clock()
+		local wait = Config.Welfare.Cooldown - (now - profile.LastWelfare)
+		if profile.LastWelfare > 0 and wait > 0 then
+			Util.Notify(player, string.format("💸 Пособие будет доступно через %d с", math.ceil(wait)), "error")
+			return
+		end
+		profile.LastWelfare = now
+		Data.AddCoins(player, Config.Welfare.Amount)
+		Util.Notify(player, string.format("💸 Пособие +%d 💰. Не проиграй всё сразу!", Config.Welfare.Amount), "success")
+	end)
+end
+
+return Shop
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="24">
+        <Properties>
+          <string name="Name">Slots</string>
+          <string name="Source"><![CDATA[-- Игровые автоматы. Результат считается на сервере, клиент только показывает анимацию.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local TweenService = game:GetService("TweenService")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Data = require(script.Parent.Data)
+local Feed = require(script.Parent.Feed)
+local Util = require(script.Parent.Util)
+
+local Slots = {}
+
+local SYMBOLS = Config.Slots.Symbols
+local busy: { [Player]: boolean } = {}
+
+local function rollSymbol(): number
+	local total = 0
+	for _, symbol in SYMBOLS do
+		total += symbol.Weight
+	end
+	local roll = math.random() * total
+	for i, symbol in SYMBOLS do
+		roll -= symbol.Weight
+		if roll <= 0 then
+			return i
+		end
+	end
+	return 1
+end
+
+local function multiplierFor(a: number, b: number, c: number): number
+	if a == b and b == c then
+		return SYMBOLS[a].Triple
+	end
+	if a == b or b == c or a == c then
+		return Config.Slots.PairMultiplier
+	end
+	return 0
+end
+
+local function randomIcons(): string
+	return string.format(
+		"%s %s %s",
+		SYMBOLS[math.random(#SYMBOLS)].Icon,
+		SYMBOLS[math.random(#SYMBOLS)].Icon,
+		SYMBOLS[math.random(#SYMBOLS)].Icon
+	)
+end
+
+local function spin(player: Player, machine)
+	if busy[player] then
+		return
+	end
+	local stake = machine.Config.Stake
+	if not Data.TrySpend(player, stake) then
+		Util.Notify(player, string.format("Не хватает монет: ставка %s 💰", Config.Format(stake)), "error")
+		return
+	end
+	busy[player] = true
+
+	local a, b, c = rollSymbol(), rollSymbol(), rollSymbol()
+	local multiplier = multiplierFor(a, b, c)
+	local payout = math.floor(stake * multiplier)
+	local icons = { SYMBOLS[a].Icon, SYMBOLS[b].Icon, SYMBOLS[c].Icon }
+
+	Net.Event("SlotResult"):FireClient(player, machine.Config.Id, icons, payout, stake, multiplier)
+
+	-- анимация экрана автомата для зрителей
+	task.spawn(function()
+		local started = os.clock()
+		while os.clock() - started < Config.Slots.SpinTime - 0.2 do
+			machine.ReelsLabel.Text = randomIcons()
+			task.wait(0.1)
+		end
+		machine.ReelsLabel.Text = table.concat(icons, " ")
+		if multiplier >= 5 then
+			local top = machine.Top
+			local original = top.Color
+			for _ = 1, 6 do
+				top.Color = Color3.new(1, 1, 1)
+				task.wait(0.12)
+				top.Color = original
+				task.wait(0.12)
+			end
+		end
+	end)
+
+	task.delay(Config.Slots.SpinTime, function()
+		busy[player] = nil
+		if payout > 0 and player.Parent then
+			Data.AddCoins(player, payout)
+			if multiplier >= 5 then
+				Feed.Report(player, payout, "слоты " .. machine.Config.Name, multiplier)
+			end
+			if multiplier >= Config.Slots.BigWinMultiplier then
+				Util.PlaySoundAt(machine.Top.Position, Util.Sounds.Ping, 1, 0.8)
+			end
+		end
+	end)
+end
+
+function Slots.Init(machines)
+	for _, machine in machines do
+		machine.Prompt.Triggered:Connect(function(player: Player)
+			spin(player, machine)
+		end)
+		-- лёгкое мигание верхней лампы
+		local info = TweenInfo.new(1.2, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+		TweenService:Create(machine.Top, info, { Transparency = 0.25 }):Play()
+	end
+	game:GetService("Players").PlayerRemoving:Connect(function(player)
+		busy[player] = nil
+	end)
+end
+
+return Slots
+]]></string>
+        </Properties>
+      </Item>
+      <Item class="ModuleScript" referent="25">
+        <Properties>
+          <string name="Name">Util</string>
+          <string name="Source"><![CDATA[-- Мелкие помощники для сервера: детали, игроки, уведомления, звуки.
+
+local Debris = game:GetService("Debris")
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+
+local Util = {}
+
+-- Создаёт закреплённую деталь со свойствами из таблицы.
+function Util.Part(props: { [string]: any }): Part
+	local part = Instance.new("Part")
+	part.Anchored = true
+	part.TopSurface = Enum.SurfaceType.Smooth
+	part.BottomSurface = Enum.SurfaceType.Smooth
+	for key, value in props do
+		if key ~= "Parent" then
+			(part :: any)[key] = value
+		end
+	end
+	part.Parent = props.Parent
+	return part
+end
+
+-- Создаёт любой объект со свойствами из таблицы.
+function Util.Make(className: string, props: { [string]: any }): any
+	local inst = Instance.new(className)
+	for key, value in props do
+		if key ~= "Parent" then
+			(inst :: any)[key] = value
+		end
+	end
+	inst.Parent = props.Parent
+	return inst
+end
+
+function Util.GetHumanoid(player: Player): Humanoid?
+	local character = player.Character
+	if not character then
+		return nil
+	end
+	return character:FindFirstChildOfClass("Humanoid")
+end
+
+function Util.GetRoot(player: Player): BasePart?
+	local character = player.Character
+	if not character then
+		return nil
+	end
+	local root = character:FindFirstChild("HumanoidRootPart")
+	if root and root:IsA("BasePart") then
+		return root
+	end
+	return nil
+end
+
+function Util.IsAlive(player: Player): boolean
+	local humanoid = Util.GetHumanoid(player)
+	return humanoid ~= nil and humanoid.Health > 0 and Util.GetRoot(player) ~= nil
+end
+
+function Util.Teleport(player: Player, cframe: CFrame)
+	local character = player.Character
+	if character then
+		local root = Util.GetRoot(player)
+		if root then
+			root.AssemblyLinearVelocity = Vector3.zero
+		end
+		character:PivotTo(cframe)
+	end
+end
+
+function Util.TeleportToLobby(player: Player)
+	local angle = math.random() * math.pi * 2
+	local radius = math.random() * 6
+	local pos = Config.LobbySpawn + Vector3.new(math.cos(angle) * radius, 0, math.sin(angle) * radius)
+	Util.Teleport(player, CFrame.new(pos))
+end
+
+function Util.ResetMovement(player: Player)
+	local humanoid = Util.GetHumanoid(player)
+	if humanoid then
+		humanoid.WalkSpeed = 16
+		humanoid.JumpHeight = 7.2
+		humanoid.JumpPower = 50
+	end
+end
+
+function Util.Shuffle<T>(list: { T }): { T }
+	for i = #list, 2, -1 do
+		local j = math.random(i)
+		list[i], list[j] = list[j], list[i]
+	end
+	return list
+end
+
+function Util.Notify(player: Player, text: string, kind: string?)
+	Net.Event("Notify"):FireClient(player, text, kind or "info")
+end
+
+function Util.NotifyAll(text: string, kind: string?)
+	Net.Event("Notify"):FireAllClients(text, kind or "info")
+end
+
+function Util.Announce(text: string, color: Color3?, duration: number?)
+	Net.Event("Announce"):FireAllClients(text, color or Color3.fromRGB(255, 210, 60), duration or 2)
+end
+
+function Util.AnnounceTo(player: Player, text: string, color: Color3?, duration: number?)
+	Net.Event("Announce"):FireClient(player, text, color or Color3.fromRGB(255, 210, 60), duration or 2)
+end
+
+-- Встроенные звуки клиента Roblox (не требуют загрузки ассетов).
+Util.Sounds = {
+	Glass = "rbxasset://sounds/collide.wav",
+	Boom = "rbxasset://sounds/collide.wav",
+	Ping = "rbxasset://sounds/electronicpingshort.wav",
+	Swoosh = "rbxasset://sounds/swoosh.wav",
+}
+
+function Util.PlaySoundAt(position: Vector3, soundId: string, volume: number?, speed: number?)
+	local holder = Instance.new("Part")
+	holder.Anchored = true
+	holder.CanCollide = false
+	holder.CanQuery = false
+	holder.CanTouch = false
+	holder.Transparency = 1
+	holder.Size = Vector3.new(1, 1, 1)
+	holder.Position = position
+	local sound = Instance.new("Sound")
+	sound.SoundId = soundId
+	sound.Volume = volume or 0.8
+	sound.PlaybackSpeed = speed or 1
+	sound.RollOffMaxDistance = 250
+	sound.Parent = holder
+	holder.Parent = workspace
+	sound:Play()
+	Debris:AddItem(holder, 4)
+end
+
+function Util.PlayerFromHit(hit: BasePart): Player?
+	local model = hit:FindFirstAncestorOfClass("Model")
+	if not model then
+		return nil
+	end
+	return Players:GetPlayerFromCharacter(model)
+end
+
+return Util
+]]></string>
+        </Properties>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="SoundService" referent="26">
+    <Properties>
+      <string name="Name">SoundService</string>
+    </Properties>
+  </Item>
+  <Item class="StarterGui" referent="27">
+    <Properties>
+      <string name="Name">StarterGui</string>
+    </Properties>
+  </Item>
+  <Item class="StarterPack" referent="28">
+    <Properties>
+      <string name="Name">StarterPack</string>
+    </Properties>
+  </Item>
+  <Item class="StarterPlayer" referent="29">
+    <Properties>
+      <string name="Name">StarterPlayer</string>
+    </Properties>
+    <Item class="StarterPlayerScripts" referent="30">
+      <Properties>
+        <string name="Name">StarterPlayerScripts</string>
+      </Properties>
+      <Item class="LocalScript" referent="31">
+        <Properties>
+          <string name="Name">Client</string>
+          <string name="Source"><![CDATA[-- АЗАРТ АРЕНА — точка входа клиента.
+
+local Players = game:GetService("Players")
+local ProximityPromptService = game:GetService("ProximityPromptService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Net = require(ReplicatedStorage.Shared.Net)
+
+local Hud = require(script.Hud)
+local player = Players.LocalPlayer
+
+Hud.Init()
+
+require(script.Panels.Bets).Init(Hud)
+require(script.Panels.Roulette).Init(Hud)
+require(script.Panels.Duel).Init(Hud)
+require(script.Panels.Shop).Init(Hud)
+require(script.SlotsView).Init(Hud)
+require(script.Spectate).Init(Hud)
+require(script.WheelView).Init()
+
+-- стойки в лобби открывают нужные панели
+ProximityPromptService.PromptTriggered:Connect(function(prompt: ProximityPrompt)
+	local panel = prompt:GetAttribute("OpenPanel")
+	if type(panel) == "string" then
+		Hud.OpenPanel(panel)
+	end
+end)
+
+-- отбрасывание (молоты, метеориты, батуты)
+Net.Event("Knockback").OnClientEvent:Connect(function(velocity: Vector3, stun: number?)
+	local character = player.Character
+	local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+	local root = character and character:FindFirstChild("HumanoidRootPart")
+	if not humanoid or not root or not root:IsA("BasePart") then
+		return
+	end
+	local stunTime = stun or 0
+	if stunTime > 0 then
+		humanoid.PlatformStand = true
+		task.delay(stunTime, function()
+			if humanoid.Parent then
+				humanoid.PlatformStand = false
+			end
+		end)
+	else
+		humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
+	end
+	root.AssemblyLinearVelocity = velocity
+end)
+
+Net.Event("RequestSync"):FireServer()
+
+task.delay(2, function()
+	Hud.Toast("🎰 Добро пожаловать в АЗАРТ АРЕНУ! Меню — слева, слоты — у северной стены.", "bigwin")
+end)
+]]></string>
+        </Properties>
+        <Item class="ModuleScript" referent="32">
+          <Properties>
+            <string name="Name">Hud</string>
+            <string name="Source"><![CDATA[-- Основной интерфейс: статус раунда, джекпот, монеты, меню, уведомления, объявления.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Sounds = require(script.Parent.Sounds)
+local UI = require(script.Parent.UI)
+
+local player = Players.LocalPlayer
+local state = Net.State()
+
+local Hud = {}
+
+type PanelInfo = { Frame: GuiObject, OnOpen: (() -> ())? }
+
+local gui: ScreenGui
+local scales: { UIScale } = {}
+local panels: { [string]: PanelInfo } = {}
+local openName: string? = nil
+local menu: Frame
+local toastHolder: Frame
+local announceFrame: Frame
+local announceLabel: TextLabel
+local announceBar: Frame
+local announceToken = 0
+local menuButtons: { [string]: GuiButton } = {}
+
+local function addScale(target: GuiObject)
+	local scale = UI.new("UIScale", { Parent = target })
+	table.insert(scales, scale)
+end
+
+local function rescale()
+	local camera = Workspace.CurrentCamera
+	if not camera then
+		return
+	end
+	local viewport = camera.ViewportSize
+	local value = math.clamp(math.min(viewport.X / 1200, viewport.Y / 760), 0.55, 1.1)
+	for _, scale in scales do
+		scale.Scale = value
+	end
+end
+
+function Hud.Gui(): ScreenGui
+	return gui
+end
+
+------------------------------------------------------------------------
+-- Панели
+------------------------------------------------------------------------
+
+function Hud.RegisterPanel(name: string, frame: GuiObject, closeButton: GuiButton, onOpen: (() -> ())?)
+	panels[name] = { Frame = frame, OnOpen = onOpen }
+	addScale(frame)
+	rescale()
+	closeButton.Activated:Connect(function()
+		Hud.ClosePanel()
+	end)
+end
+
+function Hud.ClosePanel()
+	for _, info in panels do
+		info.Frame.Visible = false
+	end
+	openName = nil
+end
+
+function Hud.OpenPanel(name: string)
+	local info = panels[name]
+	if not info then
+		return
+	end
+	if openName == name then
+		Hud.ClosePanel()
+		return
+	end
+	Hud.ClosePanel()
+	openName = name
+	info.Frame.Position = UDim2.fromScale(0.5, 0.56)
+	info.Frame.Visible = true
+	UI.Tween(info.Frame, 0.2, { Position = UDim2.fromScale(0.5, 0.5) }, Enum.EasingStyle.Back)
+	Sounds.Play("Click", 0.4)
+	if info.OnOpen then
+		info.OnOpen()
+	end
+end
+
+function Hud.IsOpen(name: string): boolean
+	return openName == name
+end
+
+------------------------------------------------------------------------
+-- Меню слева
+------------------------------------------------------------------------
+
+function Hud.AddMenuButton(id: string, icon: string, label: string, color: Color3, order: number, callback: () -> ()): GuiButton
+	local button = UI.new("TextButton", {
+		Name = id,
+		Size = UDim2.fromOffset(78, 74),
+		BackgroundColor3 = UI.Colors.Bg,
+		BackgroundTransparency = 0.1,
+		Text = "",
+		AutoButtonColor = true,
+		LayoutOrder = order,
+		Parent = menu,
+	}, {
+		UI.Corner(14),
+		UI.Stroke(color, 2.5),
+	})
+	UI.Label({
+		Text = icon,
+		Size = UDim2.new(1, 0, 0.62, 0),
+		Position = UDim2.fromScale(0, 0.04),
+		Parent = button,
+	})
+	UI.Label({
+		Text = label,
+		Size = UDim2.new(1, -6, 0.28, 0),
+		Position = UDim2.new(0, 3, 0.66, 0),
+		TextColor3 = color,
+		Font = UI.FontBlack,
+		Parent = button,
+	})
+	button.Activated:Connect(callback)
+	menuButtons[id] = button
+	return button
+end
+
+function Hud.SetMenuVisible(id: string, visible: boolean)
+	local button = menuButtons[id]
+	if button then
+		button.Visible = visible
+	end
+end
+
+------------------------------------------------------------------------
+-- Уведомления и объявления
+------------------------------------------------------------------------
+
+local TOAST_COLORS = {
+	info = UI.Colors.Panel2,
+	success = Color3.fromRGB(30, 140, 70),
+	error = Color3.fromRGB(150, 30, 45),
+	bigwin = Color3.fromRGB(200, 120, 0),
+	death = Color3.fromRGB(70, 20, 30),
+}
+
+function Hud.Toast(text: string, kind: string?)
+	kind = kind or "info"
+	local color = TOAST_COLORS[kind :: string] or TOAST_COLORS.info
+	local toast = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, kind == "bigwin" and 40 or 32),
+		BackgroundColor3 = color,
+		BackgroundTransparency = 1,
+		LayoutOrder = -math.floor(os.clock() * 100),
+		Parent = toastHolder,
+	}, {
+		UI.Corner(10),
+	})
+	local stroke = UI.Stroke(kind == "bigwin" and UI.Colors.Accent or Color3.new(0, 0, 0), kind == "bigwin" and 2.5 or 1.5, 1)
+	stroke.Parent = toast
+	local label = UI.Label({
+		Text = text,
+		Size = UDim2.new(1, -16, 1, -8),
+		Position = UDim2.fromOffset(8, 4),
+		TextTransparency = 1,
+		Parent = toast,
+	})
+	UI.Tween(toast, 0.2, { BackgroundTransparency = 0.12 })
+	UI.Tween(label, 0.2, { TextTransparency = 0 })
+	UI.Tween(stroke, 0.2, { Transparency = 0 })
+
+	local children = {}
+	for _, child in toastHolder:GetChildren() do
+		if child:IsA("Frame") then
+			table.insert(children, child)
+		end
+	end
+	if #children > 4 then
+		-- самое старое уведомление имеет наибольший LayoutOrder
+		table.sort(children, function(a, b)
+			return (a :: Frame).LayoutOrder > (b :: Frame).LayoutOrder
+		end)
+		children[1]:Destroy()
+	end
+
+	if kind == "bigwin" then
+		Sounds.Play("Win", 0.5, 1.2)
+	elseif kind == "success" then
+		Sounds.Play("Coin", 0.35)
+	elseif kind == "error" then
+		Sounds.Play("Lose", 0.3)
+	end
+
+	task.delay(kind == "bigwin" and 6 or 4, function()
+		if toast.Parent then
+			UI.Tween(toast, 0.3, { BackgroundTransparency = 1 })
+			UI.Tween(label, 0.3, { TextTransparency = 1 })
+			UI.Tween(stroke, 0.3, { Transparency = 1 })
+			task.wait(0.32)
+			toast:Destroy()
+		end
+	end)
+end
+
+function Hud.Announce(text: string, color: Color3?, duration: number?)
+	announceToken += 1
+	local token = announceToken
+	local time = duration or 2
+	announceLabel.Text = text
+	announceLabel.TextColor3 = color or UI.Colors.Accent
+	announceFrame.Visible = true
+	local scale = (announceFrame:FindFirstChild("Inner") :: Frame):FindFirstChild("Pop") :: UIScale
+	scale.Scale = 0.5
+	UI.Tween(scale, 0.25, { Scale = 1 }, Enum.EasingStyle.Back)
+	if time >= 1.3 then
+		announceBar.Visible = true
+		announceBar.Size = UDim2.new(1, 0, 1, 0)
+		UI.Tween(announceBar, time, { Size = UDim2.new(0, 0, 1, 0) }, Enum.EasingStyle.Linear)
+	else
+		announceBar.Visible = false
+	end
+	Sounds.Play("Tick", 0.4, 1.3)
+	task.delay(time, function()
+		if announceToken == token then
+			announceFrame.Visible = false
+		end
+	end)
+end
+
+------------------------------------------------------------------------
+-- Построение
+------------------------------------------------------------------------
+
+local function buildStatus()
+	local bar = UI.new("Frame", {
+		Name = "Status",
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 6),
+		Size = UDim2.fromOffset(500, 82),
+		BackgroundColor3 = UI.Colors.Bg,
+		BackgroundTransparency = 0.12,
+		Parent = gui,
+	}, {
+		UI.Corner(14),
+		UI.Stroke(UI.Colors.Pink, 2.5),
+	})
+	addScale(bar)
+	local title = UI.Label({
+		Size = UDim2.new(1, -20, 0, 34),
+		Position = UDim2.fromOffset(10, 5),
+		Font = UI.FontBlack,
+		TextColor3 = UI.Colors.Accent,
+		Text = "АЗАРТ АРЕНА",
+		Parent = bar,
+	})
+	UI.TextStroke(2).Parent = title
+	local sub = UI.Label({
+		Size = UDim2.new(1, -20, 0, 22),
+		Position = UDim2.fromOffset(10, 39),
+		Text = "",
+		Parent = bar,
+	})
+	local hint = UI.Label({
+		Size = UDim2.new(1, -20, 0, 16),
+		Position = UDim2.fromOffset(10, 62),
+		TextColor3 = UI.Colors.Muted,
+		Font = UI.Font,
+		Text = "",
+		Parent = bar,
+	})
+
+	local jackpot = UI.new("Frame", {
+		Name = "Jackpot",
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 94),
+		Size = UDim2.fromOffset(250, 32),
+		BackgroundColor3 = Color3.fromRGB(120, 60, 0),
+		Parent = gui,
+	}, {
+		UI.Corner(16),
+		UI.Stroke(UI.Colors.Accent, 2),
+		UI.Gradient(Color3.fromRGB(255, 170, 0), Color3.fromRGB(170, 70, 0)),
+	})
+	addScale(jackpot)
+	local jackpotLabel = UI.Label({
+		Size = UDim2.new(1, -16, 1, -6),
+		Position = UDim2.fromOffset(8, 3),
+		Font = UI.FontBlack,
+		Text = "🎰 ДЖЕКПОТ: 0",
+		Parent = jackpot,
+	})
+	UI.TextStroke(1.5).Parent = jackpotLabel
+
+	task.spawn(function()
+		while true do
+			local phase = state:GetAttribute("Phase") or "Waiting"
+			local left = math.max(0, math.ceil((state:GetAttribute("EndsAt") or 0) - Net.Now()))
+			local inRound = player:GetAttribute("InRound") == true
+			if phase == "Waiting" then
+				title.Text = "⌛ Ждём игроков..."
+				sub.Text = "Пока можно поиграть в казино!"
+				hint.Text = ""
+			elseif phase == "Intermission" then
+				title.Text = string.format("⏳ ПЕРЕРЫВ • %d", left)
+				sub.Text = "Далее: " .. tostring(state:GetAttribute("Next") or "")
+				hint.Text = "🎲 Ставь на победителя — кнопка «Ставки» слева"
+			elseif phase == "Countdown" then
+				title.Text = tostring(state:GetAttribute("Title") or "")
+				sub.Text = tostring(state:GetAttribute("Desc") or "")
+				hint.Text = "Приготовься!"
+			elseif phase == "Playing" then
+				title.Text = string.format("%s • %d", tostring(state:GetAttribute("Title") or ""), left)
+				sub.Text = string.format("👥 В игре: %d / %d", state:GetAttribute("Alive") or 0, state:GetAttribute("Total") or 0)
+				hint.Text = inRound and tostring(state:GetAttribute("Desc") or "") or "👁 Ты зритель — жми «Смотреть» или крути слоты"
+			elseif phase == "Results" then
+				title.Text = "🏆 ИТОГИ РАУНДА"
+				sub.Text = "Скоро следующий раунд"
+				hint.Text = ""
+			end
+			jackpotLabel.Text = "🎰 ДЖЕКПОТ: " .. Config.Format(state:GetAttribute("Jackpot") or 0) .. " 💰"
+			task.wait(0.2)
+		end
+	end)
+end
+
+local function buildCoins()
+	local frame = UI.new("Frame", {
+		Name = "Coins",
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -10),
+		Size = UDim2.fromOffset(270, 64),
+		BackgroundColor3 = UI.Colors.Bg,
+		BackgroundTransparency = 0.1,
+		Parent = gui,
+	}, {
+		UI.Corner(16),
+		UI.Stroke(UI.Colors.Accent, 3),
+	})
+	addScale(frame)
+	local amount = UI.Label({
+		Size = UDim2.new(1, -20, 0, 38),
+		Position = UDim2.fromOffset(10, 4),
+		Font = UI.FontBlack,
+		TextColor3 = UI.Colors.Accent,
+		Text = "💰 0",
+		Parent = frame,
+	})
+	UI.TextStroke(2).Parent = amount
+	local rank = UI.Label({
+		Size = UDim2.new(1, -20, 0, 18),
+		Position = UDim2.fromOffset(10, 42),
+		Text = "",
+		Parent = frame,
+	})
+
+	local shown = player:GetAttribute("Coins") or 0
+	local function refresh()
+		local coins = player:GetAttribute("Coins") or 0
+		local delta = coins - shown
+		shown = coins
+		amount.Text = "💰 " .. Config.Format(coins)
+		local r = Config.GetRank(coins)
+		rank.Text = string.format("%s %s • 🏆 %d", r.Icon, r.Name, player:GetAttribute("Wins") or 0)
+		rank.TextColor3 = r.Color
+		Hud.SetMenuVisible("welfare", coins < Config.Welfare.Threshold)
+		if delta ~= 0 then
+			local float = UI.Label({
+				Text = (delta > 0 and "+" or "") .. Config.Format(delta),
+				TextColor3 = delta > 0 and UI.Colors.Good or UI.Colors.Bad,
+				Font = UI.FontBlack,
+				AnchorPoint = Vector2.new(0.5, 1),
+				Position = UDim2.new(0.5, math.random(-60, 60), 0, -4),
+				Size = UDim2.fromOffset(200, 30),
+				Parent = frame,
+			})
+			UI.TextStroke(2).Parent = float
+			UI.Tween(float, 1.2, { Position = float.Position - UDim2.fromOffset(0, 50), TextTransparency = 1 })
+			task.delay(1.25, function()
+				float:Destroy()
+			end)
+			local pop = frame:FindFirstChildOfClass("UIScale")
+			if pop and delta > 0 then
+				local base = pop.Scale
+				pop.Scale = base * 1.08
+				UI.Tween(pop, 0.25, { Scale = base })
+			end
+		end
+	end
+	player:GetAttributeChangedSignal("Coins"):Connect(refresh)
+	player:GetAttributeChangedSignal("Wins"):Connect(refresh)
+	task.defer(refresh)
+end
+
+local function buildMenu()
+	menu = UI.new("Frame", {
+		Name = "Menu",
+		AnchorPoint = Vector2.new(0, 0.5),
+		Position = UDim2.new(0, 10, 0.5, 0),
+		Size = UDim2.fromOffset(78, 520),
+		BackgroundTransparency = 1,
+		Parent = gui,
+	}, {
+		UI.new("UIListLayout", {
+			Padding = UDim.new(0, 8),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			VerticalAlignment = Enum.VerticalAlignment.Center,
+		}),
+	})
+	addScale(menu)
+	local welfare = Hud.AddMenuButton("welfare", "💸", "Пособие", UI.Colors.Good, 100, function()
+		Net.Event("ClaimWelfare"):FireServer()
+	end)
+	welfare.Visible = false
+end
+
+local function buildToasts()
+	toastHolder = UI.new("Frame", {
+		Name = "Toasts",
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 134),
+		Size = UDim2.fromOffset(520, 200),
+		BackgroundTransparency = 1,
+		Parent = gui,
+	}, {
+		UI.new("UIListLayout", {
+			Padding = UDim.new(0, 5),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+			VerticalAlignment = Enum.VerticalAlignment.Top,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+		}),
+	})
+	addScale(toastHolder)
+end
+
+local function buildAnnounce()
+	announceFrame = UI.new("Frame", {
+		Name = "Announce",
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.46),
+		Size = UDim2.fromOffset(760, 110),
+		BackgroundTransparency = 1,
+		Visible = false,
+		ZIndex = 3,
+		Parent = gui,
+	})
+	addScale(announceFrame)
+	-- внутренняя рамка с собственным UIScale для эффекта «выпрыгивания»
+	local inner = UI.new("Frame", {
+		Name = "Inner",
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromScale(1, 1),
+		BackgroundTransparency = 1,
+		ZIndex = 3,
+		Parent = announceFrame,
+	})
+	UI.new("UIScale", { Name = "Pop", Parent = inner })
+	announceLabel = UI.Label({
+		Size = UDim2.new(1, 0, 0, 90),
+		Font = UI.FontBlack,
+		ZIndex = 3,
+		Text = "",
+		Parent = inner,
+	})
+	UI.TextStroke(4).Parent = announceLabel
+	local barBg = UI.new("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0),
+		Position = UDim2.new(0.5, 0, 0, 96),
+		Size = UDim2.fromOffset(320, 10),
+		BackgroundColor3 = Color3.new(0, 0, 0),
+		BackgroundTransparency = 0.4,
+		ZIndex = 3,
+		Parent = inner,
+	}, {
+		UI.Corner(5),
+	})
+	announceBar = UI.new("Frame", {
+		Size = UDim2.fromScale(1, 1),
+		BackgroundColor3 = Color3.new(1, 1, 1),
+		ZIndex = 3,
+		Parent = barBg,
+	}, {
+		UI.Corner(5),
+	})
+end
+
+function Hud.Init()
+	gui = UI.new("ScreenGui", {
+		Name = "AzartHUD",
+		ResetOnSpawn = false,
+		ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+		Parent = player:WaitForChild("PlayerGui"),
+	})
+	buildStatus()
+	buildMenu()
+	buildCoins()
+	buildToasts()
+	buildAnnounce()
+
+	rescale()
+	local camera = Workspace.CurrentCamera
+	if camera then
+		camera:GetPropertyChangedSignal("ViewportSize"):Connect(rescale)
+	end
+
+	Net.Event("Notify").OnClientEvent:Connect(function(text: string, kind: string?)
+		Hud.Toast(text, kind)
+	end)
+	Net.Event("Announce").OnClientEvent:Connect(function(text: string, color: Color3?, duration: number?)
+		Hud.Announce(text, color, duration)
+	end)
+end
+
+return Hud
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="Folder" referent="33">
+          <Properties>
+            <string name="Name">Panels</string>
+          </Properties>
+          <Item class="ModuleScript" referent="34">
+            <Properties>
+              <string name="Name">Bets</string>
+              <string name="Source"><![CDATA[-- Панель ставок на победителя раунда (тотализатор).
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local UI = require(script.Parent.Parent.UI)
+
+local player = Players.LocalPlayer
+local state = Net.State()
+
+local Bets = {}
+
+local pools: { [string]: number } = {}
+local mine: { [string]: number } = {}
+local total = 0
+local thumbnails: { [number]: string } = {}
+
+function Bets.Init(hud)
+	local accent = Color3.fromRGB(255, 140, 0)
+	local frame, content, close = UI.Panel(hud.Gui(), "🎲 СТАВКИ НА ПОБЕДИТЕЛЯ", UDim2.fromOffset(540, 540), accent)
+
+	local info = UI.Label({
+		Size = UDim2.new(1, 0, 0, 26),
+		TextColor3 = UI.Colors.Accent,
+		Font = UI.FontBlack,
+		ZIndex = 6,
+		Parent = content,
+	})
+	local bank = UI.Label({
+		Size = UDim2.new(1, 0, 0, 20),
+		Position = UDim2.fromOffset(0, 28),
+		TextColor3 = UI.Colors.Muted,
+		ZIndex = 6,
+		Parent = content,
+	})
+	local amountHolder = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 80),
+		Position = UDim2.fromOffset(0, 54),
+		BackgroundTransparency = 1,
+		ZIndex = 5,
+		Parent = content,
+	})
+	local amount = UI.AmountSelector(amountHolder, 50)
+	local list = UI.new("ScrollingFrame", {
+		Size = UDim2.new(1, 0, 1, -170),
+		Position = UDim2.fromOffset(0, 142),
+		BackgroundColor3 = UI.Colors.Panel,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 6,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ZIndex = 5,
+		Parent = content,
+	}, {
+		UI.Corner(10),
+		UI.Padding(6),
+		UI.new("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }),
+	})
+	UI.Label({
+		Size = UDim2.new(1, 0, 0, 18),
+		Position = UDim2.new(0, 0, 1, -20),
+		Text = "Угадал победителя — делишь весь банк (+25% от казино + джекпот)!",
+		TextColor3 = UI.Colors.Muted,
+		Font = UI.Font,
+		ZIndex = 6,
+		Parent = content,
+	})
+
+	local function rebuild()
+		for _, child in list:GetChildren() do
+			if child:IsA("Frame") then
+				child:Destroy()
+			end
+		end
+		local jackpot = state:GetAttribute("Jackpot") or 0
+		local prize = math.floor(total * Config.Betting.HouseBonus) + jackpot
+		for i, target in Players:GetPlayers() do
+			local key = tostring(target.UserId)
+			local pool = pools[key] or 0
+			local my = mine[key] or 0
+			local row = UI.new("Frame", {
+				Size = UDim2.new(1, -4, 0, 54),
+				BackgroundColor3 = target == player and Color3.fromRGB(60, 45, 20) or UI.Colors.Panel2,
+				LayoutOrder = i,
+				ZIndex = 6,
+				Parent = list,
+			}, {
+				UI.Corner(10),
+			})
+			local avatar = UI.new("ImageLabel", {
+				Size = UDim2.fromOffset(44, 44),
+				Position = UDim2.fromOffset(5, 5),
+				BackgroundColor3 = UI.Colors.Bg,
+				Image = thumbnails[target.UserId] or "",
+				ZIndex = 7,
+				Parent = row,
+			}, {
+				UI.Corner(22),
+			})
+			if not thumbnails[target.UserId] then
+				task.spawn(function()
+					local ok, image = pcall(function()
+						return Players:GetUserThumbnailAsync(target.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size100x100)
+					end)
+					if ok and image then
+						thumbnails[target.UserId] = image
+						if avatar.Parent then
+							avatar.Image = image
+						end
+					end
+				end)
+			end
+			UI.Label({
+				Text = target.DisplayName .. (target == player and " (ты)" or ""),
+				Size = UDim2.new(1, -190, 0, 24),
+				Position = UDim2.fromOffset(56, 4),
+				TextXAlignment = Enum.TextXAlignment.Left,
+				Font = UI.FontBlack,
+				ZIndex = 7,
+				Parent = row,
+			})
+			local odds = pool > 0 and string.format("кэф x%.1f", prize / pool) or "кэф —"
+			UI.Label({
+				Text = string.format(
+					'Банк: %s • <font color="#FFC83C">Твоя: %s</font> • %s',
+					Config.Format(pool),
+					Config.Format(my),
+					odds
+				),
+				Size = UDim2.new(1, -190, 0, 18),
+				Position = UDim2.fromOffset(56, 30),
+				TextXAlignment = Enum.TextXAlignment.Left,
+				TextColor3 = UI.Colors.Muted,
+				ZIndex = 7,
+				Parent = row,
+			})
+			local button = UI.Button("Поставить", UI.Colors.Good, {
+				Size = UDim2.fromOffset(120, 40),
+				Position = UDim2.new(1, -126, 0, 7),
+				ZIndex = 7,
+				Parent = row,
+			})
+			button.Activated:Connect(function()
+				Net.Event("PlaceBet"):FireServer(target.UserId, amount.Get())
+			end)
+		end
+	end
+
+	local function refreshInfo()
+		local open = state:GetAttribute("BetsOpen") == true
+		if open then
+			local left = math.max(0, math.ceil((state:GetAttribute("EndsAt") or 0) - Net.Now()))
+			info.Text = string.format("Далее: %s • приём ставок %d с", tostring(state:GetAttribute("Next") or ""), left)
+		else
+			info.Text = "🔒 Ставки закрыты — идёт раунд. Жди перерыва!"
+		end
+		local jackpot = state:GetAttribute("Jackpot") or 0
+		bank.Text = string.format(
+			"Банк ставок: %s 💰 (+25%%) • Джекпот: %s 💰",
+			Config.Format(total),
+			Config.Format(jackpot)
+		)
+	end
+
+	hud.RegisterPanel("Bets", frame, close, function()
+		rebuild()
+		refreshInfo()
+	end)
+	hud.AddMenuButton("bets", "🎲", "Ставки", Color3.fromRGB(255, 160, 40), 1, function()
+		hud.OpenPanel("Bets")
+	end)
+
+	Net.Event("BetUpdate").OnClientEvent:Connect(function(newPools, newMine, newTotal)
+		pools = newPools or {}
+		mine = newMine or {}
+		total = newTotal or 0
+		if frame.Visible then
+			rebuild()
+		end
+	end)
+	Players.PlayerAdded:Connect(function()
+		if frame.Visible then
+			rebuild()
+		end
+	end)
+	Players.PlayerRemoving:Connect(function()
+		task.defer(function()
+			if frame.Visible then
+				rebuild()
+			end
+		end)
+	end)
+	task.spawn(function()
+		while true do
+			if frame.Visible then
+				refreshInfo()
+			end
+			task.wait(0.25)
+		end
+	end)
+	-- автоматически подсказываем про ставки в начале перерыва
+	state:GetAttributeChangedSignal("BetsOpen"):Connect(function()
+		if frame.Visible then
+			rebuild()
+		end
+	end)
+end
+
+return Bets
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="35">
+            <Properties>
+              <string name="Name">Duel</string>
+              <string name="Source"><![CDATA[-- Дуэли в монетку: вызов, приглашение и анимация броска.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Sounds = require(script.Parent.Parent.Sounds)
+local UI = require(script.Parent.Parent.UI)
+
+local player = Players.LocalPlayer
+
+local Duel = {}
+
+local HEADS = "👑"
+local TAILS = "🌙"
+
+function Duel.Init(hud)
+	local gui = hud.Gui()
+	local accent = Color3.fromRGB(60, 200, 255)
+	local frame, content, close = UI.Panel(gui, "🪙 ДУЭЛЬ В МОНЕТКУ", UDim2.fromOffset(500, 500), accent)
+
+	UI.Label({
+		Size = UDim2.new(1, 0, 0, 40),
+		Text = "Оба ставят одинаково. Победитель забирает всё!\nТы — " .. HEADS .. ", соперник — " .. TAILS,
+		TextColor3 = UI.Colors.Muted,
+		Font = UI.Font,
+		ZIndex = 6,
+		Parent = content,
+	})
+	local amountHolder = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 80),
+		Position = UDim2.fromOffset(0, 46),
+		BackgroundTransparency = 1,
+		ZIndex = 5,
+		Parent = content,
+	})
+	local amount = UI.AmountSelector(amountHolder, 100)
+	local list = UI.new("ScrollingFrame", {
+		Size = UDim2.new(1, 0, 1, -136),
+		Position = UDim2.fromOffset(0, 134),
+		BackgroundColor3 = UI.Colors.Panel,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 6,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ZIndex = 5,
+		Parent = content,
+	}, {
+		UI.Corner(10),
+		UI.Padding(6),
+		UI.new("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }),
+	})
+
+	local function rebuild()
+		for _, child in list:GetChildren() do
+			if child:IsA("Frame") or child:IsA("TextLabel") then
+				child:Destroy()
+			end
+		end
+		local count = 0
+		for _, target in Players:GetPlayers() do
+			if target ~= player then
+				count += 1
+				local row = UI.new("Frame", {
+					Size = UDim2.new(1, -4, 0, 48),
+					BackgroundColor3 = UI.Colors.Panel2,
+					LayoutOrder = count,
+					ZIndex = 6,
+					Parent = list,
+				}, {
+					UI.Corner(10),
+				})
+				UI.Label({
+					Text = string.format(
+						'%s  <font color="#FFC83C">💰 %s</font>',
+						target.DisplayName,
+						Config.Format(target:GetAttribute("Coins") or 0)
+					),
+					Size = UDim2.new(1, -150, 0, 28),
+					Position = UDim2.fromOffset(10, 10),
+					TextXAlignment = Enum.TextXAlignment.Left,
+					Font = UI.FontBlack,
+					ZIndex = 7,
+					Parent = row,
+				})
+				local button = UI.Button("⚔️ Вызвать", accent, {
+					Size = UDim2.fromOffset(130, 38),
+					Position = UDim2.new(1, -136, 0, 5),
+					ZIndex = 7,
+					Parent = row,
+				})
+				button.Activated:Connect(function()
+					Net.Event("DuelRequest"):FireServer(target.UserId, amount.Get())
+				end)
+			end
+		end
+		if count == 0 then
+			UI.Label({
+				Text = "Пока никого нет... Позови друзей! 👥",
+				Size = UDim2.new(1, -4, 0, 40),
+				TextColor3 = UI.Colors.Muted,
+				ZIndex = 6,
+				Parent = list,
+			})
+		end
+	end
+
+	hud.RegisterPanel("Duel", frame, close, rebuild)
+	hud.AddMenuButton("duel", "🪙", "Дуэль", accent, 3, function()
+		hud.OpenPanel("Duel")
+	end)
+	Players.PlayerAdded:Connect(function()
+		if frame.Visible then
+			rebuild()
+		end
+	end)
+	Players.PlayerRemoving:Connect(function()
+		task.defer(function()
+			if frame.Visible then
+				rebuild()
+			end
+		end)
+	end)
+
+	------------------------------------------------------------------
+	-- Приглашение
+	------------------------------------------------------------------
+	local invite = UI.new("Frame", {
+		Name = "DuelInvite",
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -146),
+		Size = UDim2.fromOffset(440, 124),
+		BackgroundColor3 = UI.Colors.Bg,
+		Visible = false,
+		ZIndex = 8,
+		Parent = gui,
+	}, {
+		UI.Corner(14),
+		UI.Stroke(accent, 3),
+		UI.new("UIScale"),
+	})
+	local inviteText = UI.Label({
+		Size = UDim2.new(1, -20, 0, 50),
+		Position = UDim2.fromOffset(10, 6),
+		Font = UI.FontBlack,
+		ZIndex = 9,
+		Parent = invite,
+	})
+	local accept = UI.Button("✅ Принять", UI.Colors.Good, {
+		Size = UDim2.new(0.5, -15, 0, 42),
+		Position = UDim2.fromOffset(10, 62),
+		ZIndex = 9,
+		Parent = invite,
+	})
+	local decline = UI.Button("❌ Отказ", UI.Colors.Bad, {
+		Size = UDim2.new(0.5, -15, 0, 42),
+		Position = UDim2.new(0.5, 5, 0, 62),
+		ZIndex = 9,
+		Parent = invite,
+	})
+	local timerBar = UI.new("Frame", {
+		Size = UDim2.new(1, -20, 0, 6),
+		Position = UDim2.new(0, 10, 1, -12),
+		BackgroundColor3 = accent,
+		BorderSizePixel = 0,
+		ZIndex = 9,
+		Parent = invite,
+	}, {
+		UI.Corner(3),
+	})
+	local currentInvite: string? = nil
+	local function respond(ok: boolean)
+		if currentInvite then
+			Net.Event("DuelRespond"):FireServer(currentInvite, ok)
+		end
+		currentInvite = nil
+		invite.Visible = false
+	end
+	accept.Activated:Connect(function()
+		respond(true)
+	end)
+	decline.Activated:Connect(function()
+		respond(false)
+	end)
+	Net.Event("DuelInvite").OnClientEvent:Connect(function(id: string, fromName: string, bet: number, timeout: number)
+		currentInvite = id
+		inviteText.Text = string.format("⚔️ %s вызывает тебя на монетку!\nСтавка: %s 💰", fromName, Config.Format(bet))
+		invite.Visible = true
+		timerBar.Size = UDim2.new(1, -20, 0, 6)
+		UI.Tween(timerBar, timeout, { Size = UDim2.new(0, 0, 0, 6) }, Enum.EasingStyle.Linear)
+		Sounds.Play("Win", 0.5, 0.8)
+		task.delay(timeout, function()
+			if currentInvite == id then
+				currentInvite = nil
+				invite.Visible = false
+			end
+		end)
+	end)
+
+	------------------------------------------------------------------
+	-- Бросок монетки
+	------------------------------------------------------------------
+	local flip = UI.new("Frame", {
+		Name = "CoinFlip",
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.45),
+		Size = UDim2.fromOffset(420, 300),
+		BackgroundColor3 = UI.Colors.Bg,
+		BackgroundTransparency = 0.05,
+		Visible = false,
+		ZIndex = 10,
+		Parent = gui,
+	}, {
+		UI.Corner(18),
+		UI.Stroke(UI.Colors.Accent, 3),
+		UI.new("UIScale"),
+	})
+	local vsLabel = UI.Label({
+		Size = UDim2.new(1, -20, 0, 40),
+		Position = UDim2.fromOffset(10, 10),
+		Font = UI.FontBlack,
+		ZIndex = 11,
+		Parent = flip,
+	})
+	local coin = UI.new("Frame", {
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = UDim2.fromOffset(130, 130),
+		BackgroundColor3 = Color3.fromRGB(255, 200, 50),
+		ZIndex = 11,
+		Parent = flip,
+	}, {
+		UI.new("UICorner", { CornerRadius = UDim.new(0.5, 0) }),
+		UI.Stroke(Color3.fromRGB(170, 110, 0), 5),
+		UI.Gradient(Color3.fromRGB(255, 230, 120), Color3.fromRGB(230, 150, 0)),
+	})
+	local face = UI.Label({
+		Size = UDim2.fromScale(0.7, 0.7),
+		Position = UDim2.fromScale(0.15, 0.15),
+		Text = HEADS,
+		ZIndex = 12,
+		Parent = coin,
+	})
+	local resultLabel = UI.Label({
+		Size = UDim2.new(1, -20, 0, 44),
+		Position = UDim2.new(0, 10, 1, -54),
+		Font = UI.FontBlack,
+		Text = "",
+		ZIndex = 11,
+		Parent = flip,
+	})
+	UI.TextStroke(2).Parent = resultLabel
+
+	Net.Event("DuelResult").OnClientEvent:Connect(function(data)
+		hud.ClosePanel()
+		flip.Visible = true
+		resultLabel.Text = ""
+		vsLabel.Text = string.format("%s %s  🆚  %s %s", HEADS, data.Challenger, data.Opponent, TAILS)
+		local finalFace = data.ChallengerWins and HEADS or TAILS
+		local duration = (data.FlipTime or 3) - 0.6
+		local started = os.clock()
+		local spins = 0
+		while os.clock() - started < duration do
+			local t = (os.clock() - started) / duration
+			local speed = 0.04 + t * t * 0.18
+			UI.Tween(coin, speed, { Size = UDim2.fromOffset(8, 130) })
+			task.wait(speed)
+			spins += 1
+			face.Text = spins % 2 == 0 and HEADS or TAILS
+			UI.Tween(coin, speed, { Size = UDim2.fromOffset(130, 130) })
+			task.wait(speed)
+			Sounds.Play("Tick", 0.25, 1.5)
+		end
+		face.Text = finalFace
+		coin.Size = UDim2.fromOffset(130, 130)
+		if data.YouWon then
+			resultLabel.Text = string.format("🏆 ТЫ ВЫИГРАЛ %s 💰!", Config.Format(data.Amount * 2))
+			resultLabel.TextColor3 = UI.Colors.Good
+			Sounds.Play("Win", 0.6)
+		else
+			resultLabel.Text = string.format("😭 Победил %s", data.Winner)
+			resultLabel.TextColor3 = UI.Colors.Bad
+			Sounds.Play("Lose", 0.5)
+		end
+		task.wait(2.6)
+		flip.Visible = false
+	end)
+
+	-- общий масштаб для всплывающих окон
+	local function syncScales()
+		local panelScale = frame:FindFirstChildOfClass("UIScale")
+		local value = panelScale and panelScale.Scale or 1
+		for _, popup in { invite, flip } do
+			local scale = popup:FindFirstChildOfClass("UIScale")
+			if scale then
+				scale.Scale = value
+			end
+		end
+	end
+	local panelScale = frame:FindFirstChildOfClass("UIScale")
+	if panelScale then
+		panelScale:GetPropertyChangedSignal("Scale"):Connect(syncScales)
+	end
+	syncScales()
+end
+
+return Duel
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="36">
+            <Properties>
+              <string name="Name">Roulette</string>
+              <string name="Source"><![CDATA[-- Панель рулетки: ставки на цвет, история, мини-табло вращения.
+
+local HttpService = game:GetService("HttpService")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Sounds = require(script.Parent.Parent.Sounds)
+local UI = require(script.Parent.Parent.UI)
+
+local state = Net.State()
+local RC = Config.Roulette
+
+local Roulette = {}
+
+function Roulette.Init(hud)
+	local accent = Color3.fromRGB(220, 40, 60)
+	local frame, content, close = UI.Panel(hud.Gui(), "🎡 РУЛЕТКА", UDim2.fromOffset(540, 560), accent)
+
+	local timer = UI.Label({
+		Size = UDim2.new(1, 0, 0, 28),
+		Font = UI.FontBlack,
+		TextColor3 = UI.Colors.Accent,
+		ZIndex = 6,
+		Parent = content,
+	})
+
+	local historyRow = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 26),
+		Position = UDim2.fromOffset(0, 32),
+		BackgroundTransparency = 1,
+		ZIndex = 6,
+		Parent = content,
+	}, {
+		UI.new("UIListLayout", {
+			FillDirection = Enum.FillDirection.Horizontal,
+			HorizontalAlignment = Enum.HorizontalAlignment.Center,
+			Padding = UDim.new(0, 5),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+
+	local display = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 86),
+		Position = UDim2.fromOffset(0, 64),
+		BackgroundColor3 = RC.Colors.green.Color,
+		ZIndex = 6,
+		Parent = content,
+	}, {
+		UI.Corner(14),
+		UI.Stroke(UI.Colors.Accent, 3),
+	})
+	local displayLabel = UI.Label({
+		Size = UDim2.new(1, -20, 1, -16),
+		Position = UDim2.fromOffset(10, 8),
+		Font = UI.FontBlack,
+		Text = "Делай ставку!",
+		ZIndex = 7,
+		Parent = display,
+	})
+	UI.TextStroke(3).Parent = displayLabel
+
+	local amountHolder = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 80),
+		Position = UDim2.fromOffset(0, 160),
+		BackgroundTransparency = 1,
+		ZIndex = 5,
+		Parent = content,
+	})
+	local amount = UI.AmountSelector(amountHolder, 50)
+
+	local buttonsRow = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 150),
+		Position = UDim2.fromOffset(0, 250),
+		BackgroundTransparency = 1,
+		ZIndex = 5,
+		Parent = content,
+	}, {
+		UI.new("UIGridLayout", {
+			CellSize = UDim2.new(1 / 3, -8, 1, 0),
+			CellPadding = UDim2.fromOffset(10, 0),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+
+	local totalLabels: { [string]: TextLabel } = {}
+	local mineLabels: { [string]: TextLabel } = {}
+	for i, colorId in RC.ColorOrder do
+		local info = RC.Colors[colorId]
+		local button = UI.Button("", colorId == "black" and Color3.fromRGB(45, 45, 55) or info.Color, {
+			LayoutOrder = i,
+			ZIndex = 6,
+			Parent = buttonsRow,
+		})
+		UI.Label({
+			Text = string.format("%s %s", info.Icon, info.Name),
+			Size = UDim2.new(1, 0, 0.3, 0),
+			Font = UI.FontBlack,
+			ZIndex = 7,
+			Parent = button,
+		})
+		UI.Label({
+			Text = "x" .. info.Multiplier,
+			Size = UDim2.new(1, 0, 0.26, 0),
+			Position = UDim2.fromScale(0, 0.3),
+			Font = UI.FontBlack,
+			TextColor3 = UI.Colors.Accent,
+			ZIndex = 7,
+			Parent = button,
+		})
+		totalLabels[colorId] = UI.Label({
+			Text = "Всего: 0",
+			Size = UDim2.new(1, 0, 0.18, 0),
+			Position = UDim2.fromScale(0, 0.6),
+			TextColor3 = Color3.fromRGB(230, 230, 240),
+			ZIndex = 7,
+			Parent = button,
+		})
+		mineLabels[colorId] = UI.Label({
+			Text = "Твоя: 0",
+			Size = UDim2.new(1, 0, 0.18, 0),
+			Position = UDim2.fromScale(0, 0.8),
+			TextColor3 = UI.Colors.Accent,
+			ZIndex = 7,
+			Parent = button,
+		})
+		button.Activated:Connect(function()
+			Net.Event("RouletteBet"):FireServer(colorId, amount.Get())
+			Sounds.Play("Click", 0.4, 1.4)
+		end)
+	end
+
+	UI.Label({
+		Size = UDim2.new(1, 0, 0, 36),
+		Position = UDim2.new(0, 0, 1, -38),
+		Text = "Колесо стоит в лобби слева от спавна. Ставки принимаются, пока идёт отсчёт.",
+		TextColor3 = UI.Colors.Muted,
+		Font = UI.Font,
+		TextWrapped = true,
+		ZIndex = 6,
+		Parent = content,
+	})
+
+	local function refreshHistory()
+		for _, child in historyRow:GetChildren() do
+			if child:IsA("Frame") then
+				child:Destroy()
+			end
+		end
+		local raw = tostring(state:GetAttribute("RouletteHistory") or "")
+		local i = 0
+		for colorId in string.gmatch(raw, "[^,]+") do
+			local info = RC.Colors[colorId]
+			if info then
+				i += 1
+				UI.new("Frame", {
+					Size = UDim2.fromOffset(22, 22),
+					BackgroundColor3 = info.Color,
+					LayoutOrder = i,
+					ZIndex = 7,
+					Parent = historyRow,
+				}, {
+					UI.Corner(11),
+					UI.Stroke(i == 1 and UI.Colors.Accent or Color3.new(1, 1, 1), i == 1 and 2.5 or 1),
+				})
+			end
+		end
+	end
+
+	local function refreshTotals()
+		local ok, totals = pcall(function()
+			return HttpService:JSONDecode(tostring(state:GetAttribute("RouletteTotals") or "{}"))
+		end)
+		if not ok or type(totals) ~= "table" then
+			return
+		end
+		for colorId, label in totalLabels do
+			label.Text = "Всего: " .. Config.Format(totals[colorId] or 0)
+		end
+	end
+
+	local spinning = false
+	task.spawn(function()
+		while true do
+			local phase = state:GetAttribute("RoulettePhase")
+			local left = math.max(0, math.ceil((state:GetAttribute("RouletteEndsAt") or 0) - Net.Now()))
+			if phase == "Betting" then
+				timer.Text = string.format("⏳ Приём ставок: %d с", left)
+				if not spinning then
+					displayLabel.Text = "Делай ставку!"
+				end
+			elseif phase == "Spinning" then
+				timer.Text = "🎡 Крутим..."
+			else
+				timer.Text = "Новый круг через " .. left .. " с"
+			end
+			task.wait(0.2)
+		end
+	end)
+
+	Net.Event("RouletteSpin").OnClientEvent:Connect(function(index: number, _offset: number, resultColor: string, spinTime: number)
+		spinning = true
+		local segments = RC.Segments
+		local count = #segments
+		local start = math.random(count)
+		local steps = count * 3 + ((index - start) % count)
+		local duration = math.max(1, spinTime - 0.9)
+		local base = 0.03
+		local weights = 0
+		for i = 1, steps do
+			weights += (i / steps) ^ 2
+		end
+		local k = math.max(0, (duration - steps * base) / weights)
+		task.spawn(function()
+			for i = 1, steps do
+				local seg = segments[(start + i - 1) % count + 1]
+				display.BackgroundColor3 = seg == "black" and Color3.fromRGB(45, 45, 55) or RC.Colors[seg].Color
+				displayLabel.Text = RC.Colors[seg].Icon
+				task.wait(base + k * (i / steps) ^ 2)
+			end
+			local info = RC.Colors[resultColor]
+			display.BackgroundColor3 = resultColor == "black" and Color3.fromRGB(45, 45, 55) or info.Color
+			displayLabel.Text = string.format("%s %s!", info.Icon, info.Name)
+			task.wait(3)
+			spinning = false
+		end)
+	end)
+
+	Net.Event("RouletteMyBets").OnClientEvent:Connect(function(bets)
+		for colorId, label in mineLabels do
+			label.Text = "Твоя: " .. Config.Format((bets and bets[colorId]) or 0)
+		end
+	end)
+
+	state:GetAttributeChangedSignal("RouletteHistory"):Connect(refreshHistory)
+	state:GetAttributeChangedSignal("RouletteTotals"):Connect(refreshTotals)
+	refreshHistory()
+	refreshTotals()
+
+	hud.RegisterPanel("Roulette", frame, close)
+	hud.AddMenuButton("roulette", "🎡", "Рулетка", Color3.fromRGB(255, 80, 90), 2, function()
+		hud.OpenPanel("Roulette")
+	end)
+end
+
+return Roulette
+]]></string>
+            </Properties>
+          </Item>
+          <Item class="ModuleScript" referent="37">
+            <Properties>
+              <string name="Name">Shop</string>
+              <string name="Source"><![CDATA[-- Магазин следов.
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local UI = require(script.Parent.Parent.UI)
+
+local player = Players.LocalPlayer
+
+local Shop = {}
+
+local owned: { [string]: boolean } = {}
+local equipped = ""
+
+function Shop.Init(hud)
+	local accent = Color3.fromRGB(180, 80, 255)
+	local frame, content, close = UI.Panel(hud.Gui(), "🛒 МАГАЗИН СЛЕДОВ", UDim2.fromOffset(520, 540), accent)
+
+	local list = UI.new("ScrollingFrame", {
+		Size = UDim2.new(1, 0, 1, -50),
+		BackgroundColor3 = UI.Colors.Panel,
+		BorderSizePixel = 0,
+		ScrollBarThickness = 6,
+		AutomaticCanvasSize = Enum.AutomaticSize.Y,
+		CanvasSize = UDim2.new(),
+		ZIndex = 5,
+		Parent = content,
+	}, {
+		UI.Corner(10),
+		UI.Padding(6),
+		UI.new("UIListLayout", { Padding = UDim.new(0, 6), SortOrder = Enum.SortOrder.LayoutOrder }),
+	})
+	local unequip = UI.Button("Снять след", UI.Colors.Panel2, {
+		Size = UDim2.new(1, 0, 0, 40),
+		Position = UDim2.new(0, 0, 1, -42),
+		ZIndex = 6,
+		Parent = content,
+	})
+	unequip.Activated:Connect(function()
+		Net.Event("ShopAction"):FireServer("equip", "")
+	end)
+
+	local function rebuild()
+		for _, child in list:GetChildren() do
+			if child:IsA("Frame") then
+				child:Destroy()
+			end
+		end
+		local coins = player:GetAttribute("Coins") or 0
+		for i, item in Config.Trails do
+			local row = UI.new("Frame", {
+				Size = UDim2.new(1, -4, 0, 62),
+				BackgroundColor3 = UI.Colors.Panel2,
+				LayoutOrder = i,
+				ZIndex = 6,
+				Parent = list,
+			}, {
+				UI.Corner(10),
+			})
+			UI.new("Frame", {
+				Size = UDim2.fromOffset(84, 44),
+				Position = UDim2.fromOffset(9, 9),
+				BackgroundColor3 = Color3.new(1, 1, 1),
+				ZIndex = 7,
+				Parent = row,
+			}, {
+				UI.Corner(10),
+				UI.new("UIGradient", { Color = Config.ColorSequenceFrom(item.Colors) }),
+			})
+			UI.Label({
+				Text = item.Name .. " след" .. (item.Sparkles and " ✨" or ""),
+				Size = UDim2.new(1, -250, 0, 26),
+				Position = UDim2.fromOffset(104, 6),
+				TextXAlignment = Enum.TextXAlignment.Left,
+				Font = UI.FontBlack,
+				ZIndex = 7,
+				Parent = row,
+			})
+			UI.Label({
+				Text = "💰 " .. Config.Format(item.Price),
+				Size = UDim2.new(1, -250, 0, 20),
+				Position = UDim2.fromOffset(104, 34),
+				TextXAlignment = Enum.TextXAlignment.Left,
+				TextColor3 = UI.Colors.Accent,
+				ZIndex = 7,
+				Parent = row,
+			})
+			local text, color, action
+			if equipped == item.Id then
+				text, color, action = "✔ Надет", UI.Colors.Panel, nil
+			elseif owned[item.Id] then
+				text, color, action = "Надеть", UI.Colors.Cyan, "equip"
+			elseif coins >= item.Price then
+				text, color, action = "Купить", UI.Colors.Good, "buy"
+			else
+				text, color, action = "Мало 💰", UI.Colors.Bad, "buy"
+			end
+			local button = UI.Button(text, color, {
+				Size = UDim2.fromOffset(130, 42),
+				Position = UDim2.new(1, -138, 0, 10),
+				ZIndex = 7,
+				Parent = row,
+			})
+			button.Activated:Connect(function()
+				if action then
+					Net.Event("ShopAction"):FireServer(action, item.Id)
+				end
+			end)
+		end
+	end
+
+	Net.Event("ShopState").OnClientEvent:Connect(function(ownedList, newEquipped)
+		owned = {}
+		for _, id in ownedList or {} do
+			owned[id] = true
+		end
+		equipped = newEquipped or ""
+		if frame.Visible then
+			rebuild()
+		end
+	end)
+	player:GetAttributeChangedSignal("Coins"):Connect(function()
+		if frame.Visible then
+			rebuild()
+		end
+	end)
+
+	hud.RegisterPanel("Shop", frame, close, rebuild)
+	hud.AddMenuButton("shop", "🛒", "Магазин", accent, 4, function()
+		hud.OpenPanel("Shop")
+	end)
+end
+
+return Shop
+]]></string>
+            </Properties>
+          </Item>
+        </Item>
+        <Item class="ModuleScript" referent="38">
+          <Properties>
+            <string name="Name">SlotsView</string>
+            <string name="Source"><![CDATA[-- Анимация барабанов слотов на экране игрока.
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+
+local Config = require(ReplicatedStorage.Shared.Config)
+local Net = require(ReplicatedStorage.Shared.Net)
+local Sounds = require(script.Parent.Sounds)
+local UI = require(script.Parent.UI)
+
+local SlotsView = {}
+
+local SYMBOLS = Config.Slots.Symbols
+
+local function machineName(id: number): string
+	for _, machine in Config.Slots.Machines do
+		if machine.Id == id then
+			return machine.Name
+		end
+	end
+	return ""
+end
+
+function SlotsView.Init(hud)
+	local frame = UI.new("Frame", {
+		Name = "Slots",
+		AnchorPoint = Vector2.new(1, 0.5),
+		Position = UDim2.new(1, -12, 0.5, 0),
+		Size = UDim2.fromOffset(380, 190),
+		BackgroundColor3 = UI.Colors.Bg,
+		BackgroundTransparency = 0.05,
+		Visible = false,
+		ZIndex = 4,
+		Parent = hud.Gui(),
+	}, {
+		UI.Corner(16),
+		UI.Stroke(UI.Colors.Accent, 3),
+		UI.new("UIScale"),
+	})
+	local title = UI.Label({
+		Size = UDim2.new(1, -20, 0, 26),
+		Position = UDim2.fromOffset(10, 6),
+		Font = UI.FontBlack,
+		TextColor3 = UI.Colors.Accent,
+		ZIndex = 5,
+		Parent = frame,
+	})
+	local reels: { TextLabel } = {}
+	for i = 1, 3 do
+		local box = UI.new("Frame", {
+			Size = UDim2.fromOffset(100, 100),
+			Position = UDim2.fromOffset(25 + (i - 1) * 115, 38),
+			BackgroundColor3 = Color3.fromRGB(250, 245, 255),
+			ZIndex = 5,
+			Parent = frame,
+		}, {
+			UI.Corner(12),
+			UI.Stroke(UI.Colors.Pink, 3),
+		})
+		reels[i] = UI.Label({
+			Size = UDim2.fromScale(0.8, 0.8),
+			Position = UDim2.fromScale(0.1, 0.1),
+			Text = SYMBOLS[i].Icon,
+			ZIndex = 6,
+			Parent = box,
+		})
+	end
+	local result = UI.Label({
+		Size = UDim2.new(1, -20, 0, 36),
+		Position = UDim2.new(0, 10, 1, -44),
+		Font = UI.FontBlack,
+		Text = "",
+		ZIndex = 5,
+		Parent = frame,
+	})
+	UI.TextStroke(2).Parent = result
+
+	-- масштаб как у панелей
+	task.defer(function()
+		local scale = frame:FindFirstChildOfClass("UIScale")
+		local status = hud.Gui():FindFirstChild("Status")
+		local source = status and status:FindFirstChildOfClass("UIScale")
+		if scale and source then
+			scale.Scale = source.Scale
+			source:GetPropertyChangedSignal("Scale"):Connect(function()
+				scale.Scale = source.Scale
+			end)
+		end
+	end)
+
+	local token = 0
+	Net.Event("SlotResult").OnClientEvent:Connect(function(machineId: number, icons: { string }, payout: number, stake: number, multiplier: number)
+		token += 1
+		local myToken = token
+		frame.Visible = true
+		title.Text = string.format("🎰 %s • ставка %s 💰", machineName(machineId), Config.Format(stake))
+		result.Text = "Крутим..."
+		result.TextColor3 = UI.Colors.Text
+		local spinTime = Config.Slots.SpinTime - 0.1
+		local stops = { spinTime * 0.45, spinTime * 0.7, spinTime }
+		local started = os.clock()
+		local stopped = { false, false, false }
+		while os.clock() - started < spinTime do
+			local elapsed = os.clock() - started
+			for i = 1, 3 do
+				if not stopped[i] then
+					if elapsed >= stops[i] then
+						stopped[i] = true
+						reels[i].Text = icons[i]
+						Sounds.Play("Click", 0.5, 0.8)
+					else
+						reels[i].Text = SYMBOLS[math.random(#SYMBOLS)].Icon
+					end
+				end
+			end
+			Sounds.Play("Tick", 0.15, 1.8)
+			task.wait(0.07)
+		end
+		for i = 1, 3 do
+			reels[i].Text = icons[i]
+		end
+		if payout > stake then
+			result.Text = string.format("🎉 x%d! +%s 💰", multiplier, Config.Format(payout))
+			result.TextColor3 = UI.Colors.Good
+			Sounds.Play("Win", 0.6)
+			if multiplier >= Config.Slots.BigWinMultiplier then
+				hud.Announce(string.format("💥 ДЖЕКПОТ x%d!", multiplier), UI.Colors.Accent, 2.5)
+			end
+		elseif payout == stake then
+			result.Text = "↩️ Возврат ставки"
+			result.TextColor3 = UI.Colors.Cyan
+		else
+			result.Text = "Мимо... ещё разок? 😈"
+			result.TextColor3 = UI.Colors.Bad
+		end
+		task.delay(3, function()
+			if token == myToken then
+				frame.Visible = false
+			end
+		end)
+	end)
+end
+
+return SlotsView
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="39">
+          <Properties>
+            <string name="Name">Sounds</string>
+            <string name="Source"><![CDATA[-- Звуки интерфейса. Используются встроенные файлы клиента Roblox (rbxasset://),
+-- поэтому ничего не нужно загружать. Свои звуки можно вписать сюда (rbxassetid://ID).
+
+local Debris = game:GetService("Debris")
+local SoundService = game:GetService("SoundService")
+
+local Sounds = {}
+
+local IDS = {
+	Click = "rbxasset://sounds/clickfast.wav",
+	Tick = "rbxasset://sounds/clickfast.wav",
+	Win = "rbxasset://sounds/electronicpingshort.wav",
+	Coin = "rbxasset://sounds/electronicpingshort.wav",
+	Lose = "rbxasset://sounds/swoosh.wav",
+	Whoosh = "rbxasset://sounds/swoosh.wav",
+}
+
+function Sounds.Play(name: string, volume: number?, speed: number?)
+	local id = IDS[name]
+	if not id then
+		return
+	end
+	local sound = Instance.new("Sound")
+	sound.SoundId = id
+	sound.Volume = volume or 0.5
+	sound.PlaybackSpeed = speed or 1
+	sound.Parent = SoundService
+	sound:Play()
+	Debris:AddItem(sound, 3)
+end
+
+return Sounds
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="40">
+          <Properties>
+            <string name="Name">Spectate</string>
+            <string name="Source"><![CDATA[-- Режим зрителя: смотри за теми, кто ещё в игре (и за кем стоят твои ставки).
+
+local Players = game:GetService("Players")
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Workspace = game:GetService("Workspace")
+
+local Net = require(ReplicatedStorage.Shared.Net)
+local UI = require(script.Parent.UI)
+
+local player = Players.LocalPlayer
+local state = Net.State()
+
+local Spectate = {}
+
+function Spectate.Init(hud)
+	local spectating = false
+	local index = 1
+
+	local bar = UI.new("Frame", {
+		Name = "Spectate",
+		AnchorPoint = Vector2.new(0.5, 1),
+		Position = UDim2.new(0.5, 0, 1, -84),
+		Size = UDim2.fromOffset(440, 54),
+		BackgroundColor3 = UI.Colors.Bg,
+		BackgroundTransparency = 0.05,
+		Visible = false,
+		ZIndex = 4,
+		Parent = hud.Gui(),
+	}, {
+		UI.Corner(14),
+		UI.Stroke(UI.Colors.Cyan, 2.5),
+		UI.new("UIScale"),
+	})
+	local prev = UI.Button("◀", UI.Colors.Panel2, {
+		Size = UDim2.fromOffset(46, 42),
+		Position = UDim2.fromOffset(6, 6),
+		ZIndex = 5,
+		Parent = bar,
+	})
+	local nameLabel = UI.Label({
+		Size = UDim2.new(1, -170, 0, 42),
+		Position = UDim2.fromOffset(58, 6),
+		Font = UI.FontBlack,
+		Text = "",
+		ZIndex = 5,
+		Parent = bar,
+	})
+	local nextButton = UI.Button("▶", UI.Colors.Panel2, {
+		Size = UDim2.fromOffset(46, 42),
+		Position = UDim2.new(1, -106, 0, 6),
+		ZIndex = 5,
+		Parent = bar,
+	})
+	local exit = UI.Button("✕", UI.Colors.Bad, {
+		Size = UDim2.fromOffset(46, 42),
+		Position = UDim2.new(1, -54, 0, 6),
+		ZIndex = 5,
+		Parent = bar,
+	})
+
+	local function candidates(): { Player }
+		local list = {}
+		for _, other in Players:GetPlayers() do
+			if other ~= player and other:GetAttribute("InRound") == true then
+				table.insert(list, other)
+			end
+		end
+		return list
+	end
+
+	local function ownHumanoid(): Humanoid?
+		local character = player.Character
+		return character and character:FindFirstChildOfClass("Humanoid")
+	end
+
+	local function stop()
+		spectating = false
+		bar.Visible = false
+		local camera = Workspace.CurrentCamera
+		local humanoid = ownHumanoid()
+		if camera and humanoid then
+			camera.CameraSubject = humanoid
+		end
+	end
+
+	local function show()
+		local list = candidates()
+		if #list == 0 then
+			stop()
+			return
+		end
+		index = (index - 1) % #list + 1
+		local target = list[index]
+		local character = target.Character
+		local humanoid = character and character:FindFirstChildOfClass("Humanoid")
+		local camera = Workspace.CurrentCamera
+		if humanoid and camera then
+			camera.CameraSubject = humanoid
+			nameLabel.Text = "👁 " .. target.DisplayName
+		end
+	end
+
+	local button = hud.AddMenuButton("spectate", "👁", "Смотреть", UI.Colors.Cyan, 5, function()
+		if spectating then
+			stop()
+		else
+			spectating = true
+			bar.Visible = true
+			hud.ClosePanel()
+			show()
+		end
+	end)
+	button.Visible = false
+
+	prev.Activated:Connect(function()
+		index -= 1
+		show()
+	end)
+	nextButton.Activated:Connect(function()
+		index += 1
+		show()
+	end)
+	exit.Activated:Connect(stop)
+
+	player.CharacterAdded:Connect(function()
+		if spectating then
+			task.wait(0.3)
+			show()
+		end
+	end)
+
+	task.defer(function()
+		local scale = bar:FindFirstChildOfClass("UIScale")
+		local status = hud.Gui():FindFirstChild("Status")
+		local source = status and status:FindFirstChildOfClass("UIScale")
+		if scale and source then
+			scale.Scale = source.Scale
+			source:GetPropertyChangedSignal("Scale"):Connect(function()
+				scale.Scale = source.Scale
+			end)
+		end
+	end)
+
+	task.spawn(function()
+		while true do
+			local canWatch = state:GetAttribute("Phase") == "Playing" and player:GetAttribute("InRound") ~= true
+			button.Visible = canWatch
+			if spectating then
+				if not canWatch then
+					stop()
+				else
+					local camera = Workspace.CurrentCamera
+					local subject = camera and camera.CameraSubject
+					local list = candidates()
+					local watchingValid = false
+					for _, other in list do
+						local character = other.Character
+						if subject and character and subject:IsDescendantOf(character) then
+							watchingValid = true
+						end
+					end
+					if not watchingValid then
+						show()
+					end
+				end
+			end
+			task.wait(0.4)
+		end
+	end)
+end
+
+return Spectate
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="41">
+          <Properties>
+            <string name="Name">UI</string>
+            <string name="Source"><![CDATA[-- Помощники для построения интерфейса из кода.
+
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+local UI = {}
+
+UI.Colors = {
+	Bg = Color3.fromRGB(20, 16, 34),
+	Panel = Color3.fromRGB(32, 26, 54),
+	Panel2 = Color3.fromRGB(46, 38, 76),
+	Accent = Color3.fromRGB(255, 196, 40),
+	Pink = Color3.fromRGB(255, 60, 170),
+	Cyan = Color3.fromRGB(40, 220, 255),
+	Text = Color3.fromRGB(245, 240, 255),
+	Muted = Color3.fromRGB(170, 160, 205),
+	Good = Color3.fromRGB(60, 220, 110),
+	Bad = Color3.fromRGB(255, 70, 85),
+}
+
+UI.Font = Enum.Font.GothamBold
+UI.FontBlack = Enum.Font.GothamBlack
+
+function UI.new(className: string, props: { [string]: any }?, children: { Instance }?): any
+	local inst = Instance.new(className)
+	if props then
+		for key, value in props do
+			if key ~= "Parent" then
+				(inst :: any)[key] = value
+			end
+		end
+	end
+	if children then
+		for _, child in children do
+			child.Parent = inst
+		end
+	end
+	if props and props.Parent then
+		inst.Parent = props.Parent
+	end
+	return inst
+end
+
+function UI.Corner(radius: number?): UICorner
+	return UI.new("UICorner", { CornerRadius = UDim.new(0, radius or 10) })
+end
+
+function UI.Stroke(color: Color3?, thickness: number?, transparency: number?): UIStroke
+	return UI.new("UIStroke", {
+		Color = color or Color3.new(0, 0, 0),
+		Thickness = thickness or 2,
+		Transparency = transparency or 0,
+		ApplyStrokeMode = Enum.ApplyStrokeMode.Border,
+	})
+end
+
+function UI.TextStroke(thickness: number?): UIStroke
+	return UI.new("UIStroke", {
+		Color = Color3.new(0, 0, 0),
+		Thickness = thickness or 2,
+		Transparency = 0.3,
+		ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual,
+	})
+end
+
+function UI.Padding(px: number): UIPadding
+	return UI.new("UIPadding", {
+		PaddingLeft = UDim.new(0, px),
+		PaddingRight = UDim.new(0, px),
+		PaddingTop = UDim.new(0, px),
+		PaddingBottom = UDim.new(0, px),
+	})
+end
+
+function UI.List(padding: number?, horizontal: boolean?, align: Enum.HorizontalAlignment?): UIListLayout
+	return UI.new("UIListLayout", {
+		Padding = UDim.new(0, padding or 6),
+		FillDirection = horizontal and Enum.FillDirection.Horizontal or Enum.FillDirection.Vertical,
+		HorizontalAlignment = align or Enum.HorizontalAlignment.Center,
+		VerticalAlignment = Enum.VerticalAlignment.Center,
+		SortOrder = Enum.SortOrder.LayoutOrder,
+	})
+end
+
+function UI.Gradient(a: Color3, b: Color3, rotation: number?): UIGradient
+	return UI.new("UIGradient", {
+		Color = ColorSequence.new(a, b),
+		Rotation = rotation or 90,
+	})
+end
+
+function UI.Label(props: { [string]: any }): TextLabel
+	local defaults = {
+		BackgroundTransparency = 1,
+		Font = UI.Font,
+		TextColor3 = UI.Colors.Text,
+		TextScaled = true,
+		RichText = true,
+	}
+	for key, value in props do
+		defaults[key] = value
+	end
+	return UI.new("TextLabel", defaults)
+end
+
+function UI.Button(text: string, color: Color3, props: { [string]: any }?): TextButton
+	local base = {
+		Text = text,
+		BackgroundColor3 = color,
+		TextColor3 = Color3.new(1, 1, 1),
+		Font = UI.FontBlack,
+		TextScaled = true,
+		AutoButtonColor = true,
+		RichText = true,
+	}
+	if props then
+		for key, value in props do
+			base[key] = value
+		end
+	end
+	local button = UI.new("TextButton", base, {
+		UI.Corner(10),
+		UI.Stroke(color:Lerp(Color3.new(0, 0, 0), 0.45), 2),
+		UI.new("UIPadding", {
+			PaddingTop = UDim.new(0, 5),
+			PaddingBottom = UDim.new(0, 5),
+			PaddingLeft = UDim.new(0, 6),
+			PaddingRight = UDim.new(0, 6),
+		}),
+		UI.TextStroke(1.5),
+	})
+	return button
+end
+
+function UI.Tween(inst: Instance, time: number, props: { [string]: any }, style: Enum.EasingStyle?, direction: Enum.EasingDirection?): Tween
+	local tween = TweenService:Create(
+		inst,
+		TweenInfo.new(time, style or Enum.EasingStyle.Quad, direction or Enum.EasingDirection.Out),
+		props
+	)
+	tween:Play()
+	return tween
+end
+
+-- Модальная панель с заголовком и кнопкой закрытия.
+function UI.Panel(parent: Instance, title: string, size: UDim2, accent: Color3)
+	local frame = UI.new("Frame", {
+		Name = "Panel",
+		AnchorPoint = Vector2.new(0.5, 0.5),
+		Position = UDim2.fromScale(0.5, 0.5),
+		Size = size,
+		BackgroundColor3 = UI.Colors.Bg,
+		Visible = false,
+		ZIndex = 5,
+		Parent = parent,
+	}, {
+		UI.Corner(16),
+		UI.Stroke(accent, 3),
+	})
+	local header = UI.new("Frame", {
+		Name = "Header",
+		Size = UDim2.new(1, 0, 0, 50),
+		BackgroundColor3 = accent,
+		ZIndex = 5,
+		Parent = frame,
+	}, {
+		UI.Corner(16),
+		UI.Gradient(accent, accent:Lerp(Color3.new(0, 0, 0), 0.35)),
+	})
+	-- закрываем нижние скруглённые углы шапки
+	UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 16),
+		Position = UDim2.new(0, 0, 1, -16),
+		BackgroundColor3 = accent:Lerp(Color3.new(0, 0, 0), 0.35),
+		BorderSizePixel = 0,
+		ZIndex = 5,
+		Parent = header,
+	})
+	UI.Label({
+		Text = title,
+		Size = UDim2.new(1, -70, 1, -14),
+		Position = UDim2.fromOffset(16, 7),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		Font = UI.FontBlack,
+		ZIndex = 6,
+		Parent = header,
+	})
+	local close = UI.Button("✕", UI.Colors.Bad, {
+		Size = UDim2.fromOffset(38, 38),
+		Position = UDim2.new(1, -46, 0, 6),
+		ZIndex = 7,
+		Parent = header,
+	})
+	local content = UI.new("Frame", {
+		Name = "Content",
+		Size = UDim2.new(1, -24, 1, -66),
+		Position = UDim2.fromOffset(12, 58),
+		BackgroundTransparency = 1,
+		ZIndex = 5,
+		Parent = frame,
+	})
+	return frame, content, close
+end
+
+-- Поле ввода суммы с быстрыми кнопками.
+function UI.AmountSelector(parent: Instance, default: number, layoutOrder: number?)
+	local player = Players.LocalPlayer
+	local holder = UI.new("Frame", {
+		Name = "Amount",
+		Size = UDim2.new(1, 0, 0, 80),
+		BackgroundTransparency = 1,
+		LayoutOrder = layoutOrder or 0,
+		ZIndex = 5,
+		Parent = parent,
+	})
+	UI.Label({
+		Text = "Ставка:",
+		Size = UDim2.new(0, 80, 0, 34),
+		TextXAlignment = Enum.TextXAlignment.Left,
+		TextColor3 = UI.Colors.Muted,
+		ZIndex = 6,
+		Parent = holder,
+	})
+	local box = UI.new("TextBox", {
+		Size = UDim2.new(1, -90, 0, 34),
+		Position = UDim2.fromOffset(86, 0),
+		BackgroundColor3 = UI.Colors.Panel2,
+		Text = tostring(default),
+		PlaceholderText = "сумма",
+		ClearTextOnFocus = false,
+		TextColor3 = UI.Colors.Accent,
+		Font = UI.FontBlack,
+		TextScaled = true,
+		ZIndex = 6,
+		Parent = holder,
+	}, {
+		UI.Corner(8),
+		UI.new("UIPadding", { PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4) }),
+	})
+	local chips = UI.new("Frame", {
+		Size = UDim2.new(1, 0, 0, 36),
+		Position = UDim2.fromOffset(0, 42),
+		BackgroundTransparency = 1,
+		ZIndex = 6,
+		Parent = holder,
+	}, {
+		UI.new("UIGridLayout", {
+			CellSize = UDim2.new(1 / 7, -5, 1, 0),
+			CellPadding = UDim2.fromOffset(5, 0),
+			SortOrder = Enum.SortOrder.LayoutOrder,
+		}),
+	})
+
+	local function get(): number
+		local digits = string.gsub(box.Text, "%D", "")
+		return tonumber(digits) or 0
+	end
+	local function set(value: number)
+		box.Text = tostring(math.max(0, math.floor(value)))
+	end
+	box.FocusLost:Connect(function()
+		set(get())
+	end)
+
+	local function coins(): number
+		return player:GetAttribute("Coins") or 0
+	end
+	local chipDefs = {
+		{ "10", function() set(10) end },
+		{ "100", function() set(100) end },
+		{ "1K", function() set(1000) end },
+		{ "10K", function() set(10000) end },
+		{ "½", function() set(get() / 2) end },
+		{ "x2", function() set(get() * 2) end },
+		{ "ВСЁ", function() set(coins()) end },
+	}
+	for i, def in chipDefs do
+		local chip = UI.Button(def[1], i == #chipDefs and UI.Colors.Pink or UI.Colors.Panel2, {
+			LayoutOrder = i,
+			ZIndex = 7,
+			Parent = chips,
+		})
+		chip.Activated:Connect(def[2])
+	end
+
+	return {
+		Frame = holder,
+		Get = get,
+		Set = set,
+	}
+end
+
+return UI
+]]></string>
+          </Properties>
+        </Item>
+        <Item class="ModuleScript" referent="42">
+          <Properties>
+            <string name="Name">WheelView</string>
+            <string name="Source"><![CDATA[-- Плавное вращение колеса рулетки и декоративных деталей (делается на клиенте).
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local RunService = game:GetService("RunService")
+local Workspace = game:GetService("Workspace")
+
+local Net = require(ReplicatedStorage.Shared.Net)
+local Sounds = require(script.Parent.Sounds)
+
+local WheelView = {}
+
+local TAU = math.pi * 2
+
+local function setupWheel()
+	local lobby = Workspace:WaitForChild("Lobby")
+	local rouletteFolder = lobby:WaitForChild("Roulette")
+	local wheel = rouletteFolder:WaitForChild("Wheel")
+	local base = wheel:GetAttribute("Base")
+	local count = wheel:GetAttribute("Segments")
+	if typeof(base) ~= "CFrame" or type(count) ~= "number" then
+		return
+	end
+	local segAngle = TAU / count
+
+	local offsets: { [BasePart]: CFrame } = {}
+	local function collect()
+		for _, part in wheel:GetDescendants() do
+			if part:IsA("BasePart") and not offsets[part] then
+				offsets[part] = base:ToObjectSpace(part.CFrame)
+			end
+		end
+	end
+	collect()
+
+	local angle = 0
+	local function apply(a: number)
+		local cf = base * CFrame.Angles(0, 0, -a)
+		for part, offset in offsets do
+			part.CFrame = cf * offset
+		end
+	end
+
+	local connection: RBXScriptConnection? = nil
+	Net.Event("RouletteSpin").OnClientEvent:Connect(function(index: number, offset: number, _color: string, spinTime: number)
+		collect()
+		if connection then
+			connection:Disconnect()
+		end
+		local target = (-(index - 1) * segAngle + offset * segAngle) % TAU
+		local current = angle % TAU
+		local diff = (target - current) % TAU
+		local startAngle = angle
+		local finalAngle = angle + 5 * TAU + diff
+		local started = os.clock()
+		local duration = math.max(1, spinTime - 0.8)
+		local lastSeg = math.floor(angle / segAngle)
+		connection = RunService.RenderStepped:Connect(function()
+			local t = math.clamp((os.clock() - started) / duration, 0, 1)
+			local eased = 1 - (1 - t) ^ 4
+			angle = startAngle + (finalAngle - startAngle) * eased
+			apply(angle)
+			local seg = math.floor(angle / segAngle)
+			if seg ~= lastSeg then
+				lastSeg = seg
+				local camera = Workspace.CurrentCamera
+				if camera and (camera.CFrame.Position - base.Position).Magnitude < 90 then
+					Sounds.Play("Tick", 0.2, 1.6)
+				end
+			end
+			if t >= 1 and connection then
+				connection:Disconnect()
+				connection = nil
+			end
+		end)
+	end)
+end
+
+local function setupSpinners()
+	local spinners: { BasePart } = {}
+	local function consider(inst: Instance)
+		if inst:IsA("BasePart") and inst:GetAttribute("Spin") then
+			table.insert(spinners, inst)
+		end
+	end
+	for _, inst in Workspace:GetDescendants() do
+		consider(inst)
+	end
+	Workspace.DescendantAdded:Connect(consider)
+	local bases: { [BasePart]: CFrame } = {}
+	local elapsed = 0
+	RunService.RenderStepped:Connect(function(dt)
+		elapsed += dt
+		for i = #spinners, 1, -1 do
+			local part = spinners[i]
+			if not part.Parent then
+				table.remove(spinners, i)
+			else
+				local baseCf = bases[part]
+				if not baseCf then
+					baseCf = part.CFrame
+					bases[part] = baseCf
+				end
+				local speed = part:GetAttribute("Spin") or 1
+				part.CFrame = baseCf * CFrame.Angles(0, elapsed * speed, 0) + Vector3.new(0, math.sin(elapsed * 1.5) * 1.2, 0)
+			end
+		end
+	end)
+end
+
+function WheelView.Init()
+	task.spawn(setupWheel)
+	task.spawn(setupSpinners)
+end
+
+return WheelView
+]]></string>
+          </Properties>
+        </Item>
+      </Item>
+    </Item>
+  </Item>
+  <Item class="Teams" referent="43">
+    <Properties>
+      <string name="Name">Teams</string>
+    </Properties>
+  </Item>
+  <Item class="Workspace" referent="44">
+    <Properties>
+      <string name="Name">Workspace</string>
+      <bool name="NeedsPivotMigration">false</bool>
+      <bool name="StreamingEnabled">false</bool>
+    </Properties>
+  </Item>
+</roblox>

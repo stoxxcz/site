@@ -1,0 +1,41 @@
+{
+  "name": "AzartArena",
+  "tree": {
+    "$className": "DataModel",
+    "ReplicatedStorage": {
+      "Shared": {
+        "$path": "src/shared"
+      }
+    },
+    "ServerScriptService": {
+      "Server": {
+        "$path": "src/server"
+      }
+    },
+    "StarterPlayer": {
+      "StarterPlayerScripts": {
+        "Client": {
+          "$path": "src/client"
+        }
+      }
+    },
+    "Workspace": {
+      "$properties": {
+        "StreamingEnabled": false
+      }
+    },
+    "Lighting": {
+      "$properties": {
+        "ClockTime": 17.8,
+        "Brightness": 2.5,
+        "Technology": "ShadowMap",
+        "GlobalShadows": true
+      }
+    },
+    "SoundService": {},
+    "StarterGui": {},
+    "StarterPack": {},
+    "Players": {},
+    "Teams": {}
+  }
+}
