@@ -6,7 +6,7 @@
  *
  * It also caches the engine files so repeat visits start instantly.
  */
-const CACHE = 'nextmove-v1';
+const CACHE = 'nextmove-v2';
 const PRECACHE = [
   './',
   './index.html',

@@ -1,7 +1,7 @@
 import { Chess, validateFen } from './vendor/chess.js';
 
 /* =====================================================================
- *  Лучший ход — Stockfish 18 analysis board.
+ *  Лучший ход — Stockfish 19 analysis board.
  *  The engine analyses every position the moment it appears on the board,
  *  so the best move (and any forced mate) is shown with no button presses.
  * ===================================================================== */
@@ -10,8 +10,8 @@ const START_FEN = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1';
 const FILES = 'abcdefgh';
 const ANALYSIS_CAP_MS = 45000;   // stop "infinite" analysis after this, to save battery
 const MIN_PLAY_DEPTH = 10;       // "Сделать ход" waits for at least this depth (or ~0.4 s)
-const ENGINE_MT = 'engine/stockfish-18-lite.js';
-const ENGINE_ST = 'engine/stockfish-18-lite-single.js';
+const ENGINE_MT = 'engine/stockfish-19-lite.js';
+const ENGINE_ST = 'engine/stockfish-19-lite-single.js';
 
 const $ = (id) => document.getElementById(id);
 const store = {
@@ -59,7 +59,7 @@ class Engine {
     this.searching = false;
     this.ignore = 0;          // number of stale "bestmove" replies still to swallow
     this.mt = false;
-    this.name = 'Stockfish 18';
+    this.name = 'Stockfish 19';
     this.maxThreads = 1;
     this.opts = {};
   }
