@@ -204,14 +204,14 @@ async function analyse(game, opts = {}) {
     const t0 = performance.now();
     let done = 0;
     const total = jobs.length;
-    progress(0, total, `Проверяю каждый ход: 0 из ${game.moves.length}`);
+    progress(0, total, `Смотрю твою партию: 0 из ${game.moves.length} ходов`);
     await pool.run(jobs, (k, lines) => {
       if (token !== S.runToken) return;
       const i = todo[k];
       setLines(S.pos[i], lines);
       done++;
       const left = ((performance.now() - t0) / done) * (total - done) / 1000;
-      progress(done * 0.92, total, `Проверяю каждый ход: ${Math.min(done, game.moves.length)} из ${game.moves.length}`);
+      progress(done * 0.92, total, `Смотрю твою партию: ${Math.min(done, game.moves.length)} из ${game.moves.length} ходов`);
       $('progressEta').textContent = done > 2 && left > 1 ? `осталось ≈ ${Math.ceil(left)} с` : '';
       if (S.ply !== i && done % 3 === 0) { S.ply = i; renderBoard(false); renderEval(); }
     });
@@ -220,7 +220,7 @@ async function analyse(game, opts = {}) {
     // Second look at positions where the engine contradicted itself.
     const verify = A.positionsToVerify(game, S.pos).slice(0, 24);
     if (verify.length) {
-      progress(total * 0.93, total, 'Перепроверяю спорные моменты…');
+      progress(total * 0.93, total, 'Ещё раз проверяю острые моменты…');
       const vjobs = verify.map((i) => ({ fen: S.pos[i].fen, depth: cfg.depth + 4, movetime: cfg.movetime * 2, multipv: 3 }));
       let vd = 0;
       await pool.run(vjobs, (k, lines) => {
@@ -535,6 +535,12 @@ function renderPlayers() {
 
 /* ============================== Coach =============================== */
 
+/** Coach words for a move: "ты" when it's the player's (bottom side) move. */
+function moveText(r, color) {
+  if (!r.texts) return r.text || '';
+  return color === S.orientation ? r.texts.me : r.texts.opp;
+}
+
 function coachTitle(result, move) {
   const c = A.CLS[result.cls];
   return `<span class="san">${A.figurine(move.san)}</span> — ${c.label.toLowerCase()}`;
@@ -567,7 +573,7 @@ function renderCoach() {
     const color = S.game.moves[rt.idx].color;
     if (rt.state === 'solved') {
       icon.innerHTML = iconSvg(rt.result.cls);
-      title.innerHTML = `Верно! <span class="san">${A.figurine(rt.move.san)}</span>`;
+      title.innerHTML = `Есть! <span class="san">${A.figurine(rt.move.san)}</span>`;
       text.innerHTML = rt.text;
       addBtn('Продолжить ▶', () => exitRetry(true), true);
     } else if (rt.state === 'shown') {
@@ -577,10 +583,10 @@ function renderCoach() {
       addBtn('Продолжить ▶', () => exitRetry(true), true);
     } else {
       icon.innerHTML = '';
-      title.textContent = rt.state === 'wrong' ? 'Не то…' : 'Найдите ход лучше';
+      title.textContent = rt.state === 'wrong' ? 'Не то…' : 'Найди ход сильнее';
       text.innerHTML = rt.state === 'wrong'
-        ? `${rt.wrongText || 'Есть ход сильнее.'} Попробуйте ещё раз — ход за ${color === 'w' ? 'белых' : 'чёрных'}.`
-        : `В партии было сыграно <span class="san">${A.figurine(S.game.moves[rt.idx].san)}</span>. Сделайте на доске ход получше за ${color === 'w' ? 'белых' : 'чёрных'}.`;
+        ? `${rt.wrongText || 'Есть ход сильнее.'} Попробуй ещё раз — ход за ${color === 'w' ? 'белых' : 'чёрных'}.`
+        : `В партии было <span class="san">${A.figurine(S.game.moves[rt.idx].san)}</span>. А ты найди ход получше за ${color === 'w' ? 'белых' : 'чёрных'} — сделай его прямо на доске.`;
       if (rt.wrong >= 1 && !rt.hinted) addBtn('Подсказка', () => showRetryHint());
       addBtn('Показать ответ', () => showRetryAnswer());
       addBtn('Отмена', () => exitRetry(false));
@@ -600,7 +606,7 @@ function renderCoach() {
     const r = node.result;
     icon.innerHTML = iconSvg(r.cls);
     title.innerHTML = coachTitle(r, node.move);
-    text.innerHTML = r.text;
+    text.innerHTML = moveText(r, node.move.color);
     setEval({ score: node.score, turn: node.fen.split(' ')[1] });
     if (r.bestLine) showLine(r, S.variation.idx === 0 ? S.game.fens[S.variation.base] : S.variation.nodes[S.variation.idx - 1].fen, 'var');
     return;
@@ -610,9 +616,13 @@ function renderCoach() {
   if (!S.review) return;
   if (ply === 0) {
     icon.innerHTML = '';
-    title.textContent = 'Начинаем разбор';
+    title.textContent = 'Поехали!';
     const op = S.review.opening ? ` Дебют: <i>${esc(S.review.opening)}</i>.` : '';
-    text.innerHTML = `Пройдём партию ход за ходом — я объясню каждый важный момент.${op} Нажмите <b>▶</b> или клавишу <b>→</b>. Можно делать свои ходы на доске — я их тоже оценю.`;
+    const side = S.orientation === 'w' ? 'белых' : 'чёрных';
+    const otherSide = S.orientation === 'w' ? 'чёрных' : 'белых';
+    text.innerHTML = 'Давай пройдём партию ход за ходом — расскажу, что получилось здорово, а где можно было сыграть сильнее.'
+      + `${op} Жми <b>▶</b> или <b>→</b> на клавиатуре. Можешь и сам двигать фигуры — я оценю любой ход.`
+      + ` <span style="color:#6b665e">Я считаю, что ты играешь за ${side}; если ты за ${otherSide} — переверни доску ⇅.</span>`;
     setEval(S.pos[0]);
     addBtn('Первый ход ▶', () => goTo(1), true);
     return;
@@ -621,7 +631,7 @@ function renderCoach() {
   const m = S.game.moves[ply - 1];
   icon.innerHTML = iconSvg(r.cls);
   title.innerHTML = coachTitle(r, m);
-  let body = r.text;
+  let body = moveText(r, m.color);
   if (ply === S.game.moves.length) body += endNote();
   text.innerHTML = body;
   setEval(S.pos[ply]);
@@ -797,7 +807,7 @@ function renderGraph(el) {
 function renderSummary() {
   const { stats } = S.review;
   const h = S.game.headers;
-  $('summaryText').innerHTML = A.summaryText(S.game, S.review);
+  $('summaryText').innerHTML = A.summaryText(S.game, S.review, S.orientation);
   const box = (c) => {
     const name = c === 'w' ? h.White : h.Black;
     const elo = c === 'w' ? h.WhiteElo : h.BlackElo;
@@ -985,13 +995,13 @@ function handleRetryMove(m) {
     rt.fen = m.after;
     rt.result = { cls: l === best ? 'best' : 'excellent', uci };
     const what = A.purposeText(S.game.fens[rt.idx], m, prevMove, rt.idx);
-    rt.text = `${l === best ? 'Это лучший ход в позиции.' : 'Отличный ход — почти не уступает лучшему.'} ${what}`;
+    rt.text = `${l === best ? 'Точно в цель — это лучший ход!' : 'Отлично! Почти так же сильно, как ход движка.'} ${what}`;
     renderAll(true);
     return;
   }
   rt.state = 'wrong';
   rt.wrong++;
-  rt.wrongText = uci === played.from + played.to + (played.promotion || '') ? 'Это ход из партии.' : l ? 'Неплохо, но есть сильнее.' : 'Этот ход хуже, чем кажется.';
+  rt.wrongText = uci === played.from + played.to + (played.promotion || '') ? 'Это ход из партии — ищи другой.' : l ? 'Неплохо, но есть ещё сильнее.' : 'Хм, этот ход хуже, чем кажется.';
   rt.move = m;
   rt.fen = m.after;
   rt.result = null;
@@ -1014,7 +1024,7 @@ function showRetryHint() {
   S.selected = sq;
   S.targets = [];
   const names = { p: 'пешкой', n: 'конём', b: 'слоном', r: 'ладьёй', q: 'ферзём', k: 'королём' };
-  rt.wrongText = `Подсказка: ходите ${p ? names[p.t] : 'фигурой'} с ${best.uci.slice(0, 2)}.`;
+  rt.wrongText = `Подсказка: ходи ${p ? names[p.t] : 'фигурой'} с ${best.uci.slice(0, 2)}.`;
   rt.state = 'wrong';
   renderAll(false);
 }
@@ -1033,7 +1043,7 @@ function showRetryAnswer() {
   rt.fen = m.after;
   rt.result = { cls: 'best', uci: best.uci };
   const r = S.review.results[rt.idx];
-  rt.text = (A.purposeText(S.game.fens[rt.idx], m, S.game.moves[rt.idx - 1] || null, rt.idx) || 'Сильнейший ход по оценке движка.') +
+  rt.text = (A.purposeText(S.game.fens[rt.idx], m, S.game.moves[rt.idx - 1] || null, rt.idx, 'move') || 'Сильнейший ход по оценке движка.') +
     (r.bestLine ? `<br><span style="color:#5d5850;font-size:13px">Линия: ${r.bestLine}</span>` : '');
   clearSelection();
   renderAll(true);
@@ -1331,6 +1341,11 @@ async function startFromInput(orientation) {
   }
   let game;
   try { game = parseGame($('pgnInput').value); } catch (e) { showError(e.message); return; }
+  if (!orientation) {
+    // If the saved nickname plays black in this game, review it from black's side.
+    const nick = String(store.get('user', '')).toLowerCase();
+    if (nick && String(game.headers.Black || '').toLowerCase() === nick) orientation = 'b';
+  }
   analyse(game, { orientation: orientation || 'w' });
 }
 

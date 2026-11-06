@@ -49,7 +49,6 @@ export function plural(n, one, few, many) {
 const moves_ = (n) => `${n} ${plural(n, 'ход', 'хода', 'ходов')}`;
 const mateIn = (n) => (n === 1 ? 'мат следующим ходом' : `форсированный мат в ${moves_(n)}`);
 export const colorName = (c) => (c === 'w' ? 'белые' : 'чёрные');
-const colorGen = (c) => (c === 'w' ? 'белых' : 'чёрных');
 function listAnd(items) {
   if (items.length <= 1) return items.join('');
   return items.slice(0, -1).join(', ') + ' и ' + items[items.length - 1];
@@ -102,17 +101,6 @@ export function fmtWhite(pos) {
     return s.res === 1 ? '1–0' : '0–1';
   }
   return fmtScore(s);
-}
-function evalWords(e) {
-  if (e >= 0.97) return 'выигранная позиция';
-  if (e >= 0.8) return 'решающее преимущество';
-  if (e >= 0.66) return 'большое преимущество';
-  if (e >= 0.56) return 'небольшое преимущество';
-  if (e > 0.44) return 'примерное равенство';
-  if (e > 0.34) return 'небольшой перевес у соперника';
-  if (e > 0.2) return 'заметный перевес у соперника';
-  if (e > 0.03) return 'тяжёлая позиция';
-  return 'проигранная позиция';
 }
 
 /* --------------------------- Board helpers -------------------------- */
@@ -422,59 +410,81 @@ export function moveFeatures(fenBefore, m, prevMove, ply) {
   return f;
 }
 
+/* ------------------------------ Voice ------------------------------- */
+// The coach talks to the player ("ты") about their own moves and about
+// "соперник" for the other side. Past tense is avoided for "ты" (gender).
+
+const pick = (arr, seed) => arr[Math.abs(seed) % arr.length];
+function poss(t, c) {
+  const f = PIECE[t].g === 'f';
+  if (c === 'nom') return f ? 'твоя' : 'твой';
+  if (c === 'acc') return f ? 'твою' : 'твоего';
+  return f ? 'твоей' : 'твоего';
+}
+/** "твой конь" / "конь соперника" — `me`: the piece belongs to the player. */
+const ownPiece = (me, t, c = 'nom') => (me ? `${poss(t, c)} ${PIECE[t][c]}` : `${PIECE[t][c]} соперника`);
+
 /** Sentence describing what a move does (used for retries and explorations). */
-export function purposeText(fenBefore, m, prevMove, ply) {
-  try { return purpose(m, moveFeatures(fenBefore, m, prevMove, ply)); } catch { return ''; }
+export function purposeText(fenBefore, m, prevMove, ply, mode = 'you') {
+  try { return purpose(m, moveFeatures(fenBefore, m, prevMove, ply), { mode }); } catch { return ''; }
 }
 
-/** One or two short sentences about what a (good) move does. */
-function purpose(m, f, { maxItems = 2, lower = false } = {}) {
+/**
+ * What a (good) move does, in the coach's voice.
+ * mode 'you'  — "Забираешь пешку и занимаешь центр."
+ *      'they' — "Соперник забирает пешку…" (subject configurable)
+ *      'move' — "забирает пешку" (a phrase about the move itself)
+ */
+function purpose(m, f, { mode = 'move', maxItems = 2, lower = false, subj = 'Соперник' } = {}) {
+  const you = mode === 'you';
+  const v = (ty, on) => (you ? ty : on);
   const out = [];
-  const moved = PIECE[m.promotion || m.piece];
-  if (f.mate) out.push('ставит мат');
-  if (f.check && !f.mate && !f.fork) out.push('даёт шах');
-  if (f.promotion) out.push(`проводит пешку в ${PIECE[f.promotion].acc}`);
+  let solo = '';
+  const movedT = m.promotion || m.piece;
+  if (f.mate) out.push(v('ставишь мат', 'ставит мат'));
+  if (f.check && !f.mate && !f.fork) out.push(v('даёшь шах', 'даёт шах'));
+  if (f.promotion) {
+    out.push(f.promotion === 'q' ? v('проводишь пешку в ферзи', 'проводит пешку в ферзи')
+      : v(`превращаешь пешку в ${PIECE[f.promotion].acc}`, `превращает пешку в ${PIECE[f.promotion].acc}`));
+  }
   if (f.fork) {
     const hasK = f.fork.some((t) => t.t === 'k');
-    const rest = f.fork.filter((t) => t.t !== 'k').map((t) => PIECE[t.t].acc);
-    out.push(hasK ? `вилка: шах и одновременно нападение на ${listAnd(rest)}` : `вилка: ${moved.nom} нападает сразу на ${listAnd(rest)}`);
+    const rest = listAnd(f.fork.filter((t) => t.t !== 'k').map((t) => PIECE[t.t].acc));
+    if (mode === 'move') return hasK ? `шах с вилкой — заодно нападение на ${rest}` : `вилка: нападение сразу на ${rest}`;
+    if (you) solo = hasK ? `Шах — и заодно вилка: нападаешь на ${rest}!` : `Вилка! ${cap(ownPiece(true, movedT))} нападает сразу на ${rest}.`;
+    else solo = hasK ? `Шах с вилкой: ${subj === 'Соперник' ? 'соперник' : subj.toLowerCase()} заодно нападает на ${rest}.` : `Вилка! ${cap(PIECE[movedT].nom)} соперника нападает сразу на ${rest}.`;
   }
   if (f.capture && !f.fork) {
     const mp = m.piece, cp = f.capture;
-    if (f.recapture) out.push(`отыгрывает ${PIECE[cp].acc}`);
-    else if (f.trade && mp === cp && cp !== 'p') out.push(`размен ${PIECE[cp].pl}`);
-    else if (f.trade && 'nb'.includes(mp) && 'nb'.includes(cp)) out.push(`меняет ${PIECE[mp].acc} на ${PIECE[cp].acc}`);
-    else out.push(`забирает ${PIECE[cp].acc}`);
+    if (f.recapture) out.push(v(`отыгрываешь ${PIECE[cp].acc}`, `отыгрывает ${PIECE[cp].acc}`));
+    else if (f.trade && mp === cp && cp !== 'p') out.push(v(`идёшь на размен ${PIECE[cp].pl}`, `идёт на размен ${PIECE[cp].pl}`));
+    else if (f.trade && 'nb'.includes(mp) && 'nb'.includes(cp)) out.push(v(`меняешь ${PIECE[mp].acc} на ${PIECE[cp].acc}`, `меняет ${PIECE[mp].acc} на ${PIECE[cp].acc}`));
+    else out.push(v(`забираешь ${PIECE[cp].acc}`, `забирает ${PIECE[cp].acc}`));
   }
   if (f.saves && out.length < maxItems) {
-    out.push(f.saves.how === 'move' ? `уводит ${PIECE[f.saves.t].acc} из-под удара` : `защищает ${PIECE[f.saves.t].acc} на ${f.saves.sq}`);
+    out.push(f.saves.how === 'move'
+      ? v(`уводишь ${PIECE[f.saves.t].acc} из-под удара`, `уводит ${PIECE[f.saves.t].acc} из-под удара`)
+      : v(`защищаешь ${PIECE[f.saves.t].acc} на ${f.saves.sq}`, `защищает ${PIECE[f.saves.t].acc} на ${f.saves.sq}`));
   }
-  if (f.castle) out.push('рокировка: король уходит в безопасное место, а ладья включается в игру');
+  if (f.castle) out.push(v('прячешь короля и вводишь ладью в игру', 'прячет короля и вводит ладью в игру'));
   if (!f.fork && f.attacks && f.attacks.length && !f.mate) {
     const t = f.attacks[0];
-    out.push(`нападает на ${PIECE[t.t].acc} на ${t.sq}`);
+    out.push(v(`нападаешь на ${PIECE[t.t].acc} на ${t.sq}`, `нападает на ${PIECE[t.t].acc} на ${t.sq}`));
   }
-  if (f.develop) out.push(`развивает ${moved.acc}`);
-  if (f.center) out.push('захватывает центр');
-  if (f.passed) out.push('продвигает проходную пешку');
-  if (f.openFile) out.push('занимает ладьёй открытую вертикаль');
-  const items = out.slice(0, maxItems);
-  if (!items.length) return '';
-  if (items.length > 1 && items.some((x) => x.includes(':'))) {
-    return lower ? items[0] : items.map((x) => cap(x) + '.').join(' ');
+  if (f.develop) out.push(v(`выводишь ${PIECE[movedT].acc} в игру`, `выводит ${PIECE[movedT].acc} в игру`));
+  if (f.center) out.push(v('занимаешь центр', 'занимает центр'));
+  if (f.passed) out.push(v('двигаешь вперёд проходную пешку', 'двигает вперёд проходную пешку'));
+  if (f.openFile) out.push(v('ставишь ладью на открытую вертикаль', 'ставит ладью на открытую вертикаль'));
+  const items = out.slice(0, solo ? maxItems - 1 : maxItems);
+  if (mode === 'move') {
+    if (!items.length) return '';
+    const s = listAnd(items);
+    return lower ? s : cap(s) + '.';
   }
-  const s = listAnd(items);
-  return lower ? s : cap(s) + '.';
+  let sentence = '';
+  if (items.length) sentence = you ? cap(listAnd(items)) + '.' : `${subj} ${listAnd(items)}.`;
+  return [solo, sentence].filter(Boolean).join(' ');
 }
-
-function materialNom(net) {
-  const w = gainWords(net);
-  const nom = { 'ферзя': 'ферзь', 'ладью': 'ладья', 'коня': 'конь', 'слона': 'слон', 'фигуру': 'фигура', 'пешку': 'пешка' };
-  const [head, ...rest] = w.split(' за ');
-  if (head.startsWith('двух')) return 'материал';
-  return head.split(' ').map((x) => nom[x] || x).join(' ') + (rest.length ? ' за ' + rest.join(' за ') : '');
-}
-
 
 /* ------------------------- Classification --------------------------- */
 
@@ -622,7 +632,9 @@ export function reviewMove(prev, next, m, ctx = {}) {
   r.mateAfter = mateAfter;
   r.bestMate = bestMate;
   r.legal = legal;
-  r.text = explain(r, { m, prev, next, best, lines, playedLine, bestLine, matPlayed, matBest, feats, ctx });
+  const d = { m, prev, next, best, lines, playedLine, bestLine, matPlayed, matBest, feats, ctx };
+  r.texts = { me: explain(r, d, true), opp: explain(r, d, false) };
+  r.text = r.texts.me;
   r.bestLine = best && best.uci !== uci ? numbered(prev.fen, lineSan(prev.fen, best.pv || [best.uci], 10)) : '';
   r.bestLineUci = best ? (best.pv || [best.uci]).slice(0, 12) : [];
   return r;
@@ -630,20 +642,32 @@ export function reviewMove(prev, next, m, ctx = {}) {
 
 /* ------------------------------ Coach ------------------------------- */
 
-function bestReason(prev, best, bestLine, matBest, matPlayed, bestFeat) {
+/** Why the engine's move was better — a phrase whose subject is the move. */
+function bestReason(best, bestLine, matBest, matPlayed, bestFeat, tense = 'pres') {
+  const past = tense === 'past';
   if (best.mate != null && best.mate > 0) {
-    return best.mate === 1 ? 'сразу ставит мат' : `ведёт к мату в ${moves_(best.mate)}`;
+    if (best.mate === 1) return past ? 'ставил мат сразу' : 'сразу ставит мат';
+    return past ? `вёл к мату в ${moves_(best.mate)}` : `ведёт к мату в ${moves_(best.mate)}`;
   }
   const diff = matBest.delta - matPlayed.delta;
-  if (diff >= 1.5 && matBest.delta >= 1) return `выигрывает ${gainWords(netCaptures(bestLine, bestLine[0].color))}`;
-  if (diff >= 1.5) return 'сохраняет материал';
-  const p = bestFeat ? purpose(bestLine[0], bestFeat, { maxItems: 1, lower: true }) : '';
-  if (p) return p;
-  return '';
+  if (diff >= 1.5 && matBest.delta >= 1) {
+    const w = gainWords(netCaptures(bestLine, bestLine[0].color));
+    return `${past ? 'выигрывал' : 'выигрывает'} ${w}`;
+  }
+  if (diff >= 1.5) return past ? 'сохранял материал' : 'сохраняет материал';
+  if (past) return '';
+  return bestFeat ? purpose(bestLine[0], bestFeat, { mode: 'move', maxItems: 1, lower: true }) : '';
 }
 
-function explain(r, d) {
-  const { m, prev, next, best, playedLine, bestLine, matPlayed, matBest, feats, ctx } = d;
+/**
+ * The coach's words about a move. `me` — the move was made by the player
+ * the review is for (the side at the bottom of the board).
+ */
+function explain(r, d, me) {
+  const { m, prev, best, playedLine, bestLine, matPlayed, matBest, feats, ctx } = d;
+  const seed = (ctx.ply || 0) * 7 + CLS_ORDER.indexOf(r.cls) + (me ? 0 : 3);
+  const P = (arr) => pick(arr, seed);
+  const Y = (mine, theirs) => (me ? mine : theirs);
   const out = [];
   const reply = playedLine[1];
   const bestMove = bestLine[0];
@@ -651,116 +675,169 @@ function explain(r, d) {
   if (best && best.uci !== r.uci && bestMove) {
     try { bestFeat = moveFeatures(prev.fen, bestMove, ctx.prevMove, ctx.ply); } catch { bestFeat = null; }
   }
-  const better = () => {
+  const bestSan = bestMove ? S(bestMove.san) : '';
+  const why = (tense) => (bestMove ? bestReason(best, bestLine, matBest, matPlayed, bestFeat, tense) : '');
+  const what = purpose(m, feats, { mode: me ? 'you' : 'they', subj: 'Он' });
+  const better = (soft) => {
     if (!best || best.uci === r.uci || !bestMove) return '';
-    const why = bestReason(prev, best, bestLine, matBest, matPlayed, bestFeat);
-    return `Лучше было ${S(bestMove.san)}${why ? ' — ' + why : ''}.`;
+    const w = why('pres');
+    const tail = w ? ` — ${w}` : '';
+    if (soft) return Y(P([`Но ${bestSan} был ещё сильнее${tail}.`, `Чуть точнее ${bestSan}${tail}.`]),
+      `Хотя ${bestSan} был сильнее${tail}.`);
+    return Y(P([`Лучше было ${bestSan}${tail}.`, `Сильнее ${bestSan}${tail}.`, `Надо было играть ${bestSan}${tail}.`]),
+      P([`Соперник должен был играть ${bestSan}${tail}.`, `Правильно было ${bestSan}${tail}.`, `У соперника был ход получше: ${bestSan}${tail}.`]));
   };
-  const what = purpose(m, feats);
+  const outcome = r.epBest >= 0.75 ? 'сохраняет выигрыш' : r.epBest >= 0.56 ? 'сохраняет преимущество' : 'спасает позицию';
 
   switch (r.cls) {
     case 'forced':
-      out.push('Единственный возможный ход.');
+      out.push(Y(P(['Здесь без вариантов — это единственный ход.', 'Других ходов просто нет.']),
+        P(['У соперника не было выбора — единственный ход.', 'Вынужденно: других ходов у соперника нет.'])));
       break;
-    case 'book':
-      out.push(`Теоретический ход${ctx.opening ? `. Дебют: <i>${ctx.opening}</i>` : ''}.`);
-      if (what) out.push(what);
+    case 'book': {
+      const op = ctx.opening ? `<i>${ctx.opening}</i>` : '';
+      out.push(Y(P([`Теория${op ? ': ' + op : ''}. Играешь по книге!`, `Всё по теории${op ? ' — ' + op : ''}.`, `Книжный ход${op ? ' (' + op + ')' : ''}. Так играют мастера.`]),
+        P([`Соперник тоже знает теорию${op ? ': ' + op : ''}.`, `Книжный ответ${op ? ' — ' + op : ''}.`, `Соперник играет по теории${op ? ': ' + op : ''}.`])));
+      if (ctx.ply < 8 && what) out.push(what);
       break;
+    }
     case 'brilliant': {
-      const sac = r.sacrifice;
-      out.push(`Блестящая жертва ${PIECE[sac.t].gen}!`);
-      if (r.mateAfter > 0) out.push(r.mateAfter === 1 ? 'После взятия следует мат.' : `Это ведёт к форсированному мату в ${moves_(r.mateAfter)}.`);
-      else if (reply && reply.captured && reply.to === sac.sq) {
-        if (matPlayed.delta >= 0) out.push(`Если взять ${PIECE[sac.t].acc}, материал возвращается с лихвой.`);
-        else out.push(`Взамен ${PIECE[sac.t].gen} — мощная инициатива: ${evalWords(r.epPlayed)}.`);
-      } else out.push(`Брать ${PIECE[sac.t].acc} сопернику невыгодно — ${evalWords(r.epPlayed)}.`);
+      const t = r.sacrifice.t;
+      out.push(Y(P([`Блестяще!! Ты жертвуешь ${PIECE[t].acc}!`, `Вот это ход! Ты отдаёшь ${PIECE[t].acc} — и это сильнейшее продолжение!`, `Браво! Жертва ${PIECE[t].gen} — как у гроссмейстеров!`]),
+        P([`Ого! Соперник жертвует ${PIECE[t].acc} — блестящий ход!`, `Красиво! Соперник отдаёт ${PIECE[t].acc}, и это очень сильно.`])));
+      if (r.mateAfter > 0) {
+        out.push(r.mateAfter === 1 ? Y('Если соперник возьмёт — следует мат!', 'Если взять — следует мат.')
+          : Y(`Теперь у тебя форсированный мат в ${moves_(r.mateAfter)}!`, `Теперь у соперника форсированный мат в ${moves_(r.mateAfter)}.`));
+      } else if (reply && reply.captured && reply.to === r.sacrifice.sq) {
+        out.push(matPlayed.delta >= 0
+          ? Y('Если соперник примет жертву, ты вернёшь всё с лихвой.', 'Примешь жертву — соперник вернёт всё с лихвой. Осторожно!')
+          : Y('Взамен — мощная атака на короля.', 'Взамен у соперника мощная инициатива.'));
+      } else {
+        out.push(Y(`Брать ${PIECE[t].acc} сопернику опасно — это ловушка.`, `Брать ${PIECE[t].acc} тебе невыгодно — это ловушка.`));
+      }
       break;
     }
     case 'great': {
-      out.push(`Единственный ход, который ${r.epBest >= 0.75 ? 'сохраняет выигрыш' : r.epBest >= 0.56 ? 'сохраняет преимущество' : 'удерживает позицию'}.`);
+      out.push(Y(P([`Отличная находка! Это единственный ход, который ${outcome}.`, `Сильно! Только этот ход ${outcome} — в точку!`, `Вот это глаз! Единственный ход, который ${outcome}.`]),
+        P([`Соперник находит единственный ход, который ${outcome}.`, `Сильный ответ соперника — только этот ход ${outcome}.`])));
       if (what) out.push(what);
       const l2 = d.lines[1];
       if (l2) {
         const m2 = lineSan(prev.fen, [l2.uci], 1)[0];
-        if (m2) out.push(`Другие ходы заметно хуже: например, ${S(m2.san)} — ${fmtPov(scoreOf(l2), r.color)}.`);
+        const e2 = ep(scoreOf(l2));
+        if (m2) {
+          const bad = Y(e2 < 0.3 ? 'вёл к тяжёлой позиции' : 'упускал перевес', e2 < 0.3 ? 'отдавал тебе перевес' : 'давал тебе отыграться');
+          out.push(`Любой другой ход, например ${S(m2.san)}, ${bad} (${fmtPov(scoreOf(l2), r.color)}).`);
+        }
       }
       break;
     }
-    case 'best':
-      out.push(what || (r.epPlayed >= 0.56 ? 'Сохраняет преимущество.' : r.epPlayed > 0.44 ? 'Сохраняет равновесие.' : 'Лучший шанс в этой позиции.'));
-      break;
-    case 'excellent':
+    case 'best': {
+      out.push(Y(P(['Лучший ход!', 'Точно!', 'Именно так!', 'Сильнейший ход.', 'Так сыграл бы и Stockfish.']),
+        P(['Соперник находит лучший ход.', 'Точный ход соперника.', 'Соперник играет сильнейшее.'])));
       if (what) out.push(what);
-      if (r.bestSan) out.push(`Движок предпочёл бы ${S(r.bestSan)}, но разница минимальна.`);
+      else {
+        const e = r.epPlayed;
+        out.push(Y(e >= 0.56 ? P(['Держишь преимущество.', 'Преимущество под контролем.']) : e > 0.44 ? P(['Позиция в равновесии.', 'Всё под контролем.']) : P(['Лучший шанс в трудной позиции.', 'Сопротивляешься как можно упорнее.']),
+          e >= 0.56 ? 'Он держит преимущество.' : e > 0.44 ? 'Равновесие сохраняется.' : 'Он цепляется за лучший шанс.'));
+      }
+      break;
+    }
+    case 'excellent':
+      out.push(Y(P(['Отличный ход!', 'Очень хорошо!', 'Отлично сыграно.']), P(['Хороший ход соперника.', 'Соперник играет отлично.'])));
+      if (what) out.push(what);
+      if (r.bestSan) out.push(Y(P([`Stockfish чуть больше любит ${S(r.bestSan)}, но разница копеечная.`, `${S(r.bestSan)} был чуточку точнее, но это мелочи.`]),
+        `Движок предпочёл бы ${S(r.bestSan)}, но разница минимальна.`));
       break;
     case 'good':
+      out.push(Y(P(['Неплохо.', 'Нормальный ход.', 'Годится.']), P(['Неплохой ход соперника.', 'Соперник играет нормально.'])));
       if (what) out.push(what);
-      if (best && best.uci !== r.uci) out.push(better().replace('Лучше было', 'Чуть точнее было'));
+      out.push(better(true));
       break;
     default: {
       // inaccuracy / mistake / blunder / miss
-      const lostBy = matBest.delta - matPlayed.delta;
+      const heads = {
+        inaccuracy: [['Хм, неточность.', 'Не самый точный ход.', 'Можно было лучше.'], ['Неточность соперника.', 'Соперник играет неточно.']],
+        mistake: [['Ошибка.', 'Ой, это ошибка.', 'Вот тут ошибка.'], ['Соперник ошибается!', 'Ошибка соперника!']],
+        blunder: [['Зевок!', 'Ох… это зевок.', 'Ай! Грубая ошибка.'], ['Соперник зевает!', 'Грубая ошибка соперника!', 'Подарок от соперника!']],
+        miss: [['Упущенный шанс!', 'Эх, шанс упущен!'], ['Соперник упускает шанс!', 'Повезло — соперник не увидел шанс!']],
+      }[r.cls];
+      out.push(P(heads[me ? 0 : 1]));
       if (r.cls === 'miss') {
-        if (r.bestMate) out.push(`Здесь был мат в ${moves_(r.bestMate)}: ${S(r.bestSan)}!`);
-        else {
-          const pr = ctx.prevMove ? S(ctx.prevMove.san) : 'предыдущим ходом';
-          const why = bestMove ? bestReason(prev, best, bestLine, matBest, matPlayed, bestFeat) : '';
-          out.push(`Соперник ошибся (${pr}), и ${S(r.bestSan)} ${why || 'давал большое преимущество'}. Шанс упущен.`);
+        if (r.bestMate) {
+          out.push(Y(`Здесь был мат в ${moves_(r.bestMate)}: ${S(r.bestSan)}!`, `У соперника был мат в ${moves_(r.bestMate)}: ${S(r.bestSan)}.`));
+        } else {
+          const prevSan = ctx.prevMove ? S(ctx.prevMove.san) : '';
+          const w = why('past');
+          if (me) {
+            out.push(`Соперник ошибся${prevSan ? ` (${prevSan})` : ''}, и ${S(r.bestSan)} ${w || 'давал большой перевес'}.`);
+            out.push(P(['Теперь момент ушёл.', 'Шанс ушёл — в следующий раз смотри внимательнее!']));
+          } else {
+            out.push(`После твоей ошибки${prevSan ? ` (${prevSan})` : ''} соперник мог сыграть ${S(r.bestSan)}${w ? ` — этот ход ${w}` : ' с большим перевесом'}. Но он его не увидел.`);
+          }
         }
         break;
       }
+      const lostBy = matBest.delta - matPlayed.delta;
       if (r.mateAfter != null && r.mateAfter < 0) {
         const n = -r.mateAfter;
         const line = playedLine.slice(1, 1 + 2 * n);
-        out.push(`Теперь у соперника ${mateIn(n)}${line.length ? ': ' + numbered(m.after, line) : ''}.`);
+        const tail = line.length ? ': ' + numbered(m.after, line) : '';
+        out.push(Y(`Теперь у соперника ${mateIn(n)}${tail}.`, `Теперь у тебя ${mateIn(n)}${tail}!`));
       } else if (lostBy >= 1.5) {
         const loss = matPlayed.firstLoss;
         if (loss && feats.hangs.some((x) => x.sq === loss.to)) {
-          out.push(`${cap(PIECE[loss.captured].nom)} на ${loss.to} остаётся под боем — соперник забирает ${him(loss.captured)}: ${S(loss.san)}.`);
+          const t = loss.captured;
+          out.push(Y(`${cap(ownPiece(true, t))} на ${loss.to} остаётся без защиты — соперник просто забирает ${him(t)}: ${S(loss.san)}.`,
+            `${cap(ownPiece(false, t))} на ${loss.to} висит — забирай: ${S(loss.san)}!`));
         } else if (loss && feats.ignored.some((x) => x.sq === loss.to)) {
-          out.push(`Угроза не замечена: ${PIECE[loss.captured].nom} на ${loss.to} так и остаётся под ударом, и соперник забирает ${him(loss.captured)} — ${S(loss.san)}.`);
+          const t = loss.captured;
+          out.push(Y(`Осторожно, угроза! ${cap(ownPiece(true, t))} на ${loss.to} так и висит, и соперник забирает ${him(t)} — ${S(loss.san)}.`,
+            `Соперник не заметил угрозу — ${PIECE[t].acc} на ${loss.to} можно забрать: ${S(loss.san)}!`));
         } else if (reply) {
           let rf = null;
           try { rf = moveFeatures(m.after, reply, m, ctx.ply + 1); } catch { rf = null; }
           if (rf && rf.fork) {
-            const names = rf.fork.map((t) => PIECE[t.t].acc);
-            out.push(`Это позволяет сопернику вилку ${S(reply.san)}: под ударом ${listAnd(names)}.`);
+            const names = listAnd(rf.fork.map((t) => PIECE[t.t].acc));
+            out.push(Y(`Это пропускает вилку ${S(reply.san)}: под ударом ${names}.`, `Это даёт тебе вилку ${S(reply.san)} — под ударом ${names}!`));
           } else {
-            const nom = materialNom(netCaptures(playedLine, other(m.color)));
-            const many = /^(две|три|четыре)|\sи\s/.test(nom.split(' за ')[0]);
-            out.push(`После ответа ${S(reply.san)} ${many ? 'теряются' : 'теряется'} ${nom}.`);
+            const gw = gainWords(netCaptures(playedLine, other(m.color)));
+            out.push(Y(`После ${S(reply.san)} ты теряешь ${gw}.`, `Отвечай ${S(reply.san)} — и ты выигрываешь ${gw}!`));
           }
         }
       } else if (feats.ignored.length && r.cls !== 'inaccuracy' && reply && reply.captured) {
         const x = feats.ignored[0];
-        out.push(`${cap(PIECE[x.t].nom)} на ${x.sq} ${PIECE[x.t].g === 'f' ? 'осталась' : 'остался'} под ударом.`);
+        const left = PIECE[x.t].g === 'f' ? 'осталась' : 'остался';
+        out.push(Y(`${cap(ownPiece(true, x.t))} на ${x.sq} ${left} под ударом.`, `${cap(ownPiece(false, x.t))} на ${x.sq} ${left} под ударом — пользуйся!`));
       } else {
         const b = r.epBest, a = r.epPlayed;
-        if (b >= 0.8 && a < 0.66) out.push('Выигрышное преимущество упущено.');
-        else if (b >= 0.56 && a <= 0.56) out.push('Преимущество потеряно.');
-        else if (b > 0.44 && a <= 0.34) out.push('Равновесие нарушено — позиция становится тяжёлой.');
-        else if (b > 0.2 && a <= 0.1) out.push('После этого защищаться уже очень трудно.');
-        else out.push(`Оценка меняется: ${fmtPov(r.scoreBest, r.color)} → ${fmtPov(r.scoreAfter, r.color)}.`);
+        if (b >= 0.8 && a < 0.66) out.push(Y('Выигранная позиция ускользает.', 'Соперник выпускает почти выигранную позицию.'));
+        else if (b >= 0.56 && a <= 0.56) out.push(Y('Преимущество уходит.', 'Соперник растерял своё преимущество.'));
+        else if (b > 0.44 && a <= 0.34) out.push(Y('Позиция становится тяжёлой.', 'Теперь перевес на твоей стороне!'));
+        else if (b > 0.2 && a <= 0.1) out.push(Y('После этого защищаться очень трудно.', 'Теперь у тебя почти выигранная позиция!'));
+        else out.push(Y(`Оценка смещается в пользу соперника: ${fmtPov(r.scoreBest, r.color)} → ${fmtPov(r.scoreAfter, r.color)}.`,
+          `Оценка смещается в твою пользу: ${fmtPov(r.scoreBest, r.color)} → ${fmtPov(r.scoreAfter, r.color)}.`));
         if (reply) {
           let rf = null;
           try { rf = moveFeatures(m.after, reply, m, ctx.ply + 1); } catch { rf = null; }
-          const p = rf ? purpose(reply, rf, { maxItems: 1, lower: true }) : '';
-          if (p && !rf.develop && !rf.center && !rf.recapture) out.push(`Сильнейший ответ — ${S(reply.san)}: ${p}.`);
+          const p = rf ? purpose(reply, rf, { mode: 'move', maxItems: 1, lower: true }) : '';
+          if (p && !rf.develop && !rf.center && !rf.recapture) {
+            out.push(Y(`Соперник может ответить ${S(reply.san)} — ${p}.`, `Наказывай: ${S(reply.san)} — ${p}!`));
+          }
         }
       }
-      const b = better();
-      if (b) out.push(b);
+      out.push(better(false));
     }
   }
   if (feats.mate) {
     out.length = 0;
-    out.push(`Мат! ${cap(colorName(m.color))} побеждают.`);
+    out.push(Y(P(['Мат! Победа твоя!', 'Мат! Красивый финал!']), 'Мат. Соперник довёл дело до конца.'));
   } else if (r.mateAfter > 0 && !BAD.has(r.cls) && r.cls !== 'brilliant') {
-    out.push(`Теперь у ${colorGen(m.color)} ${mateIn(r.mateAfter)}.`);
+    out.push(Y(`Теперь у тебя ${mateIn(r.mateAfter)}!`, `Теперь у соперника ${mateIn(r.mateAfter)}.`));
   } else if (r.mateAfter < 0 && !BAD.has(r.cls)) {
-    out.push(`Позиция и так проиграна: у соперника ${mateIn(-r.mateAfter)}.`);
+    out.push(Y(`Позиция и так проиграна: у соперника ${mateIn(-r.mateAfter)}.`, `У тебя ${mateIn(-r.mateAfter)}!`));
   }
-  return out.join(' ');
+  return out.filter(Boolean).join(' ');
 }
 
 /* ------------------------- Whole-game review ------------------------ */
@@ -935,26 +1012,32 @@ export function openingName(op) {
 
 /* ------------------------------ Summary ----------------------------- */
 
-export function summaryText(game, review) {
+export function summaryText(game, review, me = 'w') {
   const { stats, results } = review;
   const { accuracy } = stats;
-  const W = game.headers.White && game.headers.White !== '?' ? game.headers.White : 'Белые';
-  const B = game.headers.Black && game.headers.Black !== '?' ? game.headers.Black : 'Чёрные';
+  const op = me === 'w' ? 'b' : 'w';
+  const seed = results.length;
   const parts = [];
   if (accuracy.w != null && accuracy.b != null) {
-    const d = accuracy.w - accuracy.b;
-    if (Math.abs(d) < 3) parts.push(`Обе стороны сыграли примерно одинаково (${fmtAcc(accuracy.w)} и ${fmtAcc(accuracy.b)}).`);
-    else parts.push(`Точнее играл${''} ${d > 0 ? 'белые' : 'чёрные'} — ${d > 0 ? W : B}: ${fmtAcc(Math.max(accuracy.w, accuracy.b))} против ${fmtAcc(Math.min(accuracy.w, accuracy.b))}.`.replace('играл белые', 'играли белые').replace('играл чёрные', 'играли чёрные'));
+    const a = accuracy[me], o = accuracy[op];
+    if (Math.abs(a - o) < 3) parts.push(`Точность почти равная: у тебя ${fmtAcc(a)}, у соперника ${fmtAcc(o)}. Упорная борьба!`);
+    else if (a > o) parts.push(pick([`Сегодня точность на твоей стороне: ${fmtAcc(a)} против ${fmtAcc(o)}.`, `Хорошая работа! Твоя точность — ${fmtAcc(a)}, у соперника — ${fmtAcc(o)}.`], seed));
+    else parts.push(`Соперник был точнее: ${fmtAcc(o)} против твоих ${fmtAcc(a)}. Давай посмотрим, где можно было сыграть лучше.`);
   }
   // Turning point: the biggest swing.
   let worst = null;
   for (const r of results) if (BAD.has(r.cls) && (!worst || r.loss > worst.loss)) worst = r;
   if (worst) {
     const no = Math.floor(worst.ply / 2) + 1;
-    parts.push(`Ключевой момент — ${no}${worst.color === 'w' ? '.' : '…'} ${S(worst.san)} (${CLS[worst.cls].label.toLowerCase()}).`);
-  } else parts.push('Серьёзных ошибок в партии не было — отличная игра!');
-  const bril = results.filter((r) => r.cls === 'brilliant').length;
-  if (bril) parts.push(`${bril === 1 ? 'Найден блестящий ход' : `Найдено ${bril} ${plural(bril, 'блестящий ход', 'блестящих хода', 'блестящих ходов')}`}!`);
+    const label = `${no}${worst.color === 'w' ? '.' : '…'} ${S(worst.san)}`;
+    const kind = CLS[worst.cls].label.toLowerCase();
+    if (worst.color === me) parts.push(`Главный момент партии — твой ход ${label} (${kind}). Разберём его подробно.`);
+    else parts.push(`Переломный момент — ход соперника ${label} (${kind}).`);
+  } else parts.push('Серьёзных ошибок не было — отличная партия!');
+  const mine = results.filter((r) => r.cls === 'brilliant' && r.color === me).length;
+  const theirs = results.filter((r) => r.cls === 'brilliant' && r.color === op).length;
+  if (mine) parts.push(mine === 1 ? 'А ещё у тебя есть блестящий ход!' : `А ещё у тебя ${mine} ${plural(mine, 'блестящий ход', 'блестящих хода', 'блестящих ходов')}!`);
+  if (theirs) parts.push(theirs === 1 ? 'Соперник тоже отметился блестящим ходом.' : `У соперника ${theirs} ${plural(theirs, 'блестящий ход', 'блестящих хода', 'блестящих ходов')}.`);
   if (review.opening) parts.push(`Дебют: <i>${review.opening}</i>.`);
   return parts.join(' ');
 }
