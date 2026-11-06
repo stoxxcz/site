@@ -53,6 +53,8 @@ a { color: var(--accent); }
   max-width: 1120px; margin: 0 auto; padding: 10px 16px 6px;
 }
 .brand { font-weight: 700; font-size: 18px; letter-spacing: .2px; white-space: nowrap; }
+.navlink { margin-left: 12px; font-size: 14px; font-weight: 600; color: var(--accent); text-decoration: none; }
+.navlink:hover { text-decoration: underline; }
 .logo { color: var(--accent); font-size: 22px; }
 .status { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--muted); min-width: 0; }
 #engineText { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
