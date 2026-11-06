@@ -17,7 +17,10 @@
 <header class="top">
   <a class="brand" href="./"><span class="brand-icon">!!</span><span>Разбор&nbsp;партии</span></a>
   <nav class="nav">
-    <button type="button" class="voice-btn" id="voiceBtn" aria-pressed="true" title="Голос тренера">🔊 <span>Голос</span></button>
+    <div class="voice-wrap">
+      <button type="button" class="voice-btn" id="voiceBtn" title="Голос тренера">🔊 <span>Голос</span></button>
+      <div class="voice-menu" id="voiceMenu" hidden></div>
+    </div>
     <a href="../chess/">Лучший ход</a>
   </nav>
 </header>
@@ -165,6 +168,7 @@
 <footer class="foot">
   Анализ — <a href="https://github.com/nmrugg/stockfish.js">Stockfish 19</a> (GPLv3), прямо в вашем браузере: партии никуда не отправляются.
   Правила — <a href="https://github.com/jhlywa/chess.js">chess.js</a>, дебюты — <a href="https://github.com/lichess-org/chess-openings">lichess chess-openings</a> (CC0), фигуры Cburnett (CC BY-SA 3.0).
+  Голос тренера — нейросеть <a href="https://github.com/rhasspy/piper">Piper</a> (MIT) через <a href="https://onnxruntime.ai/">onnxruntime-web</a> и <a href="https://github.com/espeak-ng/espeak-ng">espeak-ng</a> (GPLv3); голоса <a href="https://huggingface.co/rhasspy/piper-voices">piper-voices</a>, «Руслан» — на корпусе <a href="https://ruslan-corpus.github.io/">RUSLAN</a> (CC BY-NC-SA 4.0).
   Оценка уровня игры — приблизительная.
 </footer>
 </body>

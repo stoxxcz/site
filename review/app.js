@@ -1,6 +1,7 @@
 import { Chess } from '../chess/vendor/chess.js';
 import { EnginePool } from './engine.js';
 import * as A from './analysis.js';
+import { NeuralVoice, VOICES, DOWNLOAD_MB as VOICE_MB } from './voice.js';
 
 /* =====================================================================
  *  Разбор партии — free game review: paste a PGN, Stockfish checks every
@@ -103,21 +104,71 @@ function pickVoice() {
   if (!('speechSynthesis' in window)) return null;
   const vs = speechSynthesis.getVoices().filter((v) => /^ru/i.test(v.lang));
   if (!vs.length) return null;
-  for (const re of [/yuri|юрий/i, /pavel|павел/i, /dmitr|дмитр/i, /google/i, /milena|милена/i, /irina|ирина/i, /svetlana|светлана/i]) {
+  // Natural/cloud voices first: they sound much less robotic.
+  for (const re of [/natural|neural/i, /online/i, /enhanced|premium|siri/i, /google/i, /dmitr|дмитр|svetlana|светлана/i, /yuri|юрий|milena|милена/i]) {
     const v = vs.find((x) => re.test(x.name));
     if (v) return v;
   }
   return vs[0];
 }
 
+function splitSentences(t) {
+  const parts = t.match(/[^.!?…]+[.!?…]*/g) || [t];
+  const out = [];
+  for (const p of parts.map((x) => x.trim()).filter(Boolean)) {
+    // Glue very short bits ("Ой!") to the next sentence: fewer gaps.
+    if (out.length && out[out.length - 1].length < 14) out[out.length - 1] += ' ' + p;
+    else out.push(p);
+  }
+  return out;
+}
+
+const neural = new NeuralVoice();
 const Talk = {
-  on: store.get('voice', true),
-  flap: 0, stopT: 0, poll: 0, utter: null, lastKey: '', warned: false,
+  mode: store.get('voiceMode', 'neural'),      // neural | browser | off
+  voiceId: store.get('voiceId', 'ruslan'),
+  flap: 0, stopT: 0, poll: 0, raf: 0, utter: null, lastKey: '', token: 0,
+  ctx: null, analyser: null, sources: [], cache: new Map(), loadPct: null, loadFailed: false,
   faces() { return document.querySelectorAll('.coach-face'); },
   jaw(v) { for (const f of this.faces()) f.style.setProperty('--jaw', v.toFixed(1) + '%'); },
-  begin() {
-    clearInterval(this.flap);
-    for (const f of this.faces()) f.classList.add('talking');
+  talking(on) { for (const f of this.faces()) f.classList.toggle('talking', on); },
+
+  /* --- audio plumbing --- */
+  unlock() {
+    if (!this.ctx) {
+      const AC = window.AudioContext || window.webkitAudioContext;
+      if (!AC) return;
+      try { if (navigator.audioSession) navigator.audioSession.type = 'playback'; } catch { /* ignore */ }
+      this.ctx = new AC();
+      this.analyser = this.ctx.createAnalyser();
+      this.analyser.fftSize = 1024;
+      this.analyser.connect(this.ctx.destination);
+      const b = this.ctx.createBuffer(1, 1, 22050);
+      const s = this.ctx.createBufferSource(); s.buffer = b; s.connect(this.ctx.destination); s.start();
+    }
+    if (this.ctx.state === 'suspended') this.ctx.resume().catch(() => {});
+  },
+  lipSync() {
+    cancelAnimationFrame(this.raf);
+    const data = new Float32Array(this.analyser.fftSize);
+    let smooth = 0;
+    const loop = () => {
+      this.analyser.getFloatTimeDomainData(data);
+      let sum = 0;
+      for (let i = 0; i < data.length; i++) sum += data[i] * data[i];
+      const rms = Math.sqrt(sum / data.length);
+      const target = Math.max(0, Math.min(14, (rms - 0.008) * 120));
+      smooth += (target - smooth) * (target > smooth ? 0.6 : 0.35);
+      this.jaw(smooth);
+      this.raf = requestAnimationFrame(loop);
+    };
+    loop();
+  },
+
+  /* --- start / stop --- */
+  begin() {        // fake chatter for silent talking
+    clearTimeout(this.flap);
+    this.talking(true);
     let open = false;
     const tick = () => {
       open = !open;
@@ -127,37 +178,95 @@ const Talk = {
     tick();
   },
   end() {
-    clearTimeout(this.flap); clearTimeout(this.stopT); clearInterval(this.poll);
-    this.flap = this.stopT = this.poll = 0;
+    clearTimeout(this.flap); clearTimeout(this.stopT); clearInterval(this.poll); cancelAnimationFrame(this.raf);
+    this.flap = this.stopT = this.poll = this.raf = 0;
     this.jaw(0);
-    for (const f of this.faces()) f.classList.remove('talking');
+    this.talking(false);
   },
   stop() {
+    this.token++;
     this.utter = null;
     try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch { /* ignore */ }
+    for (const s of this.sources) { try { s.stop(); } catch { /* ignore */ } }
+    this.sources = [];
     this.end();
   },
+  silent(text) {
+    this.begin();
+    this.stopT = setTimeout(() => this.end(), Math.min(8000, 600 + text.length * 45));
+  },
+
   say(html) {
     this.stop();
     const text = speechText(html);
     if (!text) return;
-    this.begin();
-    const silentMs = Math.min(8000, 600 + text.length * 45);
-    const voice = this.on ? pickVoice() : null;
-    if (!voice) {
-      if (this.on && !this.warned && 'speechSynthesis' in window && speechSynthesis.getVoices().length) {
-        this.warned = true;
-        toast('В браузере нет русского голоса — тренер будет говорить только текстом.', 3500);
-      }
-      this.stopT = setTimeout(() => this.end(), silentMs);
+    if (this.mode === 'neural' && !this.loadFailed) {
+      if (neural.ready) { this.sayNeural(text, this.token); return; }
+      this.ensureNeural();
+      this.silent(text);
       return;
     }
+    if (this.mode === 'browser') { this.sayBrowser(text); return; }
+    this.silent(text);
+  },
+
+  async synthCached(sentence) {
+    const key = this.voiceId + '|' + sentence;
+    if (this.cache.has(key)) return this.cache.get(key);
+    const r = await neural.synth(sentence);
+    this.cache.set(key, r);
+    if (this.cache.size > 300) this.cache.delete(this.cache.keys().next().value);
+    return r;
+  },
+  async sayNeural(text, token) {
+    this.unlock();
+    if (!this.ctx) { this.silent(text); return; }
+    const parts = splitSentences(text);
+    let at = 0;
+    let started = false;
+    for (const sentence of parts) {
+      let r;
+      try { r = await this.synthCached(sentence); } catch (e) { console.warn(e); break; }
+      if (token !== this.token) return;
+      const ctx = this.ctx;
+      const buf = ctx.createBuffer(1, r.pcm.length, r.rate);
+      buf.copyToChannel(r.pcm instanceof Float32Array ? r.pcm : Float32Array.from(r.pcm), 0);
+      const src = ctx.createBufferSource();
+      src.buffer = buf;
+      src.connect(this.analyser);
+      at = Math.max(at, ctx.currentTime + 0.03);
+      src.start(at);
+      at += buf.duration + 0.12;
+      this.sources.push(src);
+      if (!started) { started = true; this.talking(true); this.lipSync(); }
+      clearTimeout(this.stopT);
+      this.stopT = setTimeout(() => { if (token === this.token) this.end(); }, (at - ctx.currentTime) * 1000 + 150);
+    }
+    if (token === this.token && this.prefetchNext) {
+      const next = this.prefetchNext;
+      this.prefetchNext = null;
+      this.prefetch(next, token);
+    }
+  },
+  /** Synthesize the next comment in the background so it plays instantly. */
+  async prefetch(html, token = this.token) {
+    if (this.mode !== 'neural' || !neural.ready || !html) return;
+    for (const sentence of splitSentences(speechText(html))) {
+      if (token !== this.token) return;
+      try { await this.synthCached(sentence); } catch { return; }
+    }
+  },
+
+  sayBrowser(text) {
+    const voice = pickVoice();
+    if (!voice) { this.silent(text); return; }
+    this.begin();
     const u = new SpeechSynthesisUtterance(text);
-    u.voice = voice; u.lang = voice.lang; u.rate = 1.08; u.pitch = 1.3;
+    u.voice = voice; u.lang = voice.lang; u.rate = 1; u.pitch = 1;
     const t0 = Date.now();
+    const silentMs = Math.min(8000, 600 + text.length * 45);
     u.onend = () => { if (this.utter === u) { this.utter = null; this.end(); } };
     u.onerror = () => {
-      // Blocked or failed: keep the silent animation instead.
       if (this.utter !== u) return;
       this.utter = null;
       clearInterval(this.poll);
@@ -165,24 +274,70 @@ const Talk = {
     };
     this.utter = u;
     speechSynthesis.speak(u);
-    // Safety net for browsers that never fire 'end'.
     this.poll = setInterval(() => {
       if (this.utter === u && Date.now() - t0 > 1500 && !speechSynthesis.speaking && !speechSynthesis.pending) u.onend();
     }, 500);
   },
-  toggle() {
-    this.on = !this.on;
-    store.set('voice', this.on);
+
+  ensureNeural() {
+    if (neural.loading || neural.ready || this.loadFailed) return;
+    this.loadPct = 0;
     renderVoiceBtn();
-    if (!this.on) { try { speechSynthesis.cancel(); } catch { /* ignore */ } } else speakCurrent(true);
+    neural.load(this.voiceId, (f) => {
+      const pct = Math.floor(f * 100);
+      if (pct !== this.loadPct) { this.loadPct = pct; renderVoiceBtn(); }
+    }).then(() => {
+      this.loadPct = null;
+      renderVoiceBtn();
+      renderVoiceMenu();
+      if (this.mode === 'neural') { toast('Голос тренера готов!'); speakCurrent(true); }
+    }, (e) => {
+      console.warn(e);
+      this.loadPct = null;
+      this.loadFailed = true;
+      renderVoiceBtn();
+      renderVoiceMenu();
+      toast('Не удалось загрузить живой голос — включаю голос браузера.', 3500);
+      this.mode = 'browser';
+    });
+  },
+  setMode(mode, voiceId) {
+    this.mode = mode;
+    store.set('voiceMode', mode);
+    if (voiceId && voiceId !== this.voiceId) {
+      this.voiceId = voiceId;
+      store.set('voiceId', voiceId);
+      this.loadFailed = false;
+      if (neural.voice !== voiceId) { neural.loading = null; neural.session = null; }
+    }
+    if (mode === 'neural') { this.loadFailed = false; this.ensureNeural(); }
+    renderVoiceBtn();
+    renderVoiceMenu();
+    speakCurrent(true);
   },
 };
+
 function renderVoiceBtn() {
   const b = $('voiceBtn');
-  b.innerHTML = `${Talk.on ? '🔊' : '🔇'} <span>Голос</span>`;
-  b.classList.toggle('off', !Talk.on);
-  b.setAttribute('aria-pressed', String(Talk.on));
-  b.title = Talk.on ? 'Выключить голос тренера' : 'Включить голос тренера';
+  const off = Talk.mode === 'off';
+  const label = Talk.loadPct != null ? `Голос ${Talk.loadPct}%` : 'Голос';
+  b.innerHTML = `${off ? '🔇' : '🔊'} <span>${label}</span>`;
+  b.classList.toggle('off', off);
+  b.title = 'Голос тренера';
+}
+function renderVoiceMenu() {
+  const m = $('voiceMenu');
+  if (!m || m.hidden) return;
+  const row = (mode, id, label, note) => {
+    const on = Talk.mode === mode && (mode !== 'neural' || Talk.voiceId === id);
+    return `<button type="button" class="vopt${on ? ' on' : ''}" data-mode="${mode}" data-id="${id || ''}"><span class="vdot"></span><span>${label}${note ? `<small>${note}</small>` : ''}</span></button>`;
+  };
+  const st = neural.ready ? 'загружен' : Talk.loadPct != null ? `загрузка ${Talk.loadPct}%` : `скачается один раз, ~${VOICE_MB} МБ`;
+  m.innerHTML = `<div class="vhead">Живой голос <small>(нейросеть, ${st})</small></div>` +
+    Object.entries(VOICES).map(([id, name]) => row('neural', id, name)).join('') +
+    '<div class="vhead">Другое</div>' +
+    row('browser', '', 'Голос браузера', 'быстро, но звучит как робот') +
+    row('off', '', 'Без звука', 'тренер говорит только текстом');
 }
 /** Let the coach say whatever its bubble currently shows (once per new text). */
 function speakCurrent(force) {
@@ -200,6 +355,11 @@ function speakCurrent(force) {
   } else { Talk.stop(); Talk.lastKey = ''; return; }
   if (!force && key === Talk.lastKey) return;
   Talk.lastKey = key;
+  // Prepare the next move's comment while this one is being spoken.
+  Talk.prefetchNext = null;
+  if (S.view === 'review' && S.review && !S.variation && !S.retry && S.ply < S.game.moves.length) {
+    Talk.prefetchNext = moveText(S.review.results[S.ply], S.game.moves[S.ply].color);
+  }
   Talk.say(html);
 }
 
@@ -1517,7 +1677,25 @@ function bind() {
   $('newGameBtn').onclick = $('newGameBtn2').onclick = () => { setView('input'); window.scrollTo({ top: 0 }); };
   $('summaryBtn').onclick = () => { S.variation = null; S.retry = null; setView('summary'); };
   $('shareBtn').onclick = shareLink;
-  $('voiceBtn').onclick = () => Talk.toggle();
+  $('voiceBtn').onclick = (e) => {
+    e.stopPropagation();
+    const m = $('voiceMenu');
+    m.hidden = !m.hidden;
+    renderVoiceMenu();
+  };
+  $('voiceMenu').onclick = (e) => {
+    const b = e.target.closest('.vopt');
+    if (!b) return;
+    e.stopPropagation();
+    Talk.unlock();
+    Talk.setMode(b.dataset.mode, b.dataset.id || null);
+    $('voiceMenu').hidden = true;
+  };
+  document.addEventListener('click', (e) => { if (!e.target.closest('#voiceMenu')) $('voiceMenu').hidden = true; });
+  // Browsers only allow sound after a tap/click: unlock audio on the first one.
+  const unlock = () => Talk.unlock();
+  document.addEventListener('pointerdown', unlock, true);
+  document.addEventListener('keydown', unlock, true);
   document.addEventListener('click', (e) => { if (e.target.closest('.coach-face')) speakCurrent(true); });
   if ('speechSynthesis' in window) {
     speechSynthesis.getVoices();

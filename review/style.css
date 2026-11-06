@@ -233,7 +233,23 @@ button.link { background: none; padding: 0; color: var(--accent2); text-decorati
 .coach-face.talking { animation: coach-bob .42s ease-in-out infinite alternate; }
 @keyframes coach-bob { from { transform: rotate(-2.5deg) translateY(0); } to { transform: rotate(2.5deg) translateY(-1px); } }
 @media (prefers-reduced-motion: reduce) { .coach-face.talking { animation: none; } }
-.voice-btn { background: none; color: var(--muted); padding: 4px 8px; font-weight: 600; box-shadow: none; }
+.voice-wrap { position: relative; }
+.voice-btn { background: none; color: var(--muted); padding: 4px 8px; font-weight: 600; box-shadow: none; white-space: nowrap; }
+.voice-menu {
+  position: absolute; right: 0; top: calc(100% + 6px); z-index: 50; width: 270px;
+  background: #34312d; border: 1px solid #4a4640; border-radius: 10px; padding: 6px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, .5);
+}
+.voice-menu .vhead { padding: 8px 8px 4px; font-size: 13px; font-weight: 700; color: var(--text); }
+.voice-menu .vhead small { color: var(--muted); font-weight: 500; }
+.voice-menu .vopt {
+  display: flex; align-items: flex-start; gap: 10px; width: 100%; text-align: left;
+  background: none; padding: 8px; border-radius: 7px; font-weight: 600; box-shadow: none;
+}
+.voice-menu .vopt:hover { background: #45413b; }
+.voice-menu .vopt small { display: block; color: var(--muted); font-weight: 500; font-size: 12px; }
+.voice-menu .vdot { flex: none; width: 14px; height: 14px; margin-top: 3px; border-radius: 50%; border: 2px solid #8a857c; }
+.voice-menu .vopt.on .vdot { border-color: var(--accent2); background: radial-gradient(circle, var(--accent2) 45%, transparent 50%); }
 .voice-btn:hover { background: #2f2c28; color: var(--text); }
 .voice-btn.off { opacity: .6; }
 .bubble {
