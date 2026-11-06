@@ -468,8 +468,14 @@ function getPool() {
   return S.poolPromise;
 }
 async function getOpenings() {
-  if (S.openings) return S.openings;
-  try { S.openings = await (await fetch('openings.json')).json(); } catch { S.openings = {}; }
+  if (!S.openings) {
+    const [names, book] = await Promise.all([
+      fetch('openings.json').then((r) => r.json()).catch(() => ({})),
+      fetch('book.bin').then((r) => (r.ok ? r.arrayBuffer() : null)).then((b) => (b ? A.makeBook(b) : null)).catch(() => null),
+    ]);
+    S.openings = names;
+    S.book = book;
+  }
   return S.openings;
 }
 
@@ -529,7 +535,9 @@ async function analyse(game, opts = {}) {
       });
       if (token !== S.runToken || pool.cancelled) return;
     }
-    finishReview();
+    progress(total, total, 'Готовлю комментарии тренера…');
+    await finishReview();
+    if (token !== S.runToken) return;
     saveRecent();
     if (!opts.silentUrl) history.replaceState(null, '', location.pathname + location.search);
   } catch (e) {
@@ -541,8 +549,10 @@ async function analyse(game, opts = {}) {
   }
 }
 
-function finishReview() {
-  S.review = A.reviewGame(S.game, S.pos, S.openings);
+async function finishReview() {
+  S.review = await A.reviewGameAsync(S.game, S.pos, S.openings, S.book, (f) => {
+    if (S.view === 'progress') $('progressText').textContent = `Готовлю комментарии тренера… ${Math.round(f * 100)}%`;
+  });
   S.ply = 0;
   setView('summary');
   renderAll(false);
@@ -908,7 +918,7 @@ function renderCoach() {
     title.innerHTML = coachTitle(r, node.move);
     text.innerHTML = moveText(r, node.move.color);
     setEval({ score: node.score, turn: node.fen.split(' ')[1] });
-    if (r.bestLine) showLine(r, S.variation.idx === 0 ? S.game.fens[S.variation.base] : S.variation.nodes[S.variation.idx - 1].fen, 'var');
+
     return;
   }
 
@@ -917,7 +927,8 @@ function renderCoach() {
   if (ply === 0) {
     icon.innerHTML = '';
     title.textContent = 'Поехали!';
-    const op = S.review.opening ? ` Дебют: <i>${esc(S.review.opening)}</i>.` : '';
+    const opName = S.review.family || S.review.opening;
+    const op = opName ? ` Дебют: <i>${esc(opName)}</i>.` : '';
     const side = S.orientation === 'w' ? 'белых' : 'чёрных';
     const otherSide = S.orientation === 'w' ? 'чёрных' : 'белых';
     text.innerHTML = 'Давай пройдём партию ход за ходом — расскажу, что получилось здорово, а где можно было сыграть сильнее.'
@@ -935,7 +946,7 @@ function renderCoach() {
   if (ply === S.game.moves.length) body += endNote();
   text.innerHTML = body;
   setEval(S.pos[ply]);
-  if (r.bestLine && !['book', 'forced'].includes(r.cls)) showLine(r, S.game.fens[ply - 1], 'main');
+
   if (r.bestUci && r.bestUci !== r.uci && !['book', 'forced', 'best', 'brilliant', 'great'].includes(r.cls)) {
     addBtn('Показать лучший ход', () => startVariationLine(ply - 1, r.bestLineUci, 0));
     if (A.BAD.has(r.cls)) addBtn('Попробовать снова', () => startRetry(ply - 1), true);
@@ -953,40 +964,6 @@ function endNote() {
   if (res === '0-1') return ` <br><b>Партия окончена: победа чёрных${term}.</b>`;
   if (res === '1/2-1/2') return ` <br><b>Партия окончена вничью${term}.</b>`;
   return '';
-}
-
-function showLine(r, fenBefore, kind) {
-  const line = $('coachLine');
-  const moves = A.lineSan(fenBefore, r.bestLineUci, 10);
-  if (!moves.length) return;
-  const parts = A.numbered(fenBefore, moves).split(' ');
-  // numbered() returns tokens; wrap moves (not numbers) as clickable
-  let k = 0;
-  const html = parts.map((tok) => {
-    if (/^\d+[.…]/.test(tok)) {
-      const [no, san] = tok.split(' ');
-      if (san === undefined) return esc(tok);
-      return `${esc(no)} <span class="pvmv" data-k="${k++}">${esc(san)}</span>`;
-    }
-    return `<span class="pvmv" data-k="${k++}">${esc(tok)}</span>`;
-  }).join(' ');
-  line.innerHTML = `<b>Лучшая линия:</b> ${html}`;
-  line.hidden = false;
-  line.onclick = (e) => {
-    const t = e.target.closest('.pvmv');
-    if (!t) return;
-    const idx = +t.dataset.k;
-    if (kind === 'main') startVariationLine(S.ply - 1, r.bestLineUci, idx);
-    else {
-      const v = S.variation;
-      const baseIdx = v.idx - 1;
-      const fen = baseIdx < 0 ? S.game.fens[v.base] : v.nodes[baseIdx].fen;
-      v.nodes = v.nodes.slice(0, baseIdx + 1);
-      appendLine(fen, r.bestLineUci);
-      v.idx = Math.min(v.nodes.length - 1, baseIdx + 1 + idx);
-      afterVariationChange();
-    }
-  };
 }
 
 /* =========================== Navigation ============================= */
@@ -1230,7 +1207,7 @@ function computeNodeResult(i) {
   const prevMove = i === 0 ? S.game.moves[v.base - 1] || null : v.nodes[i - 1].move;
   const prevResult = i === 0 ? (S.review.results[v.base - 1] || null) : v.nodes[i - 1].result;
   try {
-    n.result = A.reviewMove(parent, np, n.move, { ply: v.base + i, prevMove, prevResult });
+    n.result = A.reviewMove(parent, np, n.move, { ply: v.base + i, prevMove, prevResult, k: A.ratingK(S.game.headers, n.move.color) });
   } catch (e) { console.error(e); return false; }
   return true;
 }
@@ -1344,8 +1321,8 @@ function showRetryAnswer() {
   rt.fen = m.after;
   rt.result = { cls: 'best', uci: best.uci };
   const r = S.review.results[rt.idx];
-  rt.text = (A.purposeText(S.game.fens[rt.idx], m, S.game.moves[rt.idx - 1] || null, rt.idx, 'move') || 'Сильнейший ход по оценке движка.') +
-    (r.bestLine ? `<br><span style="color:#5d5850;font-size:13px">Линия: ${r.bestLine}</span>` : '');
+  rt.text = A.purposeText(S.game.fens[rt.idx], m, S.game.moves[rt.idx - 1] || null, rt.idx) || 'Сильнейший ход в этой позиции.';
+  void r;
   clearSelection();
   renderAll(true);
 }
@@ -1509,7 +1486,7 @@ async function openRecent(i) {
     S.orientation = x.orientation || 'w';
     S.variation = null; S.retry = null;
     $('pgnInput').value = x.pgn;
-    finishReview();
+    await finishReview();
     getPool().catch(() => {});
   } catch (e) { toast('Не удалось открыть разбор'); console.error(e); }
 }
