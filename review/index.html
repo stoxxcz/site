@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#262421">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='48' fill='%2322b8a0'/%3E%3Ctext x='50' y='70' font-size='56' font-weight='900' text-anchor='middle' fill='white' font-family='Arial'%3E!!%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="style.css">
+<link rel="preload" as="image" href="coach/top.png">
 <script type="module" src="app.js"></script>
 </head>
 <body>
@@ -16,6 +17,7 @@
 <header class="top">
   <a class="brand" href="./"><span class="brand-icon">!!</span><span>Разбор&nbsp;партии</span></a>
   <nav class="nav">
+    <button type="button" class="voice-btn" id="voiceBtn" aria-pressed="true" title="Голос тренера">🔊 <span>Голос</span></button>
     <a href="../chess/">Лучший ход</a>
   </nav>
 </header>
@@ -85,7 +87,7 @@
     <div class="view" id="progressView" hidden>
       <div class="card">
         <div class="coach">
-          <div class="avatar" aria-hidden="true"><svg viewBox="1.5 1.5 37 37"><use href="#p-wn"/></svg></div>
+          <button type="button" class="avatar coach-face" title="Повторить" aria-label="Тренер — нажми, чтобы повторить"><img class="cf-mouth" src="coach/mouth.png" alt=""><img class="cf-top" src="coach/top.png" alt=""><img class="cf-jaw" src="coach/jaw.png" alt=""></button>
           <div class="bubble">
             <div class="ctitle"><span class="ctext">Секунду, изучаю партию…</span></div>
             <p class="cbody" id="progressText">Запускаю Stockfish…</p>
@@ -101,7 +103,7 @@
     <div class="view" id="summaryView" hidden>
       <div class="card">
         <div class="coach">
-          <div class="avatar" aria-hidden="true"><svg viewBox="1.5 1.5 37 37"><use href="#p-wn"/></svg></div>
+          <button type="button" class="avatar coach-face" title="Повторить" aria-label="Тренер — нажми, чтобы повторить"><img class="cf-mouth" src="coach/mouth.png" alt=""><img class="cf-top" src="coach/top.png" alt=""><img class="cf-jaw" src="coach/jaw.png" alt=""></button>
           <div class="bubble">
             <div class="ctitle"><span class="ctext">Итоги партии</span></div>
             <p class="cbody" id="summaryText"></p>
@@ -123,7 +125,7 @@
     <div class="view" id="reviewView" hidden>
       <div class="card coach-card">
         <div class="coach">
-          <div class="avatar" aria-hidden="true"><svg viewBox="1.5 1.5 37 37"><use href="#p-wn"/></svg></div>
+          <button type="button" class="avatar coach-face" title="Повторить" aria-label="Тренер — нажми, чтобы повторить"><img class="cf-mouth" src="coach/mouth.png" alt=""><img class="cf-top" src="coach/top.png" alt=""><img class="cf-jaw" src="coach/jaw.png" alt=""></button>
           <div class="bubble" id="coachBubble">
             <div class="ctitle"><span class="cicon" id="coachIcon"></span><span class="ctext" id="coachTitle"></span><span class="ceval" id="coachEval"></span></div>
             <p class="cbody" id="coachText"></p>

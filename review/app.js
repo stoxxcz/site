@@ -64,6 +64,145 @@ function iconSvg(cls) {
 }
 const pieceSvg = (c, t) => `<svg viewBox="1.5 1.5 37 37"><use href="#p-${c}${t}"/></svg>`;
 
+
+/* ============================ Coach voice =========================== */
+// The coach talks: browser speech synthesis (Russian voice) while the
+// cut-out head flaps its jaw like a cartoon puppet. Without a voice it
+// still "talks" silently for a time proportional to the text.
+
+const SPEAK_PIECE = { '♚': 'король', '♛': 'ферзь', '♜': 'ладья', '♝': 'слон', '♞': 'конь', K: 'король', Q: 'ферзь', R: 'ладья', B: 'слон', N: 'конь' };
+const SPEAK_PROMO = { '♛': 'ферзя', '♜': 'ладью', '♝': 'слона', '♞': 'коня', Q: 'ферзя', R: 'ладью', B: 'слона', N: 'коня' };
+const SPEAK_FILE = { a: 'а', b: 'бэ', c: 'цэ', d: 'дэ', e: 'е', f: 'эф', g: 'жэ', h: 'аш' };
+
+function speechText(html) {
+  const div = document.createElement('div');
+  div.innerHTML = html;
+  div.querySelectorAll('span[style]').forEach((e) => e.remove());
+  let t = div.textContent.replace(/\s+/g, ' ').trim();
+  t = t.replace(/Stockfish/g, 'Стокфиш');
+  t = t.replace(/\b\d+\s?(?:\.|…)\s?(?=[♚♛♜♝♞a-hO])/g, '');
+  t = t.replace(/O-O-O([+#]?)/g, (a, c) => 'длинная рокировка' + (c === '+' ? ', шах' : c === '#' ? ', мат' : ''));
+  t = t.replace(/O-O([+#]?)/g, (a, c) => 'короткая рокировка' + (c === '+' ? ', шах' : c === '#' ? ', мат' : ''));
+  t = t.replace(/([♚♛♜♝♞])?([a-h])?([1-8])?(x)?([a-h])([1-8])(?:=([♛♜♝♞QRBN]))?([+#])?/g,
+    (all, pc, ff, fr, x, f, r, promo, chk, at, str) => [
+      pc ? SPEAK_PIECE[pc] : '', ff ? SPEAK_FILE[ff] : '', fr || '', x ? 'бьёт' : '',
+      `${SPEAK_FILE[f]} ${r}`, promo ? `с превращением в ${SPEAK_PROMO[promo]}` : '',
+      chk === '+' ? 'шах' : chk === '#' ? 'мат' : '',
+    ].filter(Boolean).join(' ') + (/^\s+[♚♛♜♝♞a-hO]/.test(str.slice(at + all.length)) ? ',' : ''));
+  t = t.replace(/([+−-])(\d+)\.(\d+)/g, (a, sg, i, f) => `${sg === '+' ? 'плюс' : 'минус'} ${i},${f}`);
+  t = t.replace(/\s*→\s*/g, ', а теперь ').replace(/!!/g, '!').replace(/\s+([,.!?])/g, '$1');
+  if (t.length > 320) {
+    const cut = t.slice(0, 320);
+    const end = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+    t = end > 80 ? cut.slice(0, end + 1) : cut;
+  }
+  return t;
+}
+
+function pickVoice() {
+  if (!('speechSynthesis' in window)) return null;
+  const vs = speechSynthesis.getVoices().filter((v) => /^ru/i.test(v.lang));
+  if (!vs.length) return null;
+  for (const re of [/yuri|юрий/i, /pavel|павел/i, /dmitr|дмитр/i, /google/i, /milena|милена/i, /irina|ирина/i, /svetlana|светлана/i]) {
+    const v = vs.find((x) => re.test(x.name));
+    if (v) return v;
+  }
+  return vs[0];
+}
+
+const Talk = {
+  on: store.get('voice', true),
+  flap: 0, stopT: 0, poll: 0, utter: null, lastKey: '', warned: false,
+  faces() { return document.querySelectorAll('.coach-face'); },
+  jaw(v) { for (const f of this.faces()) f.style.setProperty('--jaw', v.toFixed(1) + '%'); },
+  begin() {
+    clearInterval(this.flap);
+    for (const f of this.faces()) f.classList.add('talking');
+    let open = false;
+    const tick = () => {
+      open = !open;
+      this.jaw(open ? 5 + Math.random() * 8 : Math.random() * 1.5);
+      this.flap = setTimeout(tick, open ? 90 + Math.random() * 70 : 70 + Math.random() * 60);
+    };
+    tick();
+  },
+  end() {
+    clearTimeout(this.flap); clearTimeout(this.stopT); clearInterval(this.poll);
+    this.flap = this.stopT = this.poll = 0;
+    this.jaw(0);
+    for (const f of this.faces()) f.classList.remove('talking');
+  },
+  stop() {
+    this.utter = null;
+    try { if (window.speechSynthesis) speechSynthesis.cancel(); } catch { /* ignore */ }
+    this.end();
+  },
+  say(html) {
+    this.stop();
+    const text = speechText(html);
+    if (!text) return;
+    this.begin();
+    const silentMs = Math.min(8000, 600 + text.length * 45);
+    const voice = this.on ? pickVoice() : null;
+    if (!voice) {
+      if (this.on && !this.warned && 'speechSynthesis' in window && speechSynthesis.getVoices().length) {
+        this.warned = true;
+        toast('В браузере нет русского голоса — тренер будет говорить только текстом.', 3500);
+      }
+      this.stopT = setTimeout(() => this.end(), silentMs);
+      return;
+    }
+    const u = new SpeechSynthesisUtterance(text);
+    u.voice = voice; u.lang = voice.lang; u.rate = 1.08; u.pitch = 1.3;
+    const t0 = Date.now();
+    u.onend = () => { if (this.utter === u) { this.utter = null; this.end(); } };
+    u.onerror = () => {
+      // Blocked or failed: keep the silent animation instead.
+      if (this.utter !== u) return;
+      this.utter = null;
+      clearInterval(this.poll);
+      this.stopT = setTimeout(() => this.end(), Math.max(0, silentMs - (Date.now() - t0)));
+    };
+    this.utter = u;
+    speechSynthesis.speak(u);
+    // Safety net for browsers that never fire 'end'.
+    this.poll = setInterval(() => {
+      if (this.utter === u && Date.now() - t0 > 1500 && !speechSynthesis.speaking && !speechSynthesis.pending) u.onend();
+    }, 500);
+  },
+  toggle() {
+    this.on = !this.on;
+    store.set('voice', this.on);
+    renderVoiceBtn();
+    if (!this.on) { try { speechSynthesis.cancel(); } catch { /* ignore */ } } else speakCurrent(true);
+  },
+};
+function renderVoiceBtn() {
+  const b = $('voiceBtn');
+  b.innerHTML = `${Talk.on ? '🔊' : '🔇'} <span>Голос</span>`;
+  b.classList.toggle('off', !Talk.on);
+  b.setAttribute('aria-pressed', String(Talk.on));
+  b.title = Talk.on ? 'Выключить голос тренера' : 'Включить голос тренера';
+}
+/** Let the coach say whatever its bubble currently shows (once per new text). */
+function speakCurrent(force) {
+  let key = '', html = '';
+  if (S.view === 'review') {
+    html = $('coachText').innerHTML;
+    if (!html || html === 'Анализирую…') return;
+    key = 'r|' + $('coachTitle').textContent + '|' + html;
+  } else if (S.view === 'summary') {
+    html = $('summaryText').innerHTML;
+    key = 's|' + html;
+  } else if (S.view === 'progress') {
+    html = 'Секунду, изучаю твою партию!';
+    key = 'p|' + Date.now();
+  } else { Talk.stop(); Talk.lastKey = ''; return; }
+  if (!force && key === Talk.lastKey) return;
+  Talk.lastKey = key;
+  Talk.say(html);
+}
+
 /* ============================== Utils =============================== */
 
 function toast(msg, ms = 2400) {
@@ -264,6 +403,7 @@ function setView(v) {
   document.body.dataset.view = v;
   if (v === 'review' || v === 'summary') renderAll(false);
   if (v === 'input') { S.variation = null; S.retry = null; renderRecent(); }
+  speakCurrent();
 }
 function showError(msg) {
   const el = $('pgnError');
@@ -727,6 +867,7 @@ function renderAll(animate = false) {
     renderGraph($('graph'));
     if (S.view === 'summary') renderSummary();
     renderVarBar();
+    speakCurrent();
   }
 }
 
@@ -1376,6 +1517,12 @@ function bind() {
   $('newGameBtn').onclick = $('newGameBtn2').onclick = () => { setView('input'); window.scrollTo({ top: 0 }); };
   $('summaryBtn').onclick = () => { S.variation = null; S.retry = null; setView('summary'); };
   $('shareBtn').onclick = shareLink;
+  $('voiceBtn').onclick = () => Talk.toggle();
+  document.addEventListener('click', (e) => { if (e.target.closest('.coach-face')) speakCurrent(true); });
+  if ('speechSynthesis' in window) {
+    speechSynthesis.getVoices();
+    speechSynthesis.addEventListener?.('voiceschanged', () => {});
+  }
   $('navStart').onclick = () => (S.variation ? exitVariation() : goTo(0, false));
   $('navPrev').onclick = () => step(-1);
   $('navNext').onclick = () => step(1);
@@ -1429,6 +1576,7 @@ function boot() {
   renderBoard(false);
   renderPlayers();
   renderRecent();
+  renderVoiceBtn();
   // Shared link: #pgn=…&side=b
   const hp = new URLSearchParams(location.hash.slice(1));
   if (hp.get('pgn')) {
