@@ -1,18 +1,19 @@
 // Effect chain shared by live playback (AudioContext) and export
 // (OfflineAudioContext), so the downloaded file sounds like the preview.
 //
-//   input ─ hp ─ lowshelf ─ peaking ─┬─ dry ────────────────┬─ master ─ limiter ─▶
-//                                    └─ hp ─ convolver ─ wet ┘
+//   input ─ bass enhancer ─┬─ dry ────────────────┬─ master ─ limiter ─▶
+//                          └─ hp ─ convolver ─ wet ┘
 //
-// The limiter is a look-ahead brickwall AudioWorklet (limiter.js); browsers
-// without AudioWorklet fall back to DynamicsCompressorNode.
+// The bass enhancer and the look-ahead limiter are AudioWorklets
+// (processors.js). Browsers without AudioWorklet get a low-shelf boost and
+// DynamicsCompressorNode instead.
 //
 // Speed is not part of the chain: it is applied by the source
 // (media element / buffer source playbackRate, or the WSOLA stretcher).
 
 export const DEFAULTS = Object.freeze({
   bass: 0,        // dB, 0..24
-  freq: 90,       // Hz, 40..200
+  freq: 120,      // Hz, 40..200 — crossover: everything below is boosted
   speed: 1,       // ×, 0.5..2
   keepPitch: false,
   reverb: 0,      // %, 0..100
@@ -28,13 +29,13 @@ export const LIMITS = Object.freeze({
 });
 
 export const PRESETS = [
-  { id: 'orig',      name: 'Оригинал',        p: { bass: 0,  freq: 90, speed: 1,    keepPitch: false, reverb: 0 } },
-  { id: 'bass',      name: 'Bass Boost',      p: { bass: 12, freq: 90, speed: 1,    keepPitch: false, reverb: 0 } },
-  { id: 'mega',      name: 'Мега бас',        p: { bass: 20, freq: 75, speed: 1,    keepPitch: false, reverb: 0 } },
-  { id: 'slowed',    name: 'Slowed + Reverb', p: { bass: 6,  freq: 90, speed: 0.8,  keepPitch: false, reverb: 40 } },
-  { id: 'slowbass',  name: 'Slowed + Bass',   p: { bass: 14, freq: 80, speed: 0.85, keepPitch: false, reverb: 15 } },
-  { id: 'sped',      name: 'Sped Up',         p: { bass: 0,  freq: 90, speed: 1.25, keepPitch: false, reverb: 0 } },
-  { id: 'nightcore', name: 'Nightcore',       p: { bass: 4,  freq: 90, speed: 1.35, keepPitch: false, reverb: 10 } },
+  { id: 'orig',      name: 'Оригинал',        p: { bass: 0,  freq: 120, speed: 1,    keepPitch: false, reverb: 0 } },
+  { id: 'bass',      name: 'Bass Boost',      p: { bass: 12, freq: 120, speed: 1,    keepPitch: false, reverb: 0 } },
+  { id: 'mega',      name: 'Мега бас',        p: { bass: 20, freq: 110, speed: 1,    keepPitch: false, reverb: 0 } },
+  { id: 'slowed',    name: 'Slowed + Reverb', p: { bass: 6,  freq: 120, speed: 0.8,  keepPitch: false, reverb: 40 } },
+  { id: 'slowbass',  name: 'Slowed + Bass',   p: { bass: 14, freq: 110, speed: 0.85, keepPitch: false, reverb: 15 } },
+  { id: 'sped',      name: 'Sped Up',         p: { bass: 0,  freq: 120, speed: 1.25, keepPitch: false, reverb: 0 } },
+  { id: 'nightcore', name: 'Nightcore',       p: { bass: 6,  freq: 120, speed: 1.35, keepPitch: false, reverb: 10 } },
 ];
 
 export const IR_SECONDS = 3.5;
@@ -51,8 +52,6 @@ export function clampParams(p) {
   return out;
 }
 
-const dbToGain = (db) => Math.pow(10, db / 20);
-
 const workletReady = new WeakMap();
 
 // Loads the limiter worklet into a context. Never rejects.
@@ -60,7 +59,7 @@ export async function prepareContext(ctx) {
   let ok = false;
   try {
     if (ctx.audioWorklet && typeof AudioWorkletNode === 'function') {
-      await ctx.audioWorklet.addModule(new URL('./limiter.js', import.meta.url));
+      await ctx.audioWorklet.addModule(new URL('./processors.js', import.meta.url));
       ok = true;
     }
   } catch (_) {
@@ -68,6 +67,22 @@ export async function prepareContext(ctx) {
   }
   workletReady.set(ctx, ok);
   return ok;
+}
+
+function createEnhancer(ctx) {
+  if (!workletReady.get(ctx)) return null;
+  try {
+    return new AudioWorkletNode(ctx, 'bass-enhancer', {
+      numberOfInputs: 1,
+      numberOfOutputs: 1,
+      outputChannelCount: [2],
+      channelCount: 2,
+      channelCountMode: 'explicit',
+      channelInterpretation: 'speakers',
+    });
+  } catch (_) {
+    return null;
+  }
 }
 
 function createLimiter(ctx) {
@@ -95,18 +110,10 @@ function createLimiter(ctx) {
 
 // Turns user-facing settings into node values.
 export function mapParams(p) {
-  const b = p.bass;
   const r = p.reverb / 100;
   return {
-    // Leave some headroom for the boosted lows; the limiter catches the rest.
-    inputGain: dbToGain(-0.2 * b),
-    // A lowshelf boosts all the way down to DC, which only eats headroom:
-    // cut the inaudible sub-sonic range harder as the boost grows.
-    hpFreq: 2 + b,
-    shelfGain: b,
-    shelfFreq: p.freq,
-    punchFreq: p.freq * 0.75,
-    punchGain: b * 0.25,
+    boost: p.bass,
+    freq: p.freq,
     dry: 1 - 0.3 * r,
     wet: r * 0.9,
     master: p.volume / 100,
@@ -122,19 +129,28 @@ export function buildChain(ctx, impulse = null) {
     return f;
   };
   const input = ctx.createGain();
-  const hp = biquad('highpass', 2, 0.5);
-  const shelf = biquad('lowshelf', DEFAULTS.freq);
-  const punch = biquad('peaking', DEFAULTS.freq * 0.75, 0.9);
   const dry = ctx.createGain();
   const wet = ctx.createGain();
   wet.gain.value = 0;
   const master = ctx.createGain();
   const limiter = createLimiter(ctx);
+  const targets = [];
 
-  input.connect(hp);
-  hp.connect(shelf);
-  shelf.connect(punch);
-  punch.connect(dry);
+  // Bass: the enhancer worklet, or a plain low-shelf where worklets are missing.
+  let bassOut;
+  const enhancer = createEnhancer(ctx);
+  if (enhancer) {
+    input.connect(enhancer);
+    bassOut = enhancer;
+    targets.push([enhancer.parameters.get('boost'), 'boost'], [enhancer.parameters.get('freq'), 'freq']);
+  } else {
+    const shelf = biquad('lowshelf', DEFAULTS.freq);
+    input.connect(shelf);
+    bassOut = shelf;
+    targets.push([shelf.gain, 'boost'], [shelf.frequency, 'freq']);
+  }
+
+  bassOut.connect(dry);
   dry.connect(master);
   // Without an impulse (export with reverb off) skip the costly convolver.
   if (impulse) {
@@ -142,24 +158,13 @@ export function buildChain(ctx, impulse = null) {
     const conv = ctx.createConvolver();
     conv.normalize = true;
     conv.buffer = impulse;
-    punch.connect(wetHp);
+    bassOut.connect(wetHp);
     wetHp.connect(conv);
     conv.connect(wet);
     wet.connect(master);
   }
   master.connect(limiter);
-
-  const targets = [
-    [input.gain, 'inputGain'],
-    [hp.frequency, 'hpFreq'],
-    [shelf.frequency, 'shelfFreq'],
-    [shelf.gain, 'shelfGain'],
-    [punch.frequency, 'punchFreq'],
-    [punch.gain, 'punchGain'],
-    [dry.gain, 'dry'],
-    [wet.gain, 'wet'],
-    [master.gain, 'master'],
-  ];
+  targets.push([dry.gain, 'dry'], [wet.gain, 'wet'], [master.gain, 'master']);
 
   function set(params, when = 0, smooth = false) {
     const v = mapParams(params);
