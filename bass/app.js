@@ -1,4 +1,4 @@
-import { DEFAULTS, PRESETS, IR_SECONDS, buildChain, clampParams, makeImpulse, prepareContext } from './dsp.js';
+import { DEFAULTS, PRESETS, IR_SECONDS, buildChain, clampParams, makeImpulse, prepareContext } from './dsp.js?v=4';
 
 const $ = (id) => document.getElementById(id);
 const STORE_KEY = 'bassboost:v1';
@@ -221,7 +221,7 @@ async function decodeFallback(file, sampleRate, onProgress) {
   const data = await file.arrayBuffer();
   return new Promise((resolve, reject) => {
     cancelFallbackDecode();
-    const w = new Worker(new URL('./decoder.js', import.meta.url));
+    const w = new Worker(new URL('./decoder.js?v=4', import.meta.url));
     fallbackWorker = w;
     const finish = () => { if (fallbackWorker === w) fallbackWorker = null; w.terminate(); };
     w.onmessage = (e) => {
@@ -816,7 +816,7 @@ const jobs = new Map();
 
 function getWorker() {
   if (worker) return worker;
-  worker = new Worker(new URL('./worker.js', import.meta.url));
+  worker = new Worker(new URL('./worker.js?v=4', import.meta.url));
   worker.onmessage = (e) => {
     const m = e.data;
     const job = jobs.get(m.id);

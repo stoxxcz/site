@@ -30,8 +30,8 @@ export const LIMITS = Object.freeze({
 
 export const PRESETS = [
   { id: 'orig',      name: 'Оригинал',        p: { bass: 0,  freq: 120, speed: 1,    keepPitch: false, reverb: 0 } },
-  { id: 'bass',      name: 'Bass Boost',      p: { bass: 12, freq: 120, speed: 1,    keepPitch: false, reverb: 0 } },
-  { id: 'mega',      name: 'Мега бас',        p: { bass: 20, freq: 110, speed: 1,    keepPitch: false, reverb: 0 } },
+  { id: 'bass',      name: 'Bass Boost',      p: { bass: 14, freq: 120, speed: 1,    keepPitch: false, reverb: 0 } },
+  { id: 'mega',      name: 'Мега бас',        p: { bass: 22, freq: 110, speed: 1,    keepPitch: false, reverb: 0 } },
   { id: 'slowed',    name: 'Slowed + Reverb', p: { bass: 6,  freq: 120, speed: 0.8,  keepPitch: false, reverb: 40 } },
   { id: 'slowbass',  name: 'Slowed + Bass',   p: { bass: 14, freq: 110, speed: 0.85, keepPitch: false, reverb: 15 } },
   { id: 'sped',      name: 'Sped Up',         p: { bass: 0,  freq: 120, speed: 1.25, keepPitch: false, reverb: 0 } },
@@ -59,7 +59,7 @@ export async function prepareContext(ctx) {
   let ok = false;
   try {
     if (ctx.audioWorklet && typeof AudioWorkletNode === 'function') {
-      await ctx.audioWorklet.addModule(new URL('./processors.js', import.meta.url));
+      await ctx.audioWorklet.addModule(new URL('./processors.js?v=4', import.meta.url));
       ok = true;
     }
   } catch (_) {
