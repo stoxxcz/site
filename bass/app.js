@@ -78,16 +78,17 @@ function applyParams(smooth = true) {
 function looksLikeAudio(file) {
   if (!file) return false;
   if (/^(audio|video)\//.test(file.type)) return true;
-  return /\.(mp3|wav|wave|flac|ogg|oga|opus|m4a|aac|webm|weba|mp4|aif|aiff)$/i.test(file.name);
+  return /\.(mp3|wav|wave|flac|ogg|oga|opus|m4a|m4b|m4r|alac|aac|caf|webm|weba|mp4|mov|aif|aiff|aifc|wma|ape|wv|ac3|mka|mkv)$/i.test(file.name);
 }
 
 async function loadFile(file) {
   if (!looksLikeAudio(file)) {
-    showDropError('Это не похоже на аудиофайл. Подойдут MP3, WAV, FLAC, OGG, M4A.');
+    showDropError('Это не похоже на аудиофайл. Подойдут MP3, M4A, WAV, FLAC, OGG.');
     return;
   }
   const token = ++state.token;
   stop();
+  cancelFallbackDecode();
   if (state.url) URL.revokeObjectURL(state.url);
   state.file = file;
   state.url = URL.createObjectURL(file);
@@ -126,25 +127,46 @@ async function loadFile(file) {
   await ensureAudio();
   if (token !== state.token) return;
 
-  let decoded = null;
-  try {
-    const data = await file.arrayBuffer();
-    decoded = await new Promise((resolve, reject) => {
-      const p = ctx.decodeAudioData(data, resolve, reject);
-      if (p && p.catch) p.catch(reject);
-    });
-  } catch (_) {
-    decoded = null;
-  }
+  let fallbackError = '';
+  let decoded = await decodeNative(await file.arrayBuffer());
+  if (token !== state.token) return;
+  let canPlay = await playable;
   if (token !== state.token) return;
 
-  const canPlay = await playable;
-  if (token !== state.token) return;
+  if (!decoded) {
+    // The browser can't decode it (e.g. M4A with Apple Lossless): convert it
+    // to WAV with ffmpeg.wasm and use that for playback, waveform and export.
+    try {
+      const wav = await decodeFallback(file, ctx.sampleRate, (stage, f) => {
+        if (token !== state.token) return;
+        const pct = `${Math.round(f * 100)}%`;
+        $('trackSub').textContent = stage === 'download'
+          ? `Подключаю декодер для этого формата (32 МБ, один раз)… ${pct}`
+          : `Декодирую… ${pct}`;
+      });
+      if (token !== state.token) return;
+      decoded = await decodeNative(await wav.arrayBuffer());
+      if (token !== state.token) return;
+      if (decoded) {
+        URL.revokeObjectURL(state.url);
+        state.url = URL.createObjectURL(wav);
+        audio.src = state.url;
+        applySpeed();
+        canPlay = true;
+      }
+    } catch (err) {
+      if (token !== state.token) return;
+      console.warn('fallback decoder failed:', err);
+      fallbackError = String((err && err.message) || err);
+    }
+  }
   $('wave').classList.remove('loading');
 
   if (!decoded && !canPlay) {
     resetToDrop();
-    showDropError('Не получилось открыть этот файл — браузер не знает такой формат. Попробуй MP3 или WAV.');
+    showDropError(/download|fetch|network|importScripts|load/i.test(fallbackError)
+      ? 'Для этого формата нужен декодер, а он не скачался. Проверь интернет и попробуй ещё раз.'
+      : 'Не получилось открыть этот файл — похоже, он повреждён или это не аудио.');
     return;
   }
 
@@ -169,6 +191,46 @@ async function loadFile(file) {
   updateExportUi();
   drawWave();
   setMediaSession();
+}
+
+function decodeNative(data) {
+  return new Promise((resolve) => {
+    try {
+      const p = ctx.decodeAudioData(data, resolve, () => resolve(null));
+      if (p && p.catch) p.catch(() => resolve(null));
+    } catch (_) {
+      resolve(null);
+    }
+  });
+}
+
+let fallbackWorker = null;
+function cancelFallbackDecode() {
+  if (fallbackWorker) {
+    fallbackWorker.terminate();
+    fallbackWorker = null;
+  }
+}
+
+// Runs decoder.js (ffmpeg.wasm) in its own worker, terminated afterwards to
+// free its memory; the 32 MB core stays in the browser's HTTP cache.
+async function decodeFallback(file, sampleRate, onProgress) {
+  const data = await file.arrayBuffer();
+  return new Promise((resolve, reject) => {
+    cancelFallbackDecode();
+    const w = new Worker(new URL('./decoder.js', import.meta.url));
+    fallbackWorker = w;
+    const finish = () => { if (fallbackWorker === w) fallbackWorker = null; w.terminate(); };
+    w.onmessage = (e) => {
+      const m = e.data;
+      if (m.kind === 'progress') { onProgress(m.stage, m.value); return; }
+      finish();
+      if (m.kind === 'done') resolve(new Blob([m.wav], { type: 'audio/wav' }));
+      else reject(new Error(m.message));
+    };
+    w.onerror = (e) => { finish(); reject(new Error(e.message || 'decoder worker failed')); };
+    w.postMessage({ id: 1, data, name: file.name, sampleRate }, [data]);
+  });
 }
 
 function resetToDrop() {
