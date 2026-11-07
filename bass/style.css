@@ -39,7 +39,9 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .top {
   max-width: 1040px;
   margin: 0 auto;
-  padding: 18px 16px 6px;
+  padding-block: 18px 6px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -83,7 +85,9 @@ button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
 .wrap {
   max-width: 1040px;
   margin: 0 auto;
-  padding: 10px 16px 40px;
+  padding-block: 10px 40px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -450,7 +454,9 @@ input[type=range].center::-moz-range-progress { background: transparent; }
 footer {
   max-width: 1040px;
   margin: 0 auto;
-  padding: 0 16px 36px;
+  padding-block: 0 36px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
   color: var(--dim);
   font-size: 13px;
   display: flex;
@@ -489,7 +495,7 @@ kbd {
 .toast {
   position: fixed;
   left: 50%;
-  bottom: 24px;
+  bottom: calc(24px + env(safe-area-inset-bottom, 0px));
   transform: translateX(-50%);
   z-index: 11;
   max-width: calc(100% - 32px);
@@ -507,7 +513,7 @@ kbd {
   .grid .fx:last-child { grid-column: 1 / -1; }
 }
 @media (max-width: 640px) {
-  .top { padding-top: 12px; }
+  .top { padding-block: 12px 6px; }
   .ghost span { display: none; }
   .card { padding: 16px; border-radius: 14px; }
   .grid { grid-template-columns: 1fr; }

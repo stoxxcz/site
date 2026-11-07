@@ -18,36 +18,42 @@ function post(id, msg, transfer) {
   self.postMessage({ id, ...msg }, transfer || []);
 }
 
-async function loadCore(id) {
-  importScripts(CORE + 'ffmpeg-core.js');
-  const res = await fetch(CORE + 'ffmpeg-core.wasm');
-  if (!res.ok || !res.body) throw new Error('decoder download failed: ' + res.status);
-  const total = Number(res.headers.get('content-length')) || WASM_SIZE;
-  const reader = res.body.getReader();
+// `core` (optional): { base, parts } to load the core from the page's own
+// files, with the .wasm split into parts (claude.ai artifacts can't fetch
+// from a CDN and cap file sizes). Default: jsDelivr.
+async function loadCore(id, core) {
+  const base = (core && core.base) || CORE;
+  const urls = core && core.parts ? core.parts.map((p) => base + p) : [base + 'ffmpeg-core.wasm'];
+  importScripts(base + 'ffmpeg-core.js');
   const chunks = [];
   let loaded = 0;
   let last = 0;
-  for (;;) {
-    const { done, value } = await reader.read();
-    if (done) break;
-    chunks.push(value);
-    loaded += value.length;
-    if (loaded - last > 512 * 1024) {
-      last = loaded;
-      post(id, { kind: 'progress', stage: 'download', value: Math.min(1, loaded / total) });
+  for (const url of urls) {
+    const res = await fetch(url);
+    if (!res.ok || !res.body) throw new Error('decoder download failed: ' + res.status);
+    const reader = res.body.getReader();
+    for (;;) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      chunks.push(value);
+      loaded += value.length;
+      if (loaded - last > 512 * 1024) {
+        last = loaded;
+        post(id, { kind: 'progress', stage: 'download', value: Math.min(1, loaded / WASM_SIZE) });
+      }
     }
   }
   const wasmURL = URL.createObjectURL(new Blob(chunks, { type: 'application/wasm' }));
   post(id, { kind: 'progress', stage: 'download', value: 1 });
   return self.createFFmpegCore({
-    mainScriptUrlOrBlob: CORE + 'ffmpeg-core.js#' + btoa(JSON.stringify({ wasmURL })),
+    mainScriptUrlOrBlob: base + 'ffmpeg-core.js#' + btoa(JSON.stringify({ wasmURL })),
   });
 }
 
 self.onmessage = async (e) => {
-  const { id, data, name, sampleRate } = e.data;
+  const { id, data, name, sampleRate, core: coreFiles } = e.data;
   try {
-    if (!corePromise) corePromise = loadCore(id);
+    if (!corePromise) corePromise = loadCore(id, coreFiles);
     const core = await corePromise;
 
     const ext = ((/\.([a-z0-9]{1,5})$/i.exec(name || '') || [])[1] || 'bin').toLowerCase();
