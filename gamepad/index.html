@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тест задержки геймпада — инпут лаг Bluetooth-джойстика на iPhone</title>
+<meta name="description" content="Измерь задержку (инпут лаг) Bluetooth-геймпада на iPhone прямо в браузере: частота опроса, сравнение с тачскрином и точный замер через слоу-мо камеру.">
+<meta name="theme-color" content="#0b0b10">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' x2='1'%3E%3Cstop offset='0' stop-color='%2338d6ff'/%3E%3Cstop offset='1' stop-color='%238b5cff'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='26' fill='url(%23g)'/%3E%3Cpath d='M30 38h40a14 14 0 0 1 13 9l5 15a7 7 0 0 1-12 6l-7-8H31l-7 8a7 7 0 0 1-12-6l5-15a14 14 0 0 1 13-9z' fill='white'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #0b0b10;
+  --panel: #15151e;
+  --panel-2: #1c1c27;
+  --line: #262633;
+  --text: #ececf2;
+  --muted: #8e8ea0;
+  --dim: #5c5c6e;
+  --a1: #38d6ff;
+  --a2: #8b5cff;
+  --ok: #3ddc84;
+  --warn: #ffb547;
+  --bad: #ff5d73;
+  --radius: 16px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background:
+    radial-gradient(900px 500px at 10% -10%, rgba(56, 214, 255, 0.12), transparent 60%),
+    radial-gradient(900px 600px at 95% 0%, rgba(139, 92, 255, 0.14), transparent 60%),
+    var(--bg);
+  background-attachment: fixed;
+  color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+h1 { font-size: 24px; line-height: 1.2; margin: 6px 0 4px; letter-spacing: -0.01em; }
+h1 span { background: linear-gradient(90deg, var(--a1), var(--a2)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.lead { color: var(--muted); margin: 0 0 14px; }
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.card h2 { font-size: 16px; margin: 0 0 8px; }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+.tiny { font-size: 12px; color: var(--muted); }
+
+/* connection */
+.conn { display: flex; align-items: center; gap: 10px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: var(--dim); flex: none; }
+.dot.on { background: var(--ok); box-shadow: 0 0 10px var(--ok); }
+.conn-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.chip { background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 3px 10px; font-size: 12px; color: var(--muted); }
+.chip b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* live controller */
+.live { display: flex; gap: 14px; align-items: center; margin-top: 12px; }
+.sticks { display: flex; gap: 10px; flex: none; }
+.stick { width: 54px; height: 54px; border-radius: 50%; background: var(--panel-2); border: 1px solid var(--line); position: relative; }
+.stick i { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: var(--a1); left: 20px; top: 20px; }
+.btns { display: flex; flex-wrap: wrap; gap: 5px; }
+.btn { min-width: 30px; height: 26px; padding: 0 6px; border-radius: 7px; background: var(--panel-2); border: 1px solid var(--line); font-size: 11px; color: var(--muted); display: flex; align-items: center; justify-content: center; font-weight: 600; }
+.btn.on { background: var(--a2); border-color: var(--a2); color: #fff; }
+
+/* tabs */
+.tabs { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; background: var(--panel); border: 1px solid var(--line); border-radius: 14px; padding: 4px; margin-bottom: 12px; }
+.tab { border: 0; background: transparent; border-radius: 10px; padding: 9px 4px; font-size: 13px; font-weight: 600; color: var(--muted); line-height: 1.2; }
+.tab.on { background: var(--panel-2); color: var(--text); box-shadow: inset 0 0 0 1px var(--line); }
+
+/* stats */
+.big { display: flex; align-items: baseline; gap: 8px; margin: 2px 0 10px; flex-wrap: wrap; }
+.big .num { font-size: 46px; font-weight: 800; line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; }
+.big .unit { font-size: 18px; color: var(--muted); font-weight: 600; }
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; }
+@media (min-width: 520px) { .grid { grid-template-columns: repeat(4, 1fr); } }
+.stat { background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; padding: 8px 10px; min-width: 0; }
+.stat .k { font-size: 11px; color: var(--muted); }
+.stat .v { font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+canvas.hist { width: 100%; height: 110px; display: block; margin-top: 10px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 12px; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; align-items: center; }
+.ghost { border: 1px solid var(--line); background: var(--panel-2); border-radius: 10px; padding: 8px 14px; font-weight: 600; font-size: 14px; }
+.ghost:active { transform: scale(0.97); }
+.note { border-left: 3px solid var(--warn); padding: 6px 10px; background: rgba(255, 181, 71, 0.07); border-radius: 0 10px 10px 0; font-size: 13px; margin-top: 10px; }
+.note.info { border-color: var(--a1); background: rgba(56, 214, 255, 0.07); }
+ol, ul { padding-left: 20px; margin: 6px 0; }
+li { margin: 3px 0; }
+
+/* tap pad */
+.tap {
+  margin-top: 12px;
+  height: 200px;
+  border-radius: 14px;
+  border: 2px dashed var(--line);
+  display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 4px;
+  text-align: center;
+  user-select: none; -webkit-user-select: none; -webkit-touch-callout: none;
+  touch-action: none;
+  font-weight: 700; font-size: 18px; color: var(--muted);
+  transition: background-color 0.25s;
+}
+.tap.hit { background: rgba(56, 214, 255, 0.18); transition: none; }
+.tap .sub { font-size: 12px; font-weight: 500; }
+.log { font-size: 13px; font-variant-numeric: tabular-nums; margin-top: 10px; display: flex; flex-wrap: wrap; gap: 6px; }
+.log span { background: var(--panel-2); border: 1px solid var(--line); border-radius: 8px; padding: 2px 8px; }
+
+/* camera */
+.flash {
+  margin-top: 12px;
+  height: 260px;
+  border-radius: 14px;
+  background: #000;
+  border: 1px solid var(--line);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  user-select: none; -webkit-user-select: none;
+  position: relative; overflow: hidden;
+}
+.flash.white { background: #fff; color: #000; }
+.flash .cnt { font-size: 92px; font-weight: 900; line-height: 1; font-variant-numeric: tabular-nums; }
+.flash .clk { font-size: 15px; font-variant-numeric: tabular-nums; opacity: 0.7; margin-top: 6px; }
+.flash .fs { position: absolute; right: 8px; top: 8px; font-size: 12px; padding: 4px 8px; border-radius: 8px; border: 1px solid currentColor; background: transparent; opacity: 0.6; }
+.flash.full { position: fixed; inset: 0; height: auto; border-radius: 0; z-index: 50; margin: 0; border: 0; }
+.flash.full .cnt { font-size: 30vmin; }
+.calc { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 10px; }
+.calc input, .calc select { background: var(--panel-2); border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; width: 110px; font-size: 16px; }
+.calc .res { font-weight: 800; font-size: 20px; font-variant-numeric: tabular-nums; }
+label.chk { display: flex; gap: 8px; align-items: center; font-size: 13px; color: var(--muted); }
+.good { color: var(--ok); } .mid { color: var(--warn); } .badc { color: var(--bad); }
+footer { color: var(--dim); font-size: 12px; text-align: center; margin-top: 18px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <h1>Тест задержки <span>геймпада</span></h1>
+  <p class="lead">Инпут лаг Bluetooth-джойстика на iPhone: частота опроса, сравнение с тачскрином и точный замер «кнопка → экран» через слоу-мо.</p>
+
+  <section class="card">
+    <div class="conn">
+      <span class="dot" id="dot"></span>
+      <div style="min-width:0">
+        <div class="conn-name" id="padName">Геймпад не найден</div>
+        <div class="tiny" id="padHint">Подключи джойстик по Bluetooth и <b>нажми на нём любую кнопку</b> — Safari показывает геймпад сайту только после нажатия.</div>
+      </div>
+    </div>
+    <div class="live" id="live" hidden>
+      <div class="sticks"><div class="stick"><i id="s0"></i></div><div class="stick"><i id="s1"></i></div></div>
+      <div class="btns" id="btns"></div>
+    </div>
+    <div class="chips">
+      <span class="chip">Экран <b id="hz">—</b></span>
+      <span class="chip">Опрос браузера <b id="pollHz">—</b></span>
+      <span class="chip">Событий от джойстика <b id="evHz">—</b></span>
+    </div>
+    <div class="note" id="noApi" hidden>Этот браузер не поддерживает Gamepad API. На iPhone открой страницу в Safari (iOS 13+), сайт должен быть по https.</div>
+  </section>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab on" data-tab="rate" role="tab">Частота<br>опроса</button>
+    <button class="tab" data-tab="tap" role="tab">Тап +<br>кнопка</button>
+    <button class="tab" data-tab="cam" role="tab">Слоу-мо<br>камера</button>
+  </nav>
+
+  <!-- 1. report rate -->
+  <section class="card" data-panel="rate">
+    <h2>Частота опроса джойстика</h2>
+    <p class="small muted" style="margin:0 0 10px">Крути стик по кругу без остановки 5–10 секунд. Каждый новый пакет от джойстика меняет положение стика — сайт ловит каждый пакет и меряет интервал между ними.</p>
+    <div class="big"><span class="num" id="rHz">—</span><span class="unit">Гц</span><span class="unit" id="rGrade"></span></div>
+    <div class="grid">
+      <div class="stat"><div class="k">Интервал (медиана)</div><div class="v" id="rMed">—</div></div>
+      <div class="stat"><div class="k">Джиттер (разброс)</div><div class="v" id="rJit">—</div></div>
+      <div class="stat"><div class="k">Худшие 5% (p95)</div><div class="v" id="rP95">—</div></div>
+      <div class="stat"><div class="k">Пакетов</div><div class="v" id="rN">0</div></div>
+      <div class="stat"><div class="k">Средн. лаг от опроса</div><div class="v" id="rAdd">—</div></div>
+      <div class="stat"><div class="k">Макс. лаг от опроса</div><div class="v" id="rMaxAdd">—</div></div>
+      <div class="stat"><div class="k">iOS → страница</div><div class="v" id="rDet">—</div></div>
+      <div class="stat"><div class="k">Интервал по timestamp</div><div class="v" id="rTs">—</div></div>
+    </div>
+    <canvas class="hist" id="hist"></canvas>
+    <div class="tiny" style="margin-top:4px">Гистограмма интервалов между пакетами, 0–25 мс. Узкий столбик = стабильная связь, размазанный = джиттер.</div>
+    <div class="note" id="rFrameWarn" hidden>Интервал почти равен кадру экрана — похоже, Safari обновляет состояние геймпада только раз в кадр. Реальная частота джойстика может быть выше; используй слоу-мо тест для точного результата.</div>
+    <div class="row">
+      <button class="ghost" id="rReset">Сбросить</button>
+      <label class="chk"><input type="checkbox" id="fastPoll" checked> Быстрый опрос (точнее, но ест батарею)</label>
+    </div>
+    <div class="note info"><b>Как читать:</b> джойстик шлёт состояние пакетами. Нажатие ждёт следующего пакета — в среднем полинтервала, в худшем целый интервал. 125 Гц = 8 мс между пакетами ≈ +4 мс в среднем. «iOS → страница» — сколько проходит от получения пакета системой до того, как его увидел сайт (если Safari отдаёт timestamp).</div>
+  </section>
+
+  <!-- 2. tap + button -->
+  <section class="card" data-panel="tap" hidden>
+    <h2>Джойстик против тачскрина</h2>
+    <p class="small muted" style="margin:0 0 6px">Положи джойстик рядом с телефоном и <b>одновременно</b> нажимай кнопку джойстика и тапай по полю ниже — лучше двумя пальцами одной руки, одним ударом, как по барабану. Сделай 20+ повторов: случайные ошибки рук усреднятся.</p>
+    <div class="big"><span class="num" id="tMed">—</span><span class="unit">мс</span><span class="unit" id="tSign"></span></div>
+    <div class="grid">
+      <div class="stat"><div class="k">Последний</div><div class="v" id="tLast">—</div></div>
+      <div class="stat"><div class="k">Среднее</div><div class="v" id="tAvg">—</div></div>
+      <div class="stat"><div class="k">Разброс (σ)</div><div class="v" id="tSd">—</div></div>
+      <div class="stat"><div class="k">Повторов</div><div class="v" id="tN">0</div></div>
+    </div>
+    <div class="tap" id="tapPad">ТАП СЮДА<div class="sub">+ одновременно кнопка на джойстике</div></div>
+    <div class="log" id="tLog"></div>
+    <div class="row"><button class="ghost" id="tReset">Сбросить</button><button class="ghost" id="tUndo">Удалить последний</button></div>
+    <div class="note info">Результат — на сколько джойстик <b>медленнее тачскрина</b> этого же iPhone (тач тоже имеет свою задержку). Это удобно, чтобы сравнивать джойстики между собой: у кого число меньше, тот быстрее. Абсолютную задержку точно покажет только слоу-мо тест.</div>
+  </section>
+
+  <!-- 3. camera -->
+  <section class="card" data-panel="cam" hidden>
+    <h2>Точный замер: кнопка → экран</h2>
+    <ol class="small">
+      <li>Каждое нажатие кнопки джойстика переключает поле ниже между чёрным и белым в ближайшем кадре. Открой его на весь экран.</li>
+      <li>Вторым телефоном сними <b>слоу-мо 240 к/с</b> так, чтобы в кадре были и палец на кнопке, и экран iPhone.</li>
+      <li>Нажми кнопку 10–20 раз резко, с паузами.</li>
+      <li>Покадрово найди кадр, где кнопка дошла до упора (щелчок), и кадр, где экран сменил цвет. Посчитай кадры между ними и введи в калькулятор.</li>
+    </ol>
+    <div class="flash" id="flash">
+      <button class="fs" id="fsBtn">на весь экран</button>
+      <div class="cnt" id="fCnt">0</div>
+      <div class="clk" id="fClk">нажми кнопку на джойстике</div>
+    </div>
+    <div class="calc">
+      <input type="number" id="cFrames" inputmode="decimal" min="0" step="1" placeholder="кадров">
+      <span class="muted">кадров при</span>
+      <select id="cFps"><option>120</option><option selected>240</option><option>480</option><option>960</option><option>1000</option></select>
+      <span class="muted">к/с =</span>
+      <span class="res" id="cRes">— мс</span>
+    </div>
+    <div class="tiny" style="margin-top:6px">1 кадр при 240 к/с = 4,17 мс — это и есть точность замера. Усредни 10+ нажатий.</div>
+    <div class="grid" style="margin-top:12px">
+      <div class="stat"><div class="k">Страница: событие → кадр</div><div class="v" id="fPaint">—</div></div>
+      <div class="stat"><div class="k">Кадр экрана</div><div class="v" id="fFrame">—</div></div>
+    </div>
+    <div class="note info">Это полная задержка «палец → свет с экрана»: Bluetooth, опрос, iOS, Safari и сам дисплей. В играх добавится ещё задержка самой игры. Чтобы понять долю джойстика, сделай такой же замер, тапая по экрану пальцем, и сравни.</div>
+  </section>
+
+  <section class="card small">
+    <h2>Как уменьшить лаг на iPhone</h2>
+    <ul>
+      <li>Убери другие Bluetooth-устройства (особенно наушники) — они делят радиоканал с джойстиком.</li>
+      <li>Держи джойстик ближе к телефону, без препятствий; выключи режим энергосбережения.</li>
+      <li>На iPhone с ProMotion в Safari страницы иногда рисуются в 60 Гц: если «Экран» показывает 60, проверь Настройки → Приложения → Safari → Дополнения → Feature Flags → «Prefer Page Rendering Updates near 60fps» (выключить), если этот пункт есть.</li>
+      <li>Обнови прошивку джойстика (Xbox — через приложение Xbox Accessories на ПК/консоли).</li>
+    </ul>
+  </section>
+
+  <footer>Всё работает в браузере, ничего никуда не отправляется.</footer>
+</main>
+
+<script>
+(() => {
+  'use strict';
+  const $ = (id) => document.getElementById(id);
+  const now = () => performance.now();
+  const hasApi = typeof navigator.getGamepads === 'function';
+  if (!hasApi) $('noApi').hidden = false;
+
+  const LABELS = ['A','B','X','Y','LB','RB','LT','RT','⧉','☰','LS','RS','↑','↓','←','→','⌂','16','17','18','19'];
+  const fmt = (v, d = 1) => (v == null || !isFinite(v)) ? '—' : v.toFixed(d).replace('.', ',');
+  const ms = (v, d = 1) => (v == null || !isFinite(v)) ? '—' : fmt(v, d) + ' мс';
+
+  function median(a) { if (!a.length) return NaN; const s = a.slice().sort((x, y) => x - y); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; }
+  function pct(a, p) { if (!a.length) return NaN; const s = a.slice().sort((x, y) => x - y); return s[Math.min(s.length - 1, Math.floor(p * s.length))]; }
+  function mean(a) { return a.length ? a.reduce((x, y) => x + y, 0) / a.length : NaN; }
+  function sd(a) { if (a.length < 2) return NaN; const m = mean(a); return Math.sqrt(a.reduce((s, x) => s + (x - m) ** 2, 0) / (a.length - 1)); }
+  const push = (arr, v, max) => { arr.push(v); if (arr.length > max) arr.shift(); };
+
+  /* ---------- state ---------- */
+  let tab = 'rate';
+  const pads = new Map();      // index -> pad state
+  let activeIdx = null;
+  let pollCount = 0, evCount = 0;
+  const frameDeltas = [];
+  let frameMs = NaN;
+
+  const rate = { intervals: [], tsIntervals: [], detect: [], n: 0 };
+  const tap = { results: [], touch: null, press: null };
+  const cam = { count: 0, white: false, pendingAt: null, paint: [] };
+
+  /* ---------- polling ---------- */
+  function pollAll() {
+    if (!hasApi) return;
+    const t = now();
+    pollCount++;
+    const list = navigator.getGamepads();
+    for (let i = 0; i < list.length; i++) { const gp = list[i]; if (gp && gp.connected !== false) handlePad(gp, t); }
+  }
+
+  function handlePad(gp, t) {
+    let p = pads.get(gp.index);
+    if (!p || p.id !== gp.id) {
+      p = { id: gp.id, mapping: gp.mapping, pressed: gp.buttons.map(b => b.pressed), vals: gp.buttons.map(b => b.value), axes: Array.from(gp.axes), ts: gp.timestamp, last: 0 };
+      pads.set(gp.index, p);
+      activeIdx = gp.index;
+      buildLive(gp);
+      return;
+    }
+    let changed = false, axisChanged = false;
+    const downs = [];
+    const bs = gp.buttons;
+    for (let i = 0; i < bs.length; i++) {
+      const b = bs[i];
+      if (b.value !== p.vals[i]) { p.vals[i] = b.value; changed = true; }
+      if (b.pressed !== p.pressed[i]) { if (b.pressed) downs.push(i); p.pressed[i] = b.pressed; changed = true; }
+    }
+    const ax = gp.axes;
+    for (let i = 0; i < ax.length; i++) if (ax[i] !== p.axes[i]) { p.axes[i] = ax[i]; changed = axisChanged = true; }
+    const ts = gp.timestamp;
+    const tsChanged = ts !== p.ts;
+
+    if (changed || tsChanged) {
+      activeIdx = gp.index;
+      evCount++;
+      // packet interval (only while input is continuously changing)
+      if (p.last) { const d = t - p.last; if (d < 60) { push(rate.intervals, d, 1500); rate.n++; } }
+      p.last = t;
+      if (tsChanged && p.ts && ts) { const d = ts - p.ts; if (d > 0 && d < 60) push(rate.tsIntervals, d, 1500); }
+      if (ts && ts <= t && t - ts < 200) push(rate.detect, t - ts, 500);
+      p.ts = ts;
+    }
+    for (const i of downs) onButtonDown(i, t);
+  }
+
+  // Fast loop: polls far more often than once per frame, so a new packet is
+  // seen within ~1 ms instead of waiting for the next screen refresh.
+  let fast = true, running = true;
+  const mc = new MessageChannel();
+  let lastYield = 0;
+  mc.port1.onmessage = () => {
+    if (!fast || !running) return;
+    pollAll();
+    const t = now();
+    // yield to rendering/input briefly every ~4 ms so the page stays responsive
+    if (t - lastYield > 4) { lastYield = t; setTimeout(() => mc.port2.postMessage(0), 0); }
+    else mc.port2.postMessage(0);
+  };
+  function startFast() { if (fast && running) mc.port2.postMessage(0); }
+  startFast();
+
+  document.addEventListener('visibilitychange', () => {
+    running = !document.hidden;
+    if (running) { startFast(); requestWake(); }
+  });
+  $('fastPoll').addEventListener('change', (e) => { fast = e.target.checked; resetRate(); startFast(); });
+
+  window.addEventListener('gamepadconnected', (e) => { pollAll(); activeIdx = e.gamepad.index; requestWake(); });
+  window.addEventListener('gamepaddisconnected', (e) => { pads.delete(e.gamepad.index); if (activeIdx === e.gamepad.index) activeIdx = pads.size ? pads.keys().next().value : null; if (activeIdx === null) $('live').hidden = true; });
+
+  /* ---------- wake lock ---------- */
+  let wake = null;
+  async function requestWake() { try { if ('wakeLock' in navigator && !wake) { wake = await navigator.wakeLock.request('screen'); wake.addEventListener('release', () => { wake = null; }); } } catch (_) {} }
+
+  /* ---------- live view ---------- */
+  let btnEls = [];
+  function buildLive(gp) {
+    const box = $('btns'); box.textContent = '';
+    btnEls = gp.buttons.map((_, i) => { const el = document.createElement('div'); el.className = 'btn'; el.textContent = gp.mapping === 'standard' ? (LABELS[i] || i) : i; box.appendChild(el); return el; });
+    $('live').hidden = false;
+  }
+  function renderLive() {
+    const p = activeIdx !== null ? pads.get(activeIdx) : null;
+    $('dot').classList.toggle('on', !!p);
+    if (!p) { $('padName').textContent = 'Геймпад не найден'; $('padHint').hidden = false; return; }
+    $('padName').textContent = p.id.replace(/\s*\(.*?Vendor.*?\)\s*/i, ' ').trim() || 'Геймпад';
+    $('padHint').hidden = true;
+    for (let i = 0; i < btnEls.length; i++) btnEls[i].classList.toggle('on', !!p.pressed[i]);
+    const a = p.axes;
+    if (a.length >= 2) $('s0').style.transform = `translate(${(a[0] || 0) * 20}px, ${(a[1] || 0) * 20}px)`;
+    if (a.length >= 4) $('s1').style.transform = `translate(${(a[2] || 0) * 20}px, ${(a[3] || 0) * 20}px)`;
+  }
+
+  /* ---------- button down dispatch ---------- */
+  function onButtonDown(i, t) {
+    if (tab === 'tap') { tap.press = t; tryPair(); }
+    if (tab === 'cam') {
+      cam.count++; cam.white = !cam.white;
+      const f = $('flash');
+      f.classList.toggle('white', cam.white);
+      $('fCnt').textContent = cam.count;
+      $('fClk').textContent = (t / 1000).toFixed(3).replace('.', ',') + ' с';
+      cam.pendingAt = t;
+    }
+  }
+
+  /* ---------- tab 1: rate ---------- */
+  function resetRate() { rate.intervals.length = 0; rate.tsIntervals.length = 0; rate.detect.length = 0; rate.n = 0; for (const p of pads.values()) p.last = 0; }
+  $('rReset').addEventListener('click', resetRate);
+
+  function renderRate() {
+    const iv = rate.intervals;
+    const med = median(iv);
+    const hzv = 1000 / med;
+    $('rHz').textContent = iv.length > 10 ? Math.round(hzv) : '—';
+    const g = $('rGrade');
+    if (iv.length > 10) {
+      g.textContent = hzv >= 240 ? 'отлично' : hzv >= 120 ? 'хорошо' : hzv >= 60 ? 'средне' : 'медленно';
+      g.className = 'unit ' + (hzv >= 120 ? 'good' : hzv >= 60 ? 'mid' : 'badc');
+    } else { g.textContent = iv.length ? 'крути стик…' : ''; g.className = 'unit'; }
+    $('rMed').textContent = ms(med, 2);
+    $('rJit').textContent = ms(sd(iv), 2);
+    $('rP95').textContent = ms(pct(iv, 0.95), 2);
+    $('rN').textContent = rate.n;
+    $('rAdd').textContent = ms(med / 2, 1);
+    $('rMaxAdd').textContent = ms(pct(iv, 0.95), 1);
+    $('rDet').textContent = rate.detect.length > 5 ? ms(median(rate.detect), 1) : '—';
+    $('rTs').textContent = rate.tsIntervals.length > 10 ? ms(median(rate.tsIntervals), 2) : '—';
+    $('rFrameWarn').hidden = !(iv.length > 30 && isFinite(frameMs) && Math.abs(med - frameMs) < 0.6);
+    drawHist(iv);
+  }
+
+  const hist = $('hist'); const hctx = hist.getContext('2d');
+  function drawHist(iv) {
+    const dpr = Math.min(3, window.devicePixelRatio || 1);
+    const w = hist.clientWidth, h = hist.clientHeight;
+    if (hist.width !== Math.round(w * dpr)) { hist.width = Math.round(w * dpr); hist.height = Math.round(h * dpr); }
+    hctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    hctx.clearRect(0, 0, w, h);
+    const MAX = 25, BW = 0.5, nb = MAX / BW, bins = new Array(nb).fill(0);
+    for (const v of iv) { const b = Math.floor(v / BW); if (b >= 0 && b < nb) bins[b]++; }
+    const top = Math.max(1, ...bins);
+    const pad = 4, base = h - 16, bw = (w - pad * 2) / nb;
+    const grad = hctx.createLinearGradient(0, 0, w, 0); grad.addColorStop(0, '#38d6ff'); grad.addColorStop(1, '#8b5cff');
+    hctx.fillStyle = grad;
+    for (let i = 0; i < nb; i++) { const bh = bins[i] / top * (base - 6); if (bh > 0) hctx.fillRect(pad + i * bw + 0.5, base - bh, Math.max(1, bw - 1), bh); }
+    hctx.fillStyle = '#5c5c6e'; hctx.font = '10px system-ui, sans-serif'; hctx.textAlign = 'center';
+    for (let m = 0; m <= MAX; m += 5) hctx.fillText(m + (m === MAX ? ' мс' : ''), Math.min(w - 14, Math.max(8, pad + m / BW * bw)), h - 4);
+  }
+
+  /* ---------- tab 2: tap + button ---------- */
+  const tapPad = $('tapPad');
+  const WINDOW = 150; // ms within which tap and press count as one attempt
+  function onTouch(e) {
+    e.preventDefault();
+    let t = e.timeStamp;
+    const n = now();
+    if (!(t > 0) || Math.abs(n - t) > 1000) t = n; // fall back if timeStamp is in another clock
+    tap.touch = t;
+    tapPad.classList.add('hit'); setTimeout(() => tapPad.classList.remove('hit'), 60);
+    tryPair();
+  }
+  if (window.PointerEvent) tapPad.addEventListener('pointerdown', onTouch); else tapPad.addEventListener('touchstart', onTouch, { passive: false });
+
+  let pairTimer = 0;
+  function tryPair() {
+    clearTimeout(pairTimer);
+    const { touch, press } = tap;
+    if (touch != null && press != null) {
+      const d = press - touch;
+      tap.touch = tap.press = null;
+      if (Math.abs(d) <= WINDOW) { tap.results.push(d); renderTapLog(); }
+      return;
+    }
+    // wait for the other half; drop it if it never arrives
+    pairTimer = setTimeout(() => { tap.touch = tap.press = null; }, WINDOW + 20);
+  }
+  function renderTapLog() {
+    const r = tap.results, box = $('tLog'); box.textContent = '';
+    r.slice(-12).reverse().forEach(v => { const s = document.createElement('span'); s.textContent = (v > 0 ? '+' : '') + fmt(v, 1); box.appendChild(s); });
+  }
+  $('tReset').addEventListener('click', () => { tap.results.length = 0; renderTapLog(); });
+  $('tUndo').addEventListener('click', () => { tap.results.pop(); renderTapLog(); });
+
+  function renderTap() {
+    const r = tap.results;
+    const m = median(r);
+    $('tMed').textContent = r.length ? (m > 0 ? '+' : '') + fmt(m, 1) : '—';
+    $('tSign').textContent = !r.length ? '' : r.length < 10 ? 'сделай ещё ' + (10 - r.length) + '+' : (m >= 0 ? 'джойстик медленнее тача' : 'джойстик быстрее тача');
+    $('tLast').textContent = r.length ? ms(r[r.length - 1]) : '—';
+    $('tAvg').textContent = ms(mean(r));
+    $('tSd').textContent = ms(sd(r));
+    $('tN').textContent = r.length;
+  }
+
+  /* ---------- tab 3: camera ---------- */
+  const flash = $('flash');
+  $('fsBtn').addEventListener('click', () => {
+    const on = !flash.classList.contains('full');
+    flash.classList.toggle('full', on);
+    $('fsBtn').textContent = on ? 'закрыть' : 'на весь экран';
+    requestWake();
+  });
+  function calc() {
+    const fr = parseFloat(String($('cFrames').value).replace(',', '.'));
+    const fps = parseFloat($('cFps').value);
+    $('cRes').textContent = isFinite(fr) && fr >= 0 ? fmt(fr * 1000 / fps, 1) + ' мс' : '— мс';
+  }
+  $('cFrames').addEventListener('input', calc); $('cFps').addEventListener('change', calc);
+
+  /* ---------- tabs ---------- */
+  document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => {
+    tab = b.dataset.tab;
+    document.querySelectorAll('.tab').forEach(x => x.classList.toggle('on', x === b));
+    document.querySelectorAll('[data-panel]').forEach(p => { p.hidden = p.dataset.panel !== tab; });
+    if (tab !== 'cam' && flash.classList.contains('full')) $('fsBtn').click();
+  }));
+
+  /* ---------- frame loop ---------- */
+  let lastFrame = 0, lastUi = 0, lastSec = now(), pc0 = 0, ec0 = 0;
+  function frame(ts) {
+    if (!fast || !running) pollAll(); // fallback: once per frame
+    if (lastFrame) { const d = ts - lastFrame; if (d > 0 && d < 100) push(frameDeltas, d, 120); }
+    lastFrame = ts;
+    if (cam.pendingAt != null) { const d = ts - cam.pendingAt; if (d >= -1 && d < 200) push(cam.paint, Math.max(0, d), 50); cam.pendingAt = null; }
+
+    const t = now();
+    if (t - lastUi > 50) {
+      lastUi = t;
+      renderLive();
+      if (tab === 'rate') renderRate();
+      else if (tab === 'tap') renderTap();
+      else { $('fPaint').textContent = cam.paint.length ? '≈ ' + ms(median(cam.paint)) : '—'; $('fFrame').textContent = ms(frameMs, 2); }
+    }
+    if (t - lastSec >= 1000) {
+      const dt = (t - lastSec) / 1000;
+      frameMs = median(frameDeltas);
+      $('hz').textContent = isFinite(frameMs) ? Math.round(1000 / frameMs) + ' Гц' : '—';
+      const ph = (pollCount - pc0) / dt;
+      $('pollHz').textContent = ph >= 1000 ? fmt(ph / 1000, 1) + ' кГц' : Math.round(ph) + ' Гц';
+      $('evHz').textContent = Math.round((evCount - ec0) / dt) + '/с';
+      pc0 = pollCount; ec0 = evCount; lastSec = t;
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
