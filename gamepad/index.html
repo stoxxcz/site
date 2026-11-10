@@ -418,8 +418,12 @@ footer { color: var(--dim); font-size: 12px; text-align: center; margin-top: 18p
     $('rN').textContent = rate.n;
     $('rAdd').textContent = ms(med / 2, 1);
     $('rMaxAdd').textContent = ms(pct(iv, 0.95), 1);
-    $('rDet').textContent = rate.detect.length > 5 ? ms(median(rate.detect), 1) : '—';
-    $('rTs').textContent = rate.tsIntervals.length > 10 ? ms(median(rate.tsIntervals), 2) : '—';
+    // iOS Safari reports gamepad.timestamp in seconds, other browsers in ms
+    const tsRaw = median(rate.tsIntervals);
+    const tsSec = tsRaw > 0 && tsRaw < 0.5;
+    const tsMs = tsSec ? rate.tsIntervals.map(v => v * 1000).filter(v => v < 60) : rate.tsIntervals;
+    $('rTs').textContent = tsMs.length > 10 ? ms(median(tsMs), 2) : '—';
+    $('rDet').textContent = !tsSec && rate.detect.length > 5 ? ms(median(rate.detect), 1) : '—';
     $('rFrameWarn').hidden = !(iv.length > 30 && isFinite(frameMs) && Math.abs(med - frameMs) < 0.6);
     drawHist(iv);
   }
