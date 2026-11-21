@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Ночной эмбиант</title>
+<meta name="description" content="Генератор фонового эмбианта для ночи в духе FNaF 4 и Five Nights at Candy's: гул, сверчки, дыхание за дверью, шаги, скрип металла, шкатулка. Играет вживую и скачивается бесшовным циклом.">
+<meta name="theme-color" content="#050506">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%23050506'/%3E%3Ccircle cx='36' cy='46' r='7' fill='%23e23b4e'/%3E%3Ccircle cx='64' cy='46' r='7' fill='%23e23b4e'/%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #050506;
+  --panel: #0e0e11;
+  --panel-2: #15151a;
+  --line: #24242b;
+  --text: #d9d9e0;
+  --muted: #85858f;
+  --dim: #55555e;
+  --red: #e23b4e;
+  --red-dim: rgba(226, 59, 78, 0.18);
+  --amber: #e8b04a;
+  --radius: 14px;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+[hidden] { display: none !important; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: radial-gradient(1000px 600px at 50% -20%, rgba(226, 59, 78, 0.07), transparent 70%), var(--bg);
+  color: var(--text);
+  font: 15px/1.45 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  overflow-x: hidden;
+}
+/* плёночное зерно */
+body::after {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.07;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  animation: grain 0.5s steps(4) infinite;
+}
+@keyframes grain {
+  0% { transform: translate(0, 0); }
+  25% { transform: translate(-3%, 2%); }
+  50% { transform: translate(2%, -3%); }
+  75% { transform: translate(-2%, -1%); }
+}
+@media (prefers-reduced-motion: reduce) { body::after { animation: none; } }
+body.flash { background: #3a3a44; transition: none; }
+body.flash .stage { background: #2b2b33; }
+
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; touch-action: manipulation; }
+.wrap {
+  max-width: 760px;
+  margin: 0 auto;
+  padding: max(14px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
+}
+.mono { font-family: "Courier New", Courier, monospace; }
+.top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; margin-top: 6px; }
+.hour { font: 700 30px/1 "Courier New", Courier, monospace; letter-spacing: 1px; color: var(--text); }
+.night { font: 14px/1 "Courier New", Courier, monospace; color: var(--muted); text-align: right; }
+h1 {
+  font: 700 22px/1.2 "Courier New", Courier, monospace;
+  letter-spacing: 3px;
+  margin: 18px 0 6px;
+  color: #f0f0f4;
+}
+.lead { color: var(--muted); margin: 0 0 16px; }
+
+.stage {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 3fr) 1fr;
+  grid-template-rows: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 8px;
+  background: #08080a;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 10px;
+  height: 150px;
+  transition: background 0.4s;
+}
+.door {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding: 8px 4px;
+  font: 11px/1.2 "Courier New", Courier, monospace;
+  color: var(--dim);
+  text-align: center;
+  background: linear-gradient(#0b0b0e, #060607);
+  transition: color 0.6s, box-shadow 0.6s, border-color 0.6s;
+  min-width: 0;
+}
+.door.on { color: var(--red); border-color: rgba(226, 59, 78, 0.6); box-shadow: inset 0 0 30px var(--red-dim), 0 0 18px var(--red-dim); }
+#scope { width: 100%; height: 100%; display: block; border-radius: 8px; background: #050506; min-width: 0; min-height: 0; }
+
+.controls { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 14px 0 6px; }
+.play {
+  flex: 0 0 auto;
+  border: 1px solid rgba(226, 59, 78, 0.55);
+  background: rgba(226, 59, 78, 0.12);
+  color: #ffd9de;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-weight: 650;
+  letter-spacing: 0.3px;
+}
+.play:hover { background: rgba(226, 59, 78, 0.2); }
+.play.on { background: transparent; color: var(--muted); border-color: var(--line); }
+.knob { display: flex; flex-direction: column; gap: 2px; flex: 1 1 140px; min-width: 0; }
+.knob label, .layer label { font-size: 12px; color: var(--muted); display: flex; justify-content: space-between; gap: 8px; }
+.knob b, .layer b { color: var(--text); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+input[type=range] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 24px;
+  margin: 0;
+  background: transparent;
+  --p: 50%;
+}
+input[type=range]:focus-visible { outline: 1px solid var(--dim); outline-offset: 2px; border-radius: 6px; }
+input[type=range]::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 4px;
+  background: linear-gradient(90deg, var(--red) var(--p), #2a2a32 var(--p));
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  margin-top: -6px;
+  border: 0;
+  border-radius: 50%;
+  background: #f1f1f4;
+}
+input[type=range]::-moz-range-track { height: 4px; border-radius: 4px; background: #2a2a32; }
+input[type=range]::-moz-range-progress { height: 4px; border-radius: 4px; background: var(--red); }
+input[type=range]::-moz-range-thumb { width: 16px; height: 16px; border: 0; border-radius: 50%; background: #f1f1f4; }
+
+.log {
+  list-style: none;
+  margin: 10px 0 16px;
+  padding: 0;
+  min-height: 132px;
+  font: 13px/1.5 "Courier New", Courier, monospace;
+}
+.log li { color: var(--muted); display: flex; gap: 10px; animation: in 0.8s ease-out; }
+.log li time { color: var(--dim); flex: none; }
+.log li:first-child { color: var(--text); }
+.log li.hint { color: var(--dim); animation: none; }
+@keyframes in { from { opacity: 0; } to { opacity: 1; } }
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 14px;
+  margin-bottom: 12px;
+}
+.card h2, .card summary { font-size: 15px; margin: 0; font-weight: 650; }
+.card summary { cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+.card summary::-webkit-details-marker { display: none; }
+.card summary::after { content: "+"; color: var(--muted); font-size: 18px; }
+.card[open] summary::after { content: "−"; }
+.layers { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 18px; margin-top: 12px; }
+@media (max-width: 520px) { .layers { grid-template-columns: minmax(0, 1fr); } }
+.layer { min-width: 0; }
+.row-btns { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+.ghost {
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  padding: 7px 14px;
+  font-size: 13px;
+  color: var(--text);
+}
+.ghost:hover { border-color: var(--dim); }
+
+.export { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 12px; }
+@media (max-width: 520px) { .export { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); } }
+.field { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+.field span { font-size: 12px; color: var(--muted); }
+select, .field input {
+  width: 100%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 8px 10px;
+  min-width: 0;
+}
+.seedbox { display: flex; gap: 6px; }
+.seedbox button { flex: none; }
+.go {
+  margin-top: 12px;
+  width: 100%;
+  border: 1px solid var(--line);
+  background: #e9e9ee;
+  color: #0a0a0c;
+  font-weight: 650;
+  border-radius: 12px;
+  padding: 11px 14px;
+}
+.go:disabled { opacity: 0.55; cursor: default; }
+.bar { height: 4px; border-radius: 4px; background: var(--panel-2); margin-top: 10px; overflow: hidden; }
+.bar i { display: block; height: 100%; width: 0; background: var(--red); transition: width 0.2s; }
+.status { font-size: 13px; color: var(--muted); margin-top: 8px; min-height: 1.4em; }
+.tiny { font-size: 12px; color: var(--dim); }
+.tiny a { color: var(--muted); }
+footer { margin-top: 18px; }
+</style>
+</head>
+<body>
+<main class="wrap">
+  <div class="top">
+    <div class="hour" id="hour">12 AM</div>
+    <div class="night" id="nightNo">Ночь 1</div>
+  </div>
+
+  <h1>НОЧНОЙ ЭМБИАНТ</h1>
+  <p class="lead">Фон для ночи в духе FNaF&nbsp;4 и Five Nights at Candy's: гул, сверчки за окном, дыхание у двери, тяжёлые шаги, лязг металла, расстроенная шкатулка. Каждый звук синтезируется прямо в браузере, поэтому ночь не повторяется.</p>
+
+  <section class="stage" aria-label="Что происходит">
+    <div class="door" id="doorL">ЛЕВАЯ<br>ДВЕРЬ</div>
+    <canvas id="scope" aria-hidden="true"></canvas>
+    <div class="door" id="doorR">ПРАВАЯ<br>ДВЕРЬ</div>
+  </section>
+
+  <div class="controls">
+    <button class="play" id="play" type="button">▶ Начать ночь</button>
+    <div class="knob">
+      <label for="volume">Громкость <b id="volumeV">80</b></label>
+      <input id="volume" type="range" min="0" max="100" value="80">
+    </div>
+    <div class="knob">
+      <label for="tension">Тревога <b id="tensionV">50</b></label>
+      <input id="tension" type="range" min="0" max="100" value="50">
+    </div>
+  </div>
+
+  <ul class="log" id="log" aria-live="polite">
+    <li class="hint">Надень наушники. Звуки слева и справа — это двери.</li>
+  </ul>
+
+  <details class="card" id="layersCard">
+    <summary>Слои</summary>
+    <div class="layers" id="layers"></div>
+    <div class="row-btns">
+      <button class="ghost" type="button" data-preset="default">По умолчанию</button>
+      <button class="ghost" type="button" data-preset="bedroom">Спальня (FNaF 4)</button>
+      <button class="ghost" type="button" data-preset="factory">Завод (FNAC)</button>
+      <button class="ghost" type="button" data-preset="quiet">Тихий фон</button>
+    </div>
+  </details>
+
+  <section class="card">
+    <h2>Скачать бесшовный цикл</h2>
+    <div class="export">
+      <label class="field"><span>Длина</span>
+        <select id="len">
+          <option value="60">1 минута</option>
+          <option value="120" selected>2 минуты</option>
+          <option value="180">3 минуты</option>
+          <option value="300">5 минут</option>
+        </select>
+      </label>
+      <label class="field"><span>Формат</span>
+        <select id="fmt">
+          <option value="wav" selected>WAV — для игры</option>
+          <option value="mp3">MP3 — легче</option>
+        </select>
+      </label>
+      <label class="field"><span>Зерно</span>
+        <span class="seedbox">
+          <input id="seed" inputmode="numeric" autocomplete="off" aria-label="Зерно">
+          <button class="ghost" id="reseed" type="button" title="Другое зерно" aria-label="Другое зерно">⟳</button>
+        </span>
+      </label>
+    </div>
+    <button class="go" id="render" type="button">Сгенерировать и скачать</button>
+    <div class="bar" id="bar" hidden><i id="barFill"></i></div>
+    <div class="status" id="status"></div>
+    <p class="tiny">Берутся текущие слои и тревога. Конец цикла плавно переходит в начало, так что его можно ставить на повтор. Одно и то же зерно даёт один и тот же трек. Для бесшовного повтора в игре бери WAV: у MP3 в начале файла бывает пауза в доли секунды.</p>
+  </section>
+
+  <footer class="tiny">Фанатский фон: здесь нет ни одного сэмпла или мелодии из игр Скотта Коутона и Эмиля Макко, всё синтезируется заново. Можно использовать в своих проектах.</footer>
+</main>
+
+<script src="engine.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
